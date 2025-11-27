@@ -21,7 +21,13 @@ router.post(
   }
 );
 
-router.post("/login", async (req, res, next) => {
+router.post(
+  "/login",
+  body("email").isEmail(),
+  body("password").isLength({ min: 1 }),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ error: "Invalid input", details: errors.array() });
   try {
     const { email, password } = req.body;
     const { user, token } = await authService.loginUser(email, password);
@@ -29,6 +35,7 @@ router.post("/login", async (req, res, next) => {
   } catch (e) {
     next(e);
   }
-});
+  }
+);
 
 export default router;

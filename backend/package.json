@@ -8,10 +8,11 @@
     "prestart": "prisma migrate deploy",
     "start": "node dist/server.js",
     "postinstall": "prisma generate",
+    "build:seed": "tsc -p tsconfig.prisma.json",
     "seed": "prisma db seed"
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "node dist-prisma/prisma/seed.js"
   },
   "dependencies": {
     "@prisma/client": "^5.22.0",

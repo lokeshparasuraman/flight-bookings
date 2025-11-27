@@ -10,6 +10,9 @@ export function setAuthToken(token: string | null) {
   else delete api.defaults.headers.common["Authorization"];
 }
 
+const existingToken = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+if (existingToken) setAuthToken(existingToken);
+
 export async function checkHealth(): Promise<boolean> {
   try {
     const base: string = (import.meta as any).env?.VITE_API_URL || "/api";

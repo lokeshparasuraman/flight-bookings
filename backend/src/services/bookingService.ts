@@ -1,5 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-const prisma = new PrismaClient();
+import { prisma } from "../db";
 
 export async function createBooking(userId: string, flightId: string) {
   const flight = await prisma.flight.findUnique({ where: { id: flightId } });

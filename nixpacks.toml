@@ -8,10 +8,11 @@ NODE_ENV = "production"
 nixPkgs = ["nodejs_18"]
 
 [phases.install]
-cmds = ["cd backend && npm install"]
+installArgs = ["--legacy-peer-deps"]
+cmds = ["cd backend && npm install --include=dev"]
 
 [phases.build]
-cmds = ["cd backend && npm run build"]
+cmds = ["cd backend && npx tsc"]
 
 [start]
 cmd = "cd backend && npm start"

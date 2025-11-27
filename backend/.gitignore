@@ -1,0 +1,30 @@
+# Node modules
+node_modules/
+
+# Build output (TypeScript)
+dist/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE/editor folders
+.vscode/
+.idea/
+
+# Prisma generated client (if needed)
+prisma/generated/
+
+# Optional: local database files
+*.sqlite

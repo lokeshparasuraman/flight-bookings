@@ -6,6 +6,7 @@
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
+   "prestart": "prisma generate",
     "postinstall": "prisma generate",
     "build:seed": "tsc -p tsconfig.prisma.json",
     "seed": "prisma db seed"

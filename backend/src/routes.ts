@@ -5,6 +5,7 @@ import bookingsController from "./controllers/bookingsController";
 import chatController from "./controllers/chatController";
 
 const router = Router();
+
 router.use("/auth", authController);
 router.use("/flights", flightController);
 router.use("/bookings", bookingsController);

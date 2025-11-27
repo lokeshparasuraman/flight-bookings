@@ -9,67 +9,54 @@ import { errorHandler } from "./middlewares/errorHandler";
 import { prisma } from "./db";
 
 const app = express();
-app.set("trust proxy",1);
-// Security Headers
-app.use(helmet());
 
-//CORS
-app.use(cors());
+app.set("trust proxy", 1);
 
-// JSON Body Parsing
+// 🛡 Security Headers
+app.use(helmet({
+  crossOriginResourcePolicy: false 
+}));
+
+// 🌍 CORS: Allow Vercel + local dev
+app.use(cors({
+  origin: [
+    "http://localhost:3000",
+    "https://flight-bookings.vercel.app"
+  ],
+  credentials: true,
+}));
+
+// 📦 JSON Body Parsing
 app.use(express.json());
 
-// Rate Limiting
+// ⏱ Rate Limiting
 const limiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 120
+  max: 120,
 });
 app.use(limiter);
 
-// API Routes
+// 🛣 API Routes
 app.use("/api", router);
 
-// Error Handler
+// ❗ Global Error Handler
 app.use(errorHandler);
 
-// Healthcheck (must be before listen)
+// 🩺 Healthcheck
 app.get("/health", (_, res) => res.send("OK"));
 
 const port = process.env.PORT ? Number(process.env.PORT) : 4000;
 
+// 🗄 Seed only if DB empty
 async function ensureSeed() {
   try {
     const count = await prisma.flight.count();
     if (count > 0) return;
     await prisma.flight.createMany({
       data: [
-        {
-          origin: "DEL",
-          destination: "BOM",
-          airline: "DemoAir",
-          flightNumber: "DA101",
-          departure: new Date("2025-12-20T06:00:00Z"),
-          arrival: new Date("2025-12-20T08:10:00Z"),
-          basePriceCents: 55000
-        },
-        {
-          origin: "DEL",
-          destination: "BOM",
-          airline: "FlyFast",
-          flightNumber: "FF201",
-          departure: new Date("2025-12-20T09:00:00Z"),
-          arrival: new Date("2025-12-20T11:15:00Z"),
-          basePriceCents: 48000
-        },
-        {
-          origin: "BLR",
-          destination: "MYS",
-          airline: "SkyJet",
-          flightNumber: "SJ300",
-          departure: new Date("2025-12-22T13:00:00Z"),
-          arrival: new Date("2025-12-22T14:30:00Z"),
-          basePriceCents: 32000
-        }
+        { origin: "DEL", destination: "BOM", airline: "DemoAir", flightNumber: "DA101", departure: new Date("2025-12-20T06:00:00Z"), arrival: new Date("2025-12-20T08:10:00Z"), basePriceCents: 55000 },
+        { origin: "DEL", destination: "BOM", airline: "FlyFast", flightNumber: "FF201", departure: new Date("2025-12-20T09:00:00Z"), arrival: new Date("2025-12-20T11:15:00Z"), basePriceCents: 48000 },
+        { origin: "BLR", destination: "MYS", airline: "SkyJet", flightNumber: "SJ300", departure: new Date("2025-12-22T13:00:00Z"), arrival: new Date("2025-12-22T14:30:00Z"), basePriceCents: 32000 }
       ],
       skipDuplicates: true
     });

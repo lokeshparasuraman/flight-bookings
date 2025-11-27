@@ -9,7 +9,7 @@ import { errorHandler } from "./middlewares/errorHandler";
 import { prisma } from "./db";
 
 const app = express();
-app.set("trust proxy", true);
+app.set("trust proxy",1);
 // Security Headers
 app.use(helmet());
 

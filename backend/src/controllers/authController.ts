@@ -10,7 +10,7 @@ router.post(
   body("password").isLength({ min: 6 }),
   async (req, res, next) => {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+    if (!errors.isEmpty()) return res.status(400).json({ error: "Invalid input", details: errors.array() });
     try {
       const { email, password, name } = req.body;
       const { user, token } = await authService.registerUser(email, password, name);

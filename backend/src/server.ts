@@ -12,8 +12,8 @@ const app = express();
 
 // Security Headers
 app.use(helmet());
-app.set('trust proxy', true);
-// CORS
+
+//CORS
 app.use(cors());
 
 // JSON Body Parsing

@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const BASE_URL = import.meta.env.VITE_API_URL || "/api";
+
 const api = axios.create({
-  baseURL: (import.meta as any).env?.VITE_API_URL || "/api",
+  baseURL: BASE_URL,
   timeout: 15000
 });
 
@@ -15,8 +17,9 @@ if (existingToken) setAuthToken(existingToken);
 
 export async function checkHealth(): Promise<boolean> {
   try {
-    const base: string = (import.meta as any).env?.VITE_API_URL || "/api";
-    const url = base.endsWith("/api") ? base.replace(/\/api$/, "") + "/health" : "/health";
+    const rootURL = BASE_URL.replace(/\/api$/, "");   // works for both absolute & relative
+    const url = `${rootURL}/health`;
+
     const r = await axios.get(url, { timeout: 5000 });
     return r.status === 200 && String(r.data).toLowerCase() === "ok";
   } catch {

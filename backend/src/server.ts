@@ -19,10 +19,15 @@ app.use(helmet({
 
 // 🌍 CORS: Allow Vercel + local dev
 app.use(cors({
-  origin: [
-    "http://localhost:3000",
-    "https://flight-bookings.vercel.app"
-  ],
+  origin: (origin, callback) => {
+    const allowList = [
+      "http://localhost:3000",
+      process.env.FRONTEND_URL || undefined,
+    ].filter(Boolean) as string[];
+    if (!origin) return callback(null, true);
+    const allowed = allowList.includes(origin) || origin.endsWith(".vercel.app");
+    return allowed ? callback(null, true) : callback(new Error("Not allowed by CORS"));
+  },
   credentials: true,
 }));
 

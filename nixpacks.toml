@@ -1,21 +1,15 @@
-[workspace]
-path = "backend"
-
-[variables]
-NODE_ENV = "production"
-
 [phases.setup]
 nixPkgs = ["nodejs_18"]
 
 [phases.install]
 cmds = [
-  "npm install --include=dev"
+  "cd backend && npm install --include=dev"
 ]
 
 [phases.build]
 cmds = [
-  "npm run build"
+  "cd backend && npm run build"
 ]
 
 [start]
-cmd = "node dist/server.js"
+cmd = "cd backend && node dist/server.js"

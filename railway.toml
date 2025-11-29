@@ -1,8 +1,0 @@
-[build]
-builder = "NIXPACKS"
-buildCommand = "npm install --include=dev && npm run build"
-watchPatterns = ["backend/**"]
-
-[start]
-command = "node dist/server.js"
-runFrom = "backend"

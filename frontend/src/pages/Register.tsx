@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState} from "react";
 import api, { setAuthToken } from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
 import Header from "../components/Header";
@@ -12,11 +12,13 @@ export default function Register() {
   const nav = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
 
+ 
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setLoading(true);
-    
+
     try {
       const r = await api.post("/auth/register", { email, password, name });
       const token = r.data.token;
@@ -80,7 +82,7 @@ export default function Register() {
                   required
                 />
               </div>
-              
+
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                   Password

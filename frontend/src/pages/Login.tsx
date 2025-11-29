@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import api, { setAuthToken } from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
 import Header from "../components/Header";
@@ -9,8 +9,14 @@ export default function Login() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
 
+  const [showPassword, setShowPassword] = useState(false);
+  useEffect(() => {
+      const token = localStorage.getItem("token");
+      if (token) {
+        nav("/"); // redirect to home
+      }
+    }, []);
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError("");

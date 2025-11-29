@@ -17,6 +17,7 @@ export default function Bookings() {
   const formatTime = (d: string) =>
     new Date(d).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
 
+  
   const loadBookings = async () => {
     setServiceChecking(true);
     const ok = await checkHealth();

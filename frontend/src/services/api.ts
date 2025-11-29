@@ -1,10 +1,13 @@
 import axios from "axios";
 
-// Use VITE_API_URL or proxy "/api"
+// Use VITE_API_URL or "/api" (local dev proxy)
 const BASE_URL = (import.meta as any).env?.VITE_API_URL || "/api";
 
+// Remove trailing slash for safety
+const NORMALIZED_BASE = BASE_URL.replace(/\/$/, "");
+
 const api = axios.create({
-  baseURL: BASE_URL.replace(/$/, ""), // <-- remove trailing slash for safety
+  baseURL: NORMALIZED_BASE,
   timeout: 15000,
 });
 
@@ -27,10 +30,10 @@ if (existingToken) setAuthToken(existingToken);
 
 export async function checkHealth(): Promise<boolean> {
   try {
-    // If using "/api", health must hit "/health" so Vite proxy works
-    const url = BASE_URL.startsWith("/api")
+    // If using "/api" locally → use "/health" (Vite proxy)
+    const url = NORMALIZED_BASE === "/api"
       ? "/health"
-      : `${BASE_URL.replace(/\/$/, "")}/health`;
+      : `${NORMALIZED_BASE}/health`;
 
     const r = await axios.get(url, { timeout: 5000 });
 

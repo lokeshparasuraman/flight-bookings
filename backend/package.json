@@ -5,20 +5,15 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-
     "prestart": "prisma db push && prisma generate",
     "start": "node dist/server.js",
-
     "postinstall": "npm run build && prisma generate",
-
     "build:seed": "tsc -p tsconfig.prisma.json",
     "seed": "prisma db seed"
   },
-
   "prisma": {
     "seed": "node dist-prisma/prisma/seed.js"
   },
-
   "dependencies": {
     "@prisma/client": "^5.22.1",
     "bcrypt": "^5.1.1",
@@ -32,7 +27,6 @@
     "openai": "^4.28.4",
     "pg": "^8.12.0"
   },
-
   "devDependencies": {
     "@types/bcrypt": "^5.0.3",
     "@types/cors": "^2.8.20",

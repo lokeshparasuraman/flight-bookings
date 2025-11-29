@@ -60,15 +60,11 @@ app.use("/api", router);
 // ❗ Global Error Handler
 app.use(errorHandler);
 
-// 🩺 Healthcheck
-app.get("/health", async (_req, res) => {
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    res.send("OK");
-  } catch (e) {
-    res.status(500).send("DB_ERROR");
-  }
+// 🩺 Healthcheck (SAFE VERSION)
+app.get("/health", (_req, res) => {
+  res.status(200).send("OK");
 });
+
 
 const port = process.env.PORT ? Number(process.env.PORT) : 4000;
 

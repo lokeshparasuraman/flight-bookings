@@ -12,7 +12,12 @@ const app = express();
 
 app.set("trust proxy", 1);
 
-// 🌍 CORS FIRST (before helmet!)
+// 🩺 HEALTHCHECK FIRST — OUTSIDE EVERYTHING
+app.get("/health", (_req, res) => {
+  res.status(200).send("OK");
+});
+
+// 🌍 CORS (after healthcheck)
 app.use(
   cors({
     origin: (origin, callback) => {
@@ -21,14 +26,12 @@ app.use(
         process.env.FRONTEND_URL || undefined,
       ].filter(Boolean);
 
-      // Allow requests without origin (mobile apps, curl, Chrome preflight)
       if (!origin) return callback(null, true);
 
       const allowed =
         allowList.includes(origin) ||
         (origin && origin.endsWith(".vercel.app"));
 
-      // Do NOT throw error — just reject cleanly
       if (allowed) return callback(null, true);
 
       return callback(null, false);
@@ -44,7 +47,7 @@ app.use(
   })
 );
 
-// 📦 JSON Body Parsing
+// 📦 JSON parsing
 app.use(express.json());
 
 // ⏱ Rate Limiting
@@ -60,14 +63,9 @@ app.use("/api", router);
 // ❗ Global Error Handler
 app.use(errorHandler);
 
-// 🩺 Healthcheck (SAFE VERSION)
-app.get("/health", (_req, res) => {
-  res.status(200).send("OK");
-});
-
-
 const port = process.env.PORT ? Number(process.env.PORT) : 4000;
 
+// --- SEED FUNCTION ---
 async function ensureSeed() {
   try {
     const count = await prisma.flight.count();

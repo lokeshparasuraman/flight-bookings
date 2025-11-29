@@ -8,14 +8,10 @@ NODE_ENV = "production"
 nixPkgs = ["nodejs_18"]
 
 [phases.install]
-cmds = [
-  "npm install --include=dev"
-]
+cmds = ["npm install --include=dev"]
 
 [phases.build]
-cmds = [
-  "npm run build"
-]
+cmds = ["npm run build"]
 
 [start]
 cmd = "node dist/server.js"

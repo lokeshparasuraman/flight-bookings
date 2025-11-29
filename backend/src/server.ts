@@ -26,9 +26,8 @@ app.use(
       const allowList = [
         "http://localhost:3000",
         process.env.FRONTEND_URL || undefined,
-      ].filter(Boolean) as string[];
+      ].filter(Boolean);
 
-      // Allow non-browser tools and preflight without origin
       if (!origin) return callback(null, true);
 
       const allowed =

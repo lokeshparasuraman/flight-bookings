@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Use VITE_API_URL or "/api" (local dev proxy)
-const BASE_URL = (import.meta as any).env?.VITE_API_URL || "/api";
+const BASE_URL = (import.meta as any).env?.VITE_API_URL|| "/api";
 
 // Remove trailing slash for safety
 const NORMALIZED_BASE = BASE_URL.replace(/\/$/, "");

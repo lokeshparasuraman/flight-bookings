@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // Use VITE_API_URL or "/api" (local dev proxy)
-const BASE_URL = (import.meta as any).env?.VITE_API_URL|| "/api";
+const BASE_URL = (import.meta as any).env?.VITE_API_URL || "/api";
 
 // Remove trailing slash for safety
 const NORMALIZED_BASE = BASE_URL.replace(/\/$/, "");
@@ -30,12 +30,13 @@ if (existingToken) setAuthToken(existingToken);
 
 export async function checkHealth(): Promise<boolean> {
   try {
-    // If using "/api" locally → use "/health" (Vite proxy)
-    const url = NORMALIZED_BASE === "/api"
-      ? "/health"
-      : `${NORMALIZED_BASE}/health`;
+    const url =
+      NORMALIZED_BASE === "/api"
+        ? "/health" // vite proxy → local
+        : "/health"; // production (baseURL already used)
 
-    const r = await axios.get(url, { timeout: 5000 });
+    // Use axios instance, not axios global
+    const r = await api.get(url);
 
     return r.status === 200 && String(r.data).toLowerCase() === "ok";
   } catch {

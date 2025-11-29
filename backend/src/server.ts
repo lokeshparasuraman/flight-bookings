@@ -12,8 +12,7 @@ const app = express();
 app.set("trust proxy", 1);
 
 // --------------------------------------------------------
-// 🩺 HEALTHCHECK FIRST — BEFORE EVERYTHING
-// (NO CORS, NO HELMET, NO RATELIMITER, NO ERROR HANDLER)
+// 🩺 HEALTHCHECK FIRST — NO CORS, NO HELMET, NO LIMITER
 app.get("/health", (_req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.status(200).send("OK");
@@ -26,17 +25,19 @@ app.use(
     origin: (origin, callback) => {
       const allowList = [
         "http://localhost:3000",
-        process.env.FRONTEND_URL, // <-- your vercel URL
+        process.env.FRONTEND_URL,  // Vercel URL
       ].filter(Boolean);
 
-      // allow requests without an origin (curl, postman, etc.)
+      // allow missing origins (curl, postman, SSR, preflight)
       if (!origin) return callback(null, true);
 
       const allowed =
         allowList.includes(origin) ||
-        (origin && origin.endsWith(".vercel.app"));
+        origin.endsWith(".vercel.app");
 
-      return callback(null, allowed);
+      if (allowed) return callback(null, true);
+
+      return callback(new Error("CORS blocked"), false);
     },
     credentials: true,
   })
@@ -52,20 +53,21 @@ app.use(
 // 📦 JSON Body Parsing
 app.use(express.json());
 
-// ⏱ Rate Limiting
-const limiter = rateLimit({
-  windowMs: 60 * 1000,
-  max: 120,
-});
-app.use(limiter);
+// ⏱ Rate Limiter
+app.use(
+  rateLimit({
+    windowMs: 60000,
+    max: 120,
+  })
+);
 
-// 🛣 API Routes
+// API Routes
 app.use("/api", router);
 
-// ❗ Global Error Handler
+// Error Handler
 app.use(errorHandler);
 
-// 🚀 Start Server
+// Start Server
 const port = process.env.PORT ? Number(process.env.PORT) : 4000;
 app.listen(port, () =>
   console.log(`🚀 Backend running on port ${port}`)

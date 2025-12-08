@@ -24,7 +24,9 @@ const allowedOrigins = [
   "http://localhost:3000",
   "https://flight-bookings.vercel.app",
   ...(process.env.FRONTEND_URL?.split(",") || [])
-].map(o => o.trim()).filter(Boolean);
+]
+  .map(o => o.trim())
+  .filter(Boolean);
 
 app.use(
   cors({
@@ -33,10 +35,16 @@ app.use(
       if (allowedOrigins.includes(origin)) return cb(null, true);
       return cb(new Error("Not allowed by CORS: " + origin));
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    credentials: true
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204
   })
 );
+
+// ⭐ THIS IS THE CRITICAL LINE (fixes your error)
+app.options("*", cors());
 
 // Security
 app.use(
@@ -58,9 +66,11 @@ app.use(
 
 const authLimiter = rateLimit({ windowMs: 60_000, max: 30 });
 const chatLimiter = rateLimit({ windowMs: 60_000, max: 20 });
+
 app.use("/api/auth", authLimiter);
 app.use("/api/chat", chatLimiter);
 
+// Logging
 app.use((req, res, next) => {
   const start = Date.now();
   res.on("finish", () => {

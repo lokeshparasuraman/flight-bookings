@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
+
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -8,67 +9,75 @@ import router from "./routes";
 import { errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
-
 app.set("trust proxy", 1);
+app.disable("x-powered-by");
 
-// --------------------------------------------------------
-// 🩺 HEALTHCHECK FIRST — NO CORS, NO HELMET, NO LIMITER
+// Healthcheck
 app.get("/health", (_req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.status(200).send("OK");
 });
-// --------------------------------------------------------
 
-// 🌍 CORS (AFTER healthcheck)
+// CORS
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://flight-bookings.vercel.app",
+  ...(process.env.FRONTEND_URL?.split(",") || [])
+].map(o => o.trim()).filter(Boolean);
+
 app.use(
   cors({
-    origin: (origin, callback) => {
-      const allowList = [
-        "http://localhost:3000",
-        process.env.FRONTEND_URL,  // Vercel URL
-      ].filter(Boolean);
-
-      // allow missing origins (curl, postman, SSR, preflight)
-      if (!origin) return callback(null, true);
-
-      const allowed =
-        allowList.includes(origin) ||
-        origin.endsWith(".vercel.app");
-
-      if (allowed) return callback(null, true);
-
-      return callback(new Error("CORS blocked"), false);
+    origin: (origin, cb) => {
+      if (!origin) return cb(null, true);
+      if (allowedOrigins.includes(origin)) return cb(null, true);
+      return cb(new Error("Not allowed by CORS: " + origin));
     },
-    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true
   })
 );
 
-// 🛡 Helmet AFTER CORS
+// Security
 app.use(
   helmet({
-    crossOriginResourcePolicy: false,
+    crossOriginResourcePolicy: false
   })
 );
 
-// 📦 JSON Body Parsing
-app.use(express.json());
+// JSON
+app.use(express.json({ limit: "200kb" }));
 
-// ⏱ Rate Limiter
+// Rate limit
 app.use(
   rateLimit({
-    windowMs: 60000,
-    max: 120,
+    windowMs: 60_000,
+    max: 120
   })
 );
 
-// API Routes
+const authLimiter = rateLimit({ windowMs: 60_000, max: 30 });
+const chatLimiter = rateLimit({ windowMs: 60_000, max: 20 });
+app.use("/api/auth", authLimiter);
+app.use("/api/chat", chatLimiter);
+
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on("finish", () => {
+    const dur = Date.now() - start;
+    console.log(`${req.method} ${req.originalUrl} ${res.statusCode} ${dur}ms`);
+  });
+  next();
+});
+
+// Routes
 app.use("/api", router);
 
-// Error Handler
+// Error handler
 app.use(errorHandler);
 
-// Start Server
-const port = process.env.PORT ? Number(process.env.PORT) : 4000;
-app.listen(port, () =>
-  console.log(`🚀 Backend running on port ${port}`)
-);
+// Start server
+const port = Number(process.env.PORT) || 4000;
+app.listen(port, "0.0.0.0", () => {
+  console.log(`🚀 Backend running on port ${port}`);
+});

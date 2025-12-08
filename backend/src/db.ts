@@ -7,4 +7,6 @@ if (!url || !(url.startsWith("postgresql://") || url.startsWith("postgres://")))
   throw new Error("Invalid or missing DATABASE_URL. It must start with postgresql:// or postgres://");
 }
 
-export const prisma = new PrismaClient({ datasources: { db: { url } } });
+export const prisma = new PrismaClient({
+  datasources: { db: { url } }
+});

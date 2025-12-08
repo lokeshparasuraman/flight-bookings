@@ -6,15 +6,17 @@ export async function handleChatMessage({ message, sessionId }: { message: strin
 {
   "reply_text": "...",
   "intent": "search_flights"|"book_flight"|"ask_for_details"|"none",
-  "parameters": { ... }
+  "parameters": { }
 }
 If user asks to search flights, set intent to search_flights and parameters { origin, destination, date }.
 If user asks to book, set intent to book_flight and parameters { flightId }.
 Do not include any additional keys. Use ISO date strings.`;
+  const safeMessage = String(message).slice(0, 1000);
   const resp = await callLLM([
     { role: "system", content: system },
-    { role: "user", content: message }
+    { role: "user", content: safeMessage }
   ]);
+
   try {
     const parsed = JSON.parse(resp);
     if (parsed.intent === "search_flights" && parsed.parameters?.origin && parsed.parameters?.destination) {

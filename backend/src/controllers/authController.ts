@@ -28,13 +28,13 @@ router.post(
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ error: "Invalid input", details: errors.array() });
-  try {
-    const { email, password } = req.body;
-    const { user, token } = await authService.loginUser(email, password);
-    res.json({ user, token });
-  } catch (e) {
-    next(e);
-  }
+    try {
+      const { email, password } = req.body;
+      const { user, token } = await authService.loginUser(email, password);
+      res.json({ user, token });
+    } catch (e) {
+      next(e);
+    }
   }
 );
 

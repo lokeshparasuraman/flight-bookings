@@ -5,9 +5,16 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
+    strictPort: true,
     proxy: {
       "/api": "http://localhost:4000",
       "/health": "http://localhost:4000"
     }
+  },
+  preview: {
+    port: 5174
+  },
+  build: {
+    sourcemap: true
   }
 });

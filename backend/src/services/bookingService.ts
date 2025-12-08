@@ -1,38 +1,76 @@
 import { prisma } from "../db";
+import type { Booking } from "@prisma/client";
+
+/**
+ * Ensures booking exists and belongs to the requesting user.
+ * After this function runs, "booking" is guaranteed not null.
+ */
+function assertOwnership(
+  booking: Booking | null,
+  userId: string
+): asserts booking is Booking {
+  if (!booking) {
+    throw Object.assign(new Error("Booking not found"), { status: 404 });
+  }
+  if (booking.userId !== userId) {
+    throw Object.assign(new Error("Forbidden"), { status: 403 });
+  }
+}
 
 export async function createBooking(userId: string, flightId: string) {
   const flight = await prisma.flight.findUnique({ where: { id: flightId } });
+
   if (!flight) throw Object.assign(new Error("Flight not found"), { status: 404 });
-  const booking = await prisma.booking.create({
-    data: { userId, flightId, status: "PENDING", priceCents: flight.basePriceCents }
+
+  return prisma.booking.create({
+    data: {
+      userId,
+      flightId,
+      status: "PENDING",
+      priceCents: flight.basePriceCents,
+    },
   });
-  return booking;
 }
 
-export async function confirmBooking(bookingId: string) {
-  // In real app: integrate payment provider then mark confirmed
-  const booking = await prisma.booking.update({
+export async function confirmBooking(userId: string, bookingId: string) {
+  const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+
+  assertOwnership(booking, userId);
+
+  return prisma.booking.update({
     where: { id: bookingId },
-    data: { status: "CONFIRMED" }
+    data: { status: "CONFIRMED" },
   });
-  return booking;
 }
 
-export async function cancelBooking(bookingId: string) {
-  const booking = await prisma.booking.update({
+export async function cancelBooking(userId: string, bookingId: string) {
+  const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
+
+  assertOwnership(booking, userId);
+
+  return prisma.booking.update({
     where: { id: bookingId },
-    data: { status: "CANCELLED" }
+    data: { status: "CANCELLED" },
   });
-  return booking;
 }
 
 export async function getUserBookings(userId: string) {
-  return prisma.booking.findMany({ where: { userId }, include: { flight: true, payments: true }, orderBy: { createdAt: "desc" } });
+  return prisma.booking.findMany({
+    where: { userId },
+    include: { flight: true, payments: true },
+    orderBy: { createdAt: "desc" },
+  });
 }
 
-export async function payForBooking(bookingId: string, payload: { method: string; upiId?: string; cardNumber?: string; cardBrand?: string }) {
+export async function payForBooking(
+  userId: string,
+  bookingId: string,
+  payload: { method: string; upiId?: string; cardNumber?: string; cardBrand?: string }
+) {
   const booking = await prisma.booking.findUnique({ where: { id: bookingId } });
-  if (!booking) throw Object.assign(new Error("Booking not found"), { status: 404 });
+
+  assertOwnership(booking, userId);
+
   if (booking.status === "CONFIRMED") return booking;
 
   const method = payload.method;
@@ -60,30 +98,45 @@ export async function payForBooking(bookingId: string, payload: { method: string
       status: "SUCCESS",
       upiId: payload.upiId,
       cardLast4,
-      cardBrand: payload.cardBrand
-    }
+      cardBrand: payload.cardBrand,
+    },
   });
-  return prisma.booking.update({ where: { id: bookingId }, data: { status: "CONFIRMED" } });
+
+  return prisma.booking.update({
+    where: { id: bookingId },
+    data: { status: "CONFIRMED" },
+  });
 }
 
-export async function cancelAndRefund(bookingId: string) {
-  const booking = await prisma.booking.findUnique({ where: { id: bookingId }, include: { payments: true } });
-  if (!booking) throw Object.assign(new Error("Booking not found"), { status: 404 });
-
-  const upiPayment = (booking.payments || []).find(p => p.status === "SUCCESS" && p.method === "UPI" && !!p.upiId);
-  if (upiPayment) {
-    await prisma.payment.create({
-      data: {
-        bookingId,
-        method: "UPI",
-        amountCents: booking.priceCents,
-        status: "REFUNDED",
-        upiId: upiPayment.upiId || undefined
-      }
+export async function cancelAndRefund(userId: string, bookingId: string) {
+  const result = await prisma.$transaction(async (tx) => {
+    const booking = await tx.booking.findUnique({
+      where: { id: bookingId },
+      include: { payments: true },
     });
-  }
 
-  await prisma.payment.deleteMany({ where: { bookingId } });
-  await prisma.booking.delete({ where: { id: bookingId } });
-  return { ok: true };
+    assertOwnership(booking, userId);
+
+    const successfulPayment = booking.payments.find((p: any) => p.status === "SUCCESS");
+
+    if (successfulPayment) {
+      await tx.payment.create({
+        data: {
+          bookingId,
+          method: successfulPayment.method,
+          amountCents: booking.priceCents,
+          status: "REFUNDED",
+          upiId: successfulPayment.upiId,
+          cardLast4: successfulPayment.cardLast4,
+          cardBrand: successfulPayment.cardBrand,
+        },
+      });
+    }
+
+    await tx.booking.update({ where: { id: bookingId }, data: { status: "CANCELLED" } });
+
+    return { ok: true };
+  });
+
+  return result;
 }

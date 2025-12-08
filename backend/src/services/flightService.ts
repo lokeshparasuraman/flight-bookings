@@ -5,7 +5,7 @@ export async function searchFlights(origin: string, destination: string, date?: 
     origin: { equals: origin },
     destination: { equals: destination }
   };
-  
+
   if (date) {
     const dateStart = new Date(date);
     dateStart.setHours(0, 0, 0, 0);
@@ -16,7 +16,7 @@ export async function searchFlights(origin: string, destination: string, date?: 
       lte: dateEnd
     };
   }
-  
+
   return prisma.flight.findMany({
     where,
     orderBy: { departure: "asc" }

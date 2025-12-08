@@ -62,7 +62,7 @@ export default function Bookings() {
       await api.delete(`/bookings/${id}`);
       setBookings(prev => prev.filter(b => b.id !== id));
     } catch (err: any) {
-      setError(err?.response?.data?.error || "Failed to cancel booking.");
+      setError(err?.message || err?.response?.data?.error || "Failed to cancel booking.");
     }
   };
 

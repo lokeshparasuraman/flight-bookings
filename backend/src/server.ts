@@ -12,7 +12,7 @@ const app = express();
 app.set("trust proxy", 1);
 app.disable("x-powered-by");
 
-// Healthcheck
+// Healthcheck — always open
 app.get("/health", (_req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.status(200).send("OK");
@@ -29,6 +29,7 @@ const allowedOrigins = [
   .map(o => o.trim())
   .filter(Boolean);
 
+// CORS Middleware MUST run before everything else
 app.use(
   cors({
     origin: (origin, cb) => {
@@ -44,34 +45,20 @@ app.use(
   })
 );
 
-// This line is CRITICAL (handles preflight)
+// CRITICAL: Handle browser preflight BEFORE any other middleware
 app.options("*", cors());
 
-// Security
+// Security (safe after CORS)
 app.use(
   helmet({
     crossOriginResourcePolicy: false
   })
 );
 
-// JSON
+// JSON parsing
 app.use(express.json({ limit: "200kb" }));
 
-// Rate limit
-app.use(
-  rateLimit({
-    windowMs: 60_000,
-    max: 120
-  })
-);
-
-const authLimiter = rateLimit({ windowMs: 60_000, max: 30 });
-const chatLimiter = rateLimit({ windowMs: 60_000, max: 20 });
-
-app.use("/api/auth", authLimiter);
-app.use("/api/chat", chatLimiter);
-
-// Logging
+// Logging (safe before routes)
 app.use((req, res, next) => {
   const start = Date.now();
   res.on("finish", () => {
@@ -81,8 +68,16 @@ app.use((req, res, next) => {
   next();
 });
 
-// Routes
+// Routes (CORS already handled)
 app.use("/api", router);
+
+// Rate limiters MUST come AFTER routes
+// Limiters should not block OPTIONS preflight
+const authLimiter = rateLimit({ windowMs: 60_000, max: 30 });
+const chatLimiter = rateLimit({ windowMs: 60_000, max: 20 });
+
+app.use("/api/auth", authLimiter);
+app.use("/api/chat", chatLimiter);
 
 // Error handler
 app.use(errorHandler);

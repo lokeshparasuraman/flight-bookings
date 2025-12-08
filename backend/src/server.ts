@@ -23,6 +23,7 @@ const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:3000",
   "https://flight-bookings.vercel.app",
+  "https://flight-bookings-production.up.railway.app",
   ...(process.env.FRONTEND_URL?.split(",") || [])
 ]
   .map(o => o.trim())
@@ -43,7 +44,7 @@ app.use(
   })
 );
 
-// ⭐ THIS IS THE CRITICAL LINE (fixes your error)
+// This line is CRITICAL (handles preflight)
 app.options("*", cors());
 
 // Security

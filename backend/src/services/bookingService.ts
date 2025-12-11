@@ -1,14 +1,15 @@
 import { prisma } from "../db";
-import type { Booking } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
+type BookingShape = { userId: string; status?: string; priceCents?: number; payments?: any[] };
 
 /**
  * Ensures booking exists and belongs to the requesting user.
  * After this function runs, "booking" is guaranteed not null.
  */
 function assertOwnership(
-  booking: Booking | null,
+  booking: BookingShape | null,
   userId: string
-): asserts booking is Booking {
+): asserts booking is BookingShape {
   if (!booking) {
     throw Object.assign(new Error("Booking not found"), { status: 404 });
   }
@@ -109,7 +110,7 @@ export async function payForBooking(
 }
 
 export async function cancelAndRefund(userId: string, bookingId: string) {
-  const result = await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     const booking = await tx.booking.findUnique({
       where: { id: bookingId },
       include: { payments: true },
@@ -117,9 +118,11 @@ export async function cancelAndRefund(userId: string, bookingId: string) {
 
     assertOwnership(booking, userId);
 
-    const successfulPayment = booking.payments.find((p: any) => p.status === "SUCCESS");
+    const payments = booking.payments || [];
+    const successfulPayment = payments.find((p: any) => p.status === "SUCCESS");
+    const alreadyRefunded = payments.find((p: any) => p.status === "REFUNDED");
 
-    if (successfulPayment) {
+    if (successfulPayment && !alreadyRefunded) {
       await tx.payment.create({
         data: {
           bookingId,

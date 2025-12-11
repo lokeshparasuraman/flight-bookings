@@ -7,10 +7,13 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [otpStep, setOtpStep] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
 
  
 
@@ -20,13 +23,50 @@ export default function Register() {
     setLoading(true);
 
     try {
-      const r = await api.post("/auth/register", { email, password, name });
-      const token = r.data.token;
-      setAuthToken(token);
-      localStorage.setItem("token", token);
-      nav("/");
+      const r = await api.post("/auth/register", { email, password, name, phone });
+      if (r.data?.otpSent) {
+        setOtpStep(true);
+      } else if (r.data?.token) {
+        const token = r.data.token;
+        setAuthToken(token);
+        localStorage.setItem("token", token);
+        nav("/");
+      } else {
+        setError("Registration step incomplete. Please verify OTP.");
+        setOtpStep(true);
+      }
     } catch (err: any) {
       setError(err?.response?.data?.error || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function resendOtp() {
+    try {
+      setError("");
+      await api.post("/auth/send-otp", { email });
+    } catch (err: any) {
+      setError(err?.response?.data?.error || "Failed to send OTP.");
+    }
+  }
+
+  async function verifyOtp(e: React.FormEvent) {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      setError("");
+      const r = await api.post("/auth/verify-otp", { email, code: otpCode });
+      const token = r.data?.token;
+      if (token) {
+        setAuthToken(token);
+        localStorage.setItem("token", token);
+        nav("/");
+      } else {
+        setError("OTP verification failed.");
+      }
+    } catch (err: any) {
+      setError(err?.response?.data?.error || "OTP verification failed.");
     } finally {
       setLoading(false);
     }
@@ -54,6 +94,7 @@ export default function Register() {
               </div>
             )}
 
+            {!otpStep && (
             <form onSubmit={submit} className="space-y-6">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -81,6 +122,21 @@ export default function Register() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                  Mobile Number
+                </label>
+                <input
+                  type="tel"
+                  className="input-field"
+                  placeholder="e.g. +919876543210"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  required
+                />
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">We will send an OTP to this number.</div>
               </div>
 
               <div>
@@ -115,6 +171,46 @@ export default function Register() {
                 {loading ? "Creating account..." : "Create Account"}
               </button>
             </form>
+            )}
+
+            {otpStep && (
+              <form onSubmit={verifyOtp} className="space-y-6">
+                <div className="text-center mb-2">
+                  <div className="text-2xl mb-1">🔐</div>
+                  <div className="font-semibold">Verify your mobile number</div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">Enter the OTP sent to your phone</div>
+                </div>
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                    OTP Code
+                  </label>
+                  <input
+                    type="text"
+                    className="input-field"
+                    placeholder="Enter 6-digit OTP"
+                    value={otpCode}
+                    onChange={(e) => setOtpCode(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <button
+                    type="button"
+                    onClick={resendOtp}
+                    className="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
+                  >
+                    Resend OTP
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="btn-primary"
+                  >
+                    {loading ? "Verifying..." : "Verify & Continue"}
+                  </button>
+                </div>
+              </form>
+            )}
 
             <div className="mt-6 text-center">
               <p className="text-gray-600 dark:text-gray-400">

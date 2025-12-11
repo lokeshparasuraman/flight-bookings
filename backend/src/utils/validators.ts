@@ -27,6 +27,13 @@ export function isValidISODate(date: string) {
   return !isNaN(d.getTime());
 }
 
+export function isValidPhone(phone: string) {
+  const p = String(phone).trim();
+  if (!p) return false;
+  // Accept E.164-like numbers or 10-14 digits, allow optional leading +
+  return /^\+?[1-9]\d{9,14}$/.test(p);
+}
+
 export function luhnCheck(num: string) {
   const n = String(num).replace(/\s+/g, "");
   if (!/^[0-9]{12,19}$/.test(n)) return false;

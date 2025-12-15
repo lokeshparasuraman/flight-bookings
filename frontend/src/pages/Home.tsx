@@ -13,7 +13,10 @@ export default function Home() {
 
   function search(e: React.FormEvent) {
     e.preventDefault();
-    nav(`/search?origin=${origin}&destination=${destination}&date=${date}`);
+    const d = String(date || "");
+    const m = d.match(/^(\d{2})-(\d{2})-(\d{4})$/);
+    const iso = m ? `${m[3]}-${m[2]}-${m[1]}` : d;
+    nav(`/search?origin=${origin}&destination=${destination}&date=${iso}`);
   }
 
   const today = new Date().toISOString().split('T')[0];

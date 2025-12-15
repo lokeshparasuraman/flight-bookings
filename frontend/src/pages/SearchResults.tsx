@@ -28,11 +28,13 @@ export default function SearchResults() {
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return "";
-    return new Date(dateStr).toLocaleDateString('en-US', { 
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return dateStr; // guard invalid date formats like dd-mm-yyyy
+    return d.toLocaleDateString('en-US', {
       weekday: 'long',
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
   };
 

@@ -1,15 +1,25 @@
 import OpenAI from "openai";
 const apiKey = process.env.OPENAI_API_KEY || "";
-if (!apiKey) {
-  throw new Error("Missing OPENAI_API_KEY environment variable");
+let client: OpenAI | null = null;
+if (apiKey) {
+  client = new OpenAI({ apiKey });
 }
-const client = new OpenAI({ apiKey });
 
 export async function callLLM(messages: any[]) {
+  if (!client) {
+    const fallback = {
+      reply_text: "LLM unavailable in this environment",
+      intent: "none",
+      parameters: {}
+    };
+    return JSON.stringify(fallback);
+  }
   const resp: any = await client.chat.completions.create({
     model: "gpt-4o-mini",
     messages,
-    max_tokens: 600
+    max_tokens: 600,
+    temperature: 0.2,
+    response_format: { type: "json_object" }
   });
   return resp.choices?.[0]?.message?.content || "";
 }

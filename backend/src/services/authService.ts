@@ -149,19 +149,56 @@ export async function verifyPhoneOtp(email: string, code: string) {
   return { verified: true, token };
 }
 
-export async function requestPasswordReset(email: string) {
-  const user = await prisma.user.findUnique({ where: { email } });
+export async function requestPasswordReset(identifier: string, channel?: "email" | "phone") {
+  const id = String(identifier).trim();
+  let user: { id: string; email: string | null; phone: string | null } | null = null;
+  if (isValidEmail(id)) {
+    user = await prisma.user.findUnique({ where: { email: id }, select: { id: true, email: true, phone: true } });
+  } else if (isValidPhone(id)) {
+    try {
+      user = await prisma.user.findUnique({ where: { phone: id }, select: { id: true, email: true, phone: true } });
+    } catch (e: any) {
+      throw Object.assign(new Error("Phone-based reset unavailable until database migration is applied"), { status: 503 });
+    }
+  } else {
+    throw Object.assign(new Error("Invalid identifier"), { status: 400 });
+  }
   if (!user) return { ok: true };
   const code = genCode(6);
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000);
   await prisma.verificationCode.create({ data: { userId: user.id, type: "RESET", code, expiresAt } });
-  console.log(`[RESET] Password reset code for ${email}: ${code}`);
-  try { await sendEmail(email, "Password reset code", `Your code is ${code}`); } catch {}
+  console.log(`[RESET] Password reset code for ${id}: ${code}`);
+  if (!channel) channel = isValidPhone(id) ? "phone" : "email";
+  if (channel === "phone") {
+    if (user.phone) {
+      try { await sendSms(user.phone, `Your FlyFast reset code is ${code}`); } catch {}
+    } else {
+      throw Object.assign(new Error("No phone available for this account"), { status: 400 });
+    }
+  } else {
+    if (user.email) {
+      try { await sendEmail(user.email, "Password reset code", `Your code is ${code}`); } catch {}
+    } else {
+      throw Object.assign(new Error("No email available for this account"), { status: 400 });
+    }
+  }
   return { ok: true };
 }
 
-export async function resetPassword(email: string, code: string, newPassword: string) {
-  const user = await prisma.user.findUnique({ where: { email } });
+export async function resetPassword(identifier: string, code: string, newPassword: string) {
+  const id = String(identifier).trim();
+  let user: { id: string; email: string | null } | null = null;
+  if (isValidEmail(id)) {
+    user = await prisma.user.findUnique({ where: { email: id }, select: { id: true, email: true } });
+  } else if (isValidPhone(id)) {
+    try {
+      user = await prisma.user.findUnique({ where: { phone: id }, select: { id: true, email: true } });
+    } catch (e: any) {
+      throw Object.assign(new Error("Phone-based reset unavailable until database migration is applied"), { status: 503 });
+    }
+  } else {
+    throw Object.assign(new Error("Invalid identifier"), { status: 400 });
+  }
   if (!user) throw Object.assign(new Error("User not found"), { status: 404 });
   const record = await prisma.verificationCode.findFirst({
     where: { userId: user.id, type: "RESET", code, used: false },
@@ -175,4 +212,17 @@ export async function resetPassword(email: string, code: string, newPassword: st
     prisma.user.update({ where: { id: user.id }, data: { password: hash } })
   ]);
   return { ok: true };
+}
+
+export async function getLatestOtp(identifier: string, type?: "PHONE" | "LOGIN" | "RESET") {
+  const user = await findUserByIdentifier(identifier);
+  if (!user) throw Object.assign(new Error("User not found"), { status: 404 });
+  const where: any = { userId: user.id, used: false };
+  if (type) where.type = type;
+  const record = await prisma.verificationCode.findFirst({
+    where,
+    orderBy: { createdAt: "desc" }
+  });
+  if (!record) throw Object.assign(new Error("No OTP available"), { status: 404 });
+  return { code: record.code, expiresAt: record.expiresAt };
 }

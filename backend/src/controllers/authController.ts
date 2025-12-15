@@ -77,13 +77,14 @@ router.post(
 
 router.post(
   "/forgot",
-  body("email").isEmail(),
+  body("identifier").isString(),
+  body("channel").optional().isIn(["email", "phone"]),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ error: "Invalid input", details: errors.array() });
     try {
-      const { email } = req.body;
-      const r = await authService.requestPasswordReset(email);
+      const { identifier, channel } = req.body as { identifier: string; channel?: "email" | "phone" };
+      const r = await authService.requestPasswordReset(identifier, channel);
       res.json(r);
     } catch (e) {
       next(e);
@@ -93,15 +94,15 @@ router.post(
 
 router.post(
   "/reset",
-  body("email").isEmail(),
+  body("identifier").isString(),
   body("code").isLength({ min: 4, max: 8 }),
   body("newPassword").isLength({ min: 6 }),
   async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ error: "Invalid input", details: errors.array() });
     try {
-      const { email, code, newPassword } = req.body;
-      const r = await authService.resetPassword(email, code, newPassword);
+      const { identifier, code, newPassword } = req.body as { identifier: string; code: string; newPassword: string };
+      const r = await authService.resetPassword(identifier, code, newPassword);
       res.json(r);
     } catch (e) {
       next(e);
@@ -136,6 +137,26 @@ router.post(
     try {
       const { identifier, code } = req.body;
       const r = await authService.verifyLoginOtp(identifier, code);
+      res.json(r);
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
+router.post(
+  "/dev/otp/latest",
+  body("identifier").isString(),
+  body("type").optional().isIn(["PHONE", "LOGIN", "RESET"]),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ error: "Invalid input", details: errors.array() });
+    try {
+      const expose = String(process.env.DEV_OTP_EXPOSE || "").toLowerCase() === "true";
+      const env = String(process.env.NODE_ENV || "").toLowerCase();
+      if (!expose || env === "production") return res.status(403).json({ error: "Not allowed" });
+      const { identifier, type } = req.body as { identifier: string; type?: "PHONE" | "LOGIN" | "RESET" };
+      const r = await authService.getLatestOtp(identifier, type);
       res.json(r);
     } catch (e) {
       next(e);

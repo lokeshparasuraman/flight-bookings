@@ -14,7 +14,13 @@ export default function Login() {
   const [forgotMode, setForgotMode] = useState(false);
   const [resetCode, setResetCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [otpMode, setOtpMode] = useState(false);
+  const identifierValid = (() => {
+    const id = String(identifier).trim();
+    const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(id);
+    const phoneOk = /^\+?[1-9]\d{9,14}$/.test(id);
+    return emailOk || phoneOk;
+  })();
+  
   useEffect(() => {
       const token = localStorage.getItem("token");
       if (token) {
@@ -44,7 +50,7 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      await api.post("/auth/forgot", { email: identifier });
+      await api.post("/auth/forgot", { identifier });
     } catch (err: any) {
       setError(err?.response?.data?.error || "Failed to send reset code.");
     } finally {
@@ -57,7 +63,7 @@ export default function Login() {
     setError("");
     setLoading(true);
     try {
-      await api.post("/auth/reset", { email: identifier, code: resetCode, newPassword });
+      await api.post("/auth/reset", { identifier, code: resetCode, newPassword });
       setForgotMode(false);
     } catch (err: any) {
       setError(err?.response?.data?.error || "Failed to reset password.");
@@ -66,38 +72,7 @@ export default function Login() {
     }
   }
 
-  async function sendLoginOtp(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      await api.post("/auth/login-otp/send", { identifier });
-    } catch (err: any) {
-      setError(err?.response?.data?.error || "Failed to send OTP.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  const [loginCode, setLoginCode] = useState("");
-  async function verifyLoginOtp(e: React.FormEvent) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      const r = await api.post("/auth/login-otp/verify", { identifier, code: loginCode });
-      const token = r.data?.token;
-      if (token) {
-        setAuthToken(token);
-        localStorage.setItem("token", token);
-        nav("/");
-      }
-    } catch (err: any) {
-      setError(err?.response?.data?.error || "Failed to verify OTP.");
-    } finally {
-      setLoading(false);
-    }
-  }
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -127,7 +102,7 @@ export default function Login() {
               </div>
             )}
 
-            {!forgotMode && !otpMode && (
+            {!forgotMode && (
               <form onSubmit={submit} className="space-y-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
@@ -176,13 +151,6 @@ export default function Login() {
                     Forgot password?
                   </button>
                   <button
-                    type="button"
-                    onClick={() => setOtpMode(true)}
-                    className="text-sm text-gray-600 dark:text-gray-400 hover:text-booking-lightblue"
-                  >
-                    Login using OTP
-                  </button>
-                  <button
                     type="submit"
                     disabled={loading}
                     className="btn-primary"
@@ -193,9 +161,11 @@ export default function Login() {
               </form>
             )}
 
-            {!forgotMode && otpMode && (
+            
+
+            {forgotMode && (
               <div className="space-y-6">
-                <form onSubmit={sendLoginOtp} className="space-y-4">
+                <form onSubmit={sendReset} className="space-y-4">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
                       Email or Phone
@@ -208,61 +178,20 @@ export default function Login() {
                       onChange={(e) => setIdentifier(e.target.value)}
                       required
                     />
+                    {!identifierValid && identifier.trim() && (
+                      <div className="text-xs text-red-600 dark:text-red-400 mt-2">
+                        Enter a valid email or E.164 phone (e.g. +919876543210)
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center justify-between">
-                    <button type="button" onClick={() => setOtpMode(false)} className="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                      Use Password Instead
-                    </button>
-                    <button type="submit" disabled={loading} className="btn-primary">
-                      {loading ? "Sending..." : "Send OTP"}
-                    </button>
-                  </div>
-                </form>
-                <form onSubmit={verifyLoginOtp} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      OTP Code
-                    </label>
-                    <input
-                      type="text"
-                      className="input-field"
-                      placeholder="Enter 6-digit OTP"
-                      value={loginCode}
-                      onChange={(e) => setLoginCode(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <button type="submit" disabled={loading} className="btn-primary w-full">
-                    {loading ? "Verifying..." : "Verify & Login"}
-                  </button>
-                </form>
-              </div>
-            )}
-
-            {forgotMode && (
-              <div className="space-y-6">
-                <form onSubmit={sendReset} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Email Address
-                    </label>
-                    <input
-                      type="email"
-                      className="input-field"
-                      placeholder="your@email.com"
-                      value={identifier}
-                      onChange={(e) => setIdentifier(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <button type="submit" disabled={loading} className="btn-primary w-full">
-                    {loading ? "Sending..." : "Send Reset Code"}
+                  <button type="submit" disabled={loading || !identifierValid} className="btn-primary w-full">
+                    {loading ? "Sending..." : "Request OTP"}
                   </button>
                 </form>
                 <form onSubmit={resetPwd} className="space-y-4">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      Reset Code
+                      OTP Code
                     </label>
                     <input
                       type="text"

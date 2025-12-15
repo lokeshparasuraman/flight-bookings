@@ -4,6 +4,7 @@ import { useNavigate, Link } from "react-router-dom";
 import Header from "../components/Header";
 
 export default function Register() {
+  const IS_DEV = (import.meta as any).env?.DEV === true;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -14,6 +15,7 @@ export default function Register() {
   const [showPassword, setShowPassword] = useState(false);
   const [otpStep, setOtpStep] = useState(false);
   const [otpCode, setOtpCode] = useState("");
+  const [devOtp, setDevOtp] = useState("");
 
  
 
@@ -51,6 +53,16 @@ export default function Register() {
     }
   }
 
+  async function showDevOtp() {
+    try {
+      setError("");
+      const r = await api.post("/auth/dev/otp/latest", { identifier: email, type: "PHONE" });
+      setDevOtp(r.data?.code || "");
+    } catch (err: any) {
+      setError(err?.response?.data?.error || "Failed to fetch OTP.");
+    }
+  }
+
   async function verifyOtp(e: React.FormEvent) {
     e.preventDefault();
     try {
@@ -79,7 +91,6 @@ export default function Register() {
         <div className="max-w-md mx-auto animate-scale-in">
           <div className="card p-8 shadow-soft-lg">
             <div className="text-center mb-8">
-              <div className="text-5xl mb-4">🚀</div>
               <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">
                 Create Account
               </h2>
@@ -209,6 +220,22 @@ export default function Register() {
                     {loading ? "Verifying..." : "Verify & Continue"}
                   </button>
                 </div>
+                {IS_DEV && (
+                  <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={showDevOtp}
+                        className="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
+                      >
+                        Show OTP (dev)
+                      </button>
+                      {devOtp && (
+                        <div className="text-sm text-gray-700 dark:text-gray-300">Current OTP: <span className="font-mono font-semibold">{devOtp}</span></div>
+                      )}
+                    </div>
+                  </div>
+                )}
               </form>
             )}
 

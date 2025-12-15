@@ -26,6 +26,8 @@ Do not include any additional keys. Use ISO date strings.`;
     }
     return parsed;
   } catch (e) {
-    return { reply_text: resp, intent: "none", parameters: {} };
+    const isHtml = /<[^>]+>/.test(resp);
+    const reply = isHtml ? "I ran into an issue formatting a response. Please try rephrasing your request." : resp;
+    return { reply_text: reply, intent: "none", parameters: {} };
   }
 }

@@ -6,7 +6,7 @@ export interface DiscountOffer {
   reason: string;
 }
 
-export function calculateDiscount(flight: any, userHistory?: any): DiscountOffer {
+export function calculateDiscount(flight: any, _userHistory?: any): DiscountOffer {
   let discount = 0;
   let offerText = "";
   let reason = "";

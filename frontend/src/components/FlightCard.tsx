@@ -25,90 +25,130 @@ export default function FlightCard({ f, origin, destination }: any) {
     return `${hours}h ${minutes}m`;
   };
 
-  const price = (f.basePriceCents / 100).toFixed(2);
+  const getAirlineColor = (airline: string) => {
+    switch (airline.toLowerCase()) {
+      case 'indigo':
+        return 'from-blue-600 to-blue-800 shadow-blue-500/20';
+      case 'air india':
+      case 'air india express':
+        return 'from-red-500 to-orange-600 shadow-red-500/20';
+      case 'vistara':
+        return 'from-indigo-900 via-purple-950 to-purple-800 shadow-indigo-900/20';
+      case 'spicejet':
+        return 'from-orange-500 to-red-500 shadow-orange-500/20';
+      case 'akasa air':
+        return 'from-orange-400 to-amber-500 shadow-amber-500/20';
+      default:
+        return 'from-indigo-500 to-indigo-600 shadow-indigo-500/20';
+    }
+  };
+
+  const price = (f.basePriceCents / 100).toLocaleString('en-IN', {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2
+  });
   const flightOrigin = f.origin || origin || 'N/A';
   const flightDest = f.destination || destination || 'N/A';
 
   return (
-    <div className="card p-6 hover:scale-[1.02] transition-all duration-300 animate-slide-up">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-        {/* Flight Info */}
+    <div className="card p-6 hover:scale-[1.01] hover:border-booking-lightblue/30 dark:hover:border-booking-lightblue/30 transition-all duration-300 border border-gray-100 dark:border-gray-800/80 shadow-soft backdrop-blur-md bg-white/90 dark:bg-gray-800/90 relative overflow-hidden group">
+      {/* Visual Accent Hover Bar */}
+      <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-booking-lightblue to-booking-blue transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
+      
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
+        {/* Flight Details section */}
         <div className="flex-1">
-          <div className="flex items-start justify-between mb-4">
-            <div>
-              <div className="flex items-center space-x-3 mb-2">
-                <div className="w-12 h-12 bg-gradient-to-br from-booking-lightblue to-booking-blue rounded-lg flex items-center justify-center text-white font-bold text-lg">
-                  {f.airline.charAt(0)}
-                </div>
-                <div>
-                  <div className="font-bold text-lg text-gray-800 dark:text-gray-200">
-                    {f.airline}
-                  </div>
-                  <div className="text-sm text-gray-500 dark:text-gray-400">
-                    {f.flightNumber}
-                  </div>
-                </div>
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-5 pb-4 border-b border-gray-100 dark:border-gray-700/50">
+            <div className="flex items-center space-x-3.5">
+              <div className={`w-11 h-11 bg-gradient-to-br ${getAirlineColor(f.airline)} rounded-xl flex items-center justify-center text-white font-extrabold text-base shadow-md`}>
+                {f.airline.charAt(0)}
               </div>
+              <div>
+                <h3 className="font-bold text-base text-gray-800 dark:text-gray-200 leading-tight">
+                  {f.airline}
+                </h3>
+                <span className="text-xs text-gray-400 dark:text-gray-500 font-semibold tracking-wider uppercase">
+                  {f.flightNumber}
+                </span>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <span className="text-[10px] font-bold px-2.5 py-1 bg-gray-100 dark:bg-gray-700/60 text-gray-500 dark:text-gray-400 rounded-lg">
+                Non-stop
+              </span>
+              <span className="text-[10px] font-bold px-2.5 py-1 bg-green-500/10 text-green-600 dark:text-green-400 rounded-lg flex items-center">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5 animate-pulse" />
+                Live Status
+              </span>
             </div>
           </div>
 
-          {/* Flight Times */}
-          <div className="grid grid-cols-3 gap-4 items-center">
-            {/* Departure */}
-            <div>
-              <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+          {/* Flight Times Timeline */}
+          <div className="grid grid-cols-3 gap-2 items-center px-2">
+            {/* Departure details */}
+            <div className="text-left">
+              <span className="text-2xl font-bold tracking-tight text-gray-800 dark:text-gray-100 font-display">
                 {formatTime(f.departure)}
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
+              </span>
+              <div className="text-sm font-semibold text-gray-500 dark:text-gray-400 mt-0.5">
                 {flightOrigin}
               </div>
-              <div className="text-xs text-gray-400 dark:text-gray-500">
+              <div className="text-[11px] text-gray-400 dark:text-gray-500 font-medium">
                 {formatDate(f.departure)}
               </div>
             </div>
 
-            {/* Duration */}
-            <div className="text-center">
-              <div className="text-sm text-gray-500 dark:text-gray-400 mb-1">
+            {/* Flight Duration Line */}
+            <div className="text-center px-2">
+              <span className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 tracking-wider">
                 {getDuration(f.departure, f.arrival)}
+              </span>
+              <div className="relative flex items-center justify-center my-1.5">
+                <div className="w-full h-[2px] bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent" />
+                <div className="absolute text-gray-400/80 bg-white dark:bg-gray-800 px-2 text-sm group-hover:text-booking-lightblue group-hover:scale-110 transition-transform duration-300">
+                  ✈️
+                </div>
               </div>
-              <div className="flex items-center">
-                <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
-                <div className="mx-2 text-gray-400">✈️</div>
-                <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
-              </div>
+              <span className="text-[9px] text-booking-lightblue dark:text-booking-lightblue/80 font-bold tracking-wider uppercase">
+                Economy
+              </span>
             </div>
 
-            {/* Arrival */}
+            {/* Arrival details */}
             <div className="text-right">
-              <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+              <span className="text-2xl font-bold tracking-tight text-gray-800 dark:text-gray-100 font-display">
                 {formatTime(f.arrival)}
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
+              </span>
+              <div className="text-sm font-semibold text-gray-500 dark:text-gray-400 mt-0.5">
                 {flightDest}
               </div>
-              <div className="text-xs text-gray-400 dark:text-gray-500">
+              <div className="text-[11px] text-gray-400 dark:text-gray-500 font-medium">
                 {formatDate(f.arrival)}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Price and Book Button */}
-        <div className="flex flex-col items-end justify-between md:min-w-[180px] border-t md:border-t-0 md:border-l border-gray-200 dark:border-gray-700 pt-4 md:pt-0 md:pl-6">
-          <div className="mb-4">
-            <div className="text-3xl font-bold text-booking-lightblue mb-1">
+        {/* Pricing / Booking column */}
+        <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center md:min-w-[170px] border-t md:border-t-0 md:border-l border-gray-100 dark:border-gray-700/60 pt-4 md:pt-0 md:pl-6 gap-4">
+          <div className="text-left md:text-right">
+            <span className="text-xs text-gray-400 dark:text-gray-500 font-medium block">
+              Fare starting from
+            </span>
+            <div className="text-3xl font-extrabold text-booking-lightblue dark:text-booking-lightblue font-display tracking-tight">
               ₹{price}
             </div>
-            <div className="text-sm text-gray-500 dark:text-gray-400">
-              per person
-            </div>
+            <span className="text-[10px] text-gray-400 dark:text-gray-500 block">
+              incl. taxes & fees
+            </span>
           </div>
+          
           <Link
             to={`/flight/${f.id}`}
-            className="btn-primary w-full md:w-auto text-center"
+            className="btn-primary py-2.5 px-6 rounded-xl text-sm font-bold shadow-soft hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-center w-auto min-w-[110px]"
           >
-            Select
+            Select ➔
           </Link>
         </div>
       </div>

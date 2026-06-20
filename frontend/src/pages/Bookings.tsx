@@ -1,56 +1,76 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
-import api, { setAuthToken, checkHealth } from "../services/api";
+import api, { setAuthToken } from "../services/api";
+import { useToast } from "../contexts/ToastContext";
 
 export default function Bookings() {
   const nav = useNavigate();
+  const { showToast } = useToast();
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
-  const [serviceOk, setServiceOk] = useState<boolean | null>(null);
-  const [serviceChecking, setServiceChecking] = useState(false);
+  const [selectedBookingIds, setSelectedBookingIds] = useState<string[]>([]);
+
+  const handleToggleAll = () => {
+    const activeBookings = bookings.filter(b => b.status === "CONFIRMED");
+    const activeIds = activeBookings.map(b => b.id);
+    if (selectedBookingIds.length === activeIds.length) {
+      setSelectedBookingIds([]);
+    } else {
+      setSelectedBookingIds(activeIds);
+    }
+  };
+
+  const handleToggleSelect = (id: string) => {
+    if (selectedBookingIds.includes(id)) {
+      setSelectedBookingIds(prev => prev.filter(item => item !== id));
+    } else {
+      setSelectedBookingIds(prev => [...prev, id]);
+    }
+  };
+
+  const handlePrintSingle = (id: string) => {
+    const prev = [...selectedBookingIds];
+    setSelectedBookingIds([id]);
+    setTimeout(() => {
+      window.print();
+      setSelectedBookingIds(prev);
+    }, 100);
+  };
 
   const formatDate = (d: string) =>
     new Date(d).toLocaleDateString([], { year: "numeric", month: "short", day: "2-digit" });
   const formatTime = (d: string) =>
     new Date(d).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
 
-  
   const loadBookings = async () => {
-    setServiceChecking(true);
-    const ok = await checkHealth();
-    setServiceOk(ok);
-    setServiceChecking(false);
-    if (!ok) {
-      setError("Service unavailable. Please try again later.");
-      return;
-    }
-    const token = localStorage.getItem("token");
-    if (!token) {
-      nav("/login");
-      return;
-    }
-    setAuthToken(token);
     setError("");
     setLoading(true);
     try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        nav("/login");
+        return;
+      }
+      setAuthToken(token);
+      
       const r = await api.get("/bookings/me");
       const data = Array.isArray(r.data) ? r.data : [];
       // Sort by booking created date, newest first
       data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
       setBookings(data);
+      setSelectedBookingIds(data.filter((bk: any) => bk.status === "CONFIRMED").map((bk: any) => bk.id));
       setLoaded(true);
     } catch (err: any) {
-      setError(err?.response?.data?.error || "Failed to load bookings. Please try again.");
+      setError(err?.response?.data?.error || err?.message || "Failed to load bookings. Please verify authentication.");
     } finally {
       setLoading(false);
     }
   };
 
   const cancelBooking = async (id: string) => {
-    if (serviceOk === false) return;
     const token = localStorage.getItem("token");
     if (!token) {
       nav("/login");
@@ -58,145 +78,355 @@ export default function Bookings() {
     }
     setAuthToken(token);
     setError("");
+    if (!confirm("Are you sure you want to cancel this flight and receive a full refund?")) {
+      return;
+    }
     try {
       await api.delete(`/bookings/${id}`);
       setBookings(prev => prev.filter(b => b.id !== id));
+      showToast("success", "Reservation cancelled successfully. A refund has been issued.");
     } catch (err: any) {
       setError(err?.message || err?.response?.data?.error || "Failed to cancel booking.");
+      showToast("error", err?.response?.data?.error || "Failed to cancel booking.");
     }
   };
 
   useEffect(() => {
-    (async () => {
-      setServiceChecking(true);
-      const ok = await checkHealth();
-      setServiceOk(ok);
-      setServiceChecking(false);
-    })();
+    window.scrollTo(0, 0);
+    loadBookings();
   }, []);
 
+  const handlePrint = () => {
+    window.print();
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <Header />
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-primary-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 print:bg-white print:text-black">
+      {/* Background Animations */}
+      <div className="bg-blobs print:hidden">
+        <div className="grid-pattern" />
+        <div className="blob blob-1" />
+        <div className="blob blob-2" />
+        <div className="blob blob-3" />
+      </div>
+
+      <div className="relative z-10">
+        <div className="print:hidden">
+          <Header />
+        </div>
+      
       <div className="container py-8">
-        <div className="card p-6 animate-fade-in">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">My Bookings</h1>
-          <button
-              onClick={loadBookings}
-              disabled={loading || serviceOk === false || serviceChecking}
-              className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+        <div className="flex items-center justify-between mb-8 print:hidden">
+          <div>
+            <h1 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100">
+              Your Flight Tickets
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              Manage your active reservations and display digital boarding passes.
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handlePrint}
+              disabled={selectedBookingIds.length === 0}
+              className="btn-secondary py-2 px-4 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Loading..." : serviceChecking ? "Checking..." : "Load My Bookings"}
+              🖨 Print Passes {selectedBookingIds.length > 0 ? `(${selectedBookingIds.length})` : ""}
             </button>
-          <div className="ml-4">
-            {serviceOk === true && (
-              <span className="px-3 py-1 bg-green-100 text-green-700 rounded-md text-sm">All systems operational</span>
-            )}
-            {serviceOk === false && (
-              <span className="px-3 py-1 bg-red-100 text-red-700 rounded-md text-sm">Service unavailable</span>
-            )}
+            <button
+              onClick={loadBookings}
+              disabled={loading}
+              className="btn-primary py-2 px-4 text-sm font-semibold disabled:opacity-50"
+            >
+              {loading ? "Refreshing..." : "🔄 Refresh"}
+            </button>
           </div>
         </div>
 
-          {error && (
-            <div className="p-4 mb-4 bg-red-100 text-red-700 rounded-lg">{error}</div>
-          )}
+        {error && (
+          <div className="p-4 mb-6 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 rounded-lg border border-red-100 dark:border-red-900 print:hidden">
+            {error}
+          </div>
+        )}
 
-          {!loading && loaded && bookings.length === 0 && (
-            <div className="text-center py-8">
-              <div className="text-6xl mb-4">🗒️</div>
-              <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
-                No flights booked yet
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400">
-                Book a flight to see it here.
-              </p>
+        {loading && bookings.length === 0 && (
+          <div className="flex justify-center items-center py-20 print:hidden">
+            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-booking-lightblue"></div>
+          </div>
+        )}
+
+        {!loading && loaded && bookings.length === 0 && (
+          <div className="card p-12 text-center max-w-lg mx-auto print:hidden animate-scale-in">
+            <div className="text-6xl mb-4">🎫</div>
+            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+              No flights booked yet
+            </h2>
+            <p className="text-gray-500 dark:text-gray-400 mb-6">
+              You haven't reserved any flights yet. Let's find your next destination!
+            </p>
+            <button
+              onClick={() => nav("/")}
+              className="btn-primary py-2 px-6"
+            >
+              Search Flights
+            </button>
+          </div>
+        )}
+
+        {bookings.length > 0 && (
+          <div className="space-y-8 max-w-4xl mx-auto">
+            {/* Print Selection Bar */}
+            <div className="p-4 bg-gray-100/50 dark:bg-gray-800/30 rounded-2xl border border-gray-200/50 dark:border-gray-700/50 flex items-center justify-between print:hidden">
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="select-all-bookings"
+                  checked={bookings.filter(b => b.status === "CONFIRMED").length > 0 && selectedBookingIds.length === bookings.filter(b => b.status === "CONFIRMED").length}
+                  onChange={handleToggleAll}
+                  className="w-5 h-5 rounded text-booking-lightblue focus:ring-booking-lightblue border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 cursor-pointer"
+                />
+                <label htmlFor="select-all-bookings" className="text-sm font-semibold text-gray-700 dark:text-gray-300 cursor-pointer select-none">
+                  Select All Active Tickets ({selectedBookingIds.length}/{bookings.filter(b => b.status === "CONFIRMED").length} selected to print)
+                </label>
+              </div>
+              {selectedBookingIds.length > 0 && (
+                <span className="text-xs text-booking-lightblue font-bold uppercase animate-fade-in flex items-center gap-1">
+                  <span>🖨</span> Ready to Print
+                </span>
+              )}
             </div>
-          )}
 
-          {!loading && bookings.length > 0 && (
-            <div className="space-y-4">
-              {bookings.map((b, idx) => {
-                const f = b.flight || {};
-                return (
-                  <div
-                    key={b.id || idx}
-                    className="card p-4 animate-slide-up"
-                    style={{ animationDelay: `${idx * 0.05}s` }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-booking-lightblue to-booking-blue rounded-lg flex items-center justify-center text-white font-bold text-lg">
-                          {(f.airline || "F")[0]}
-                        </div>
-                        <div>
-                          <div className="font-bold text-lg text-gray-800 dark:text-gray-200">
-                            {f.airline || "Unknown Airline"}
-                          </div>
-                          <div className="text-sm text-gray-500 dark:text-gray-400">
-                            {f.flightNumber || "—"}
-                          </div>
-                        </div>
+            {bookings.map((b, idx) => {
+              const f = b.flight || {};
+              const isConfirmed = b.status === "CONFIRMED";
+              
+              const seats = (b.seatNumber || "").split(", ").filter((s: string) => s.trim().length > 0);
+              const hasBusiness = seats.some((s: string) => s.startsWith("1") || s.startsWith("2"));
+              const hasEconomy = seats.some((s: string) => !s.startsWith("1") && !s.startsWith("2") && s.trim().length > 0);
+              
+              let classText = "Economy Class";
+              if (hasBusiness && hasEconomy) {
+                classText = "Business & Economy";
+              } else if (hasBusiness) {
+                classText = "Business Class";
+              }
+
+              return (
+                <div
+                  key={b.id || idx}
+                  className={`relative bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-soft-lg overflow-hidden flex flex-col md:flex-row print:border-black print:text-black print:shadow-none animate-slide-up print:break-inside-avoid ${
+                    selectedBookingIds.includes(b.id) ? "" : "print:hidden"
+                  }`}
+                  style={{ animationDelay: `${idx * 0.08}s` }}
+                >
+                  {/* Left Side: Main Boarding Pass */}
+                  <div className="flex-1 p-6 md:p-8 space-y-6">
+                    {/* Header bar */}
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-2">
+                        <span className="text-2xl print:text-black text-booking-lightblue">✈️</span>
+                        <span className="font-extrabold tracking-wider text-gray-800 dark:text-gray-200 uppercase text-sm">
+                          FlyFast Airlines
+                        </span>
                       </div>
-                      <div className="text-right">
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          Booked on {formatDate(b.createdAt)} at {formatTime(b.createdAt)}
-                        </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          Status: {b.status}
-                        </div>
-                        <div className="mt-2">
-                          <button
-                            onClick={() => cancelBooking(b.id)}
-                            disabled={serviceOk === false}
-                            className="px-3 py-1 bg-red-500 hover:bg-red-600 disabled:bg-red-300 disabled:cursor-not-allowed text-white rounded-lg text-xs"
-                          >
-                            Cancel & Refund
-                          </button>
-                        </div>
+                      
+                      <div className="flex items-center gap-3 print:hidden">
+                        {isConfirmed && (
+                          <label className="flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 select-none">
+                            <input
+                              type="checkbox"
+                              checked={selectedBookingIds.includes(b.id)}
+                              onChange={() => handleToggleSelect(b.id)}
+                              className="w-4 h-4 rounded text-booking-lightblue focus:ring-booking-lightblue border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800"
+                            />
+                            <span>Print</span>
+                          </label>
+                        )}
+                        <span className={`text-[10px] px-2 py-0.5 rounded font-extrabold uppercase border ${
+                          hasBusiness 
+                            ? "bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800" 
+                            : "bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800"
+                        }`}>
+                          {classText}
+                        </span>
+                        <span className={`text-[10px] px-2 py-0.5 rounded font-extrabold uppercase border ${
+                          isConfirmed 
+                            ? "bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800" 
+                            : "bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-800"
+                        }`}>
+                          {b.status}
+                        </span>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-6 items-center mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    {/* Flight Path (Origin and Destination codes) */}
+                    <div className="flex justify-between items-center gap-4 py-4 border-y border-gray-100 dark:border-gray-700 print:border-black">
                       <div>
-                        <div className="text-xl font-bold text-gray-800 dark:text-gray-200">
-                          {formatTime(f.departure)}
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400 font-semibold">
+                        <div className="text-4xl md:text-5xl font-extrabold text-booking-lightblue">
                           {f.origin}
                         </div>
-                        <div className="text-xs text-gray-400 dark:text-gray-500">
+                        <div className="text-xs text-gray-500 font-semibold mt-1">
+                          DEPARTURE: {formatTime(f.departure)}
+                        </div>
+                        <div className="text-[10px] text-gray-400">
                           {formatDate(f.departure)}
                         </div>
                       </div>
 
-                      <div className="text-center">
-                        <div className="flex items-center">
-                          <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
-                          <div className="mx-2 text-lg">✈️</div>
-                          <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
+                      <div className="flex-1 flex flex-col items-center">
+                        <span className="text-[10px] text-gray-400 font-semibold mb-1 uppercase tracking-wider">
+                          Flight {f.flightNumber}
+                        </span>
+                        <div className="w-full flex items-center relative">
+                          <div className="flex-1 h-px border-t border-dashed border-gray-300 dark:border-gray-600 print:border-black"></div>
+                          <div className="mx-2 text-xl text-gray-400 dark:text-gray-500 print:text-black">✈️</div>
+                          <div className="flex-1 h-px border-t border-dashed border-gray-300 dark:border-gray-600 print:border-black"></div>
                         </div>
+                        <span className="text-[10px] text-booking-lightblue font-bold mt-1">
+                          NON-STOP
+                        </span>
                       </div>
 
                       <div className="text-right">
-                        <div className="text-xl font-bold text-gray-800 dark:text-gray-200">
-                          {formatTime(f.arrival)}
-                        </div>
-                        <div className="text-sm text-gray-600 dark:text-gray-400 font-semibold">
+                        <div className="text-4xl md:text-5xl font-extrabold text-booking-lightblue">
                           {f.destination}
                         </div>
-                        <div className="text-xs text-gray-400 dark:text-gray-500">
+                        <div className="text-xs text-gray-500 font-semibold mt-1">
+                          ARRIVAL: {formatTime(f.arrival)}
+                        </div>
+                        <div className="text-[10px] text-gray-400">
                           {formatDate(f.arrival)}
                         </div>
                       </div>
                     </div>
+
+                    {/* Passenger & Gate details */}
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                      <div>
+                        <span className="text-gray-400 block mb-0.5">PASSENGER NAME</span>
+                        <span className="font-bold text-gray-800 dark:text-gray-200">Lokesh Parasuraman</span>
+                      </div>
+                      
+                      <div>
+                        <span className="text-gray-400 block mb-0.5">SEAT NUMBER</span>
+                        <span className="font-extrabold text-gray-800 dark:text-gray-200 text-sm text-booking-lightblue">
+                          {b.seatNumber || "—"}
+                        </span>
+                      </div>
+
+                      <div>
+                        <span className="text-gray-400 block mb-0.5">BOARDING GATE</span>
+                        <span className="font-bold text-gray-800 dark:text-gray-200">G-12</span>
+                      </div>
+
+                      <div>
+                        <span className="text-gray-400 block mb-0.5">BOARDING TIME</span>
+                        <span className="font-bold text-gray-800 dark:text-gray-200">
+                          {(() => {
+                            const dep = new Date(f.departure);
+                            dep.setMinutes(dep.getMinutes() - 40);
+                            return dep.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+                          })()}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Flight Add-ons details footer */}
+                    <div className="pt-4 border-t border-gray-100 dark:border-gray-700 print:border-black flex flex-wrap gap-x-6 gap-y-2 text-[11px] text-gray-500 dark:text-gray-400">
+                      <div>🍽 Meal: <span className="font-semibold text-gray-700 dark:text-gray-300">{b.mealOption || "None"}</span></div>
+                      <div>🧳 Baggage: <span className="font-semibold text-gray-700 dark:text-gray-300">{b.luggageOption || "15kg (Included)"}</span></div>
+                      <div>📶 Wi-Fi: <span className="font-semibold text-gray-700 dark:text-gray-300">{b.wifiOption || "None"}</span></div>
+                      <div>🛡 Insurance: <span className="font-semibold text-gray-700 dark:text-gray-300">{b.insuranceOption || "None"}</span></div>
+                    </div>
                   </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
+
+                  {/* Dotted Separator Line for ticket stub */}
+                  {/* Desktop / Print: Vertical Divider */}
+                  <div className="hidden md:flex flex-col items-center justify-between py-4 relative print:flex">
+                    <div className="w-4 h-4 bg-gray-50 dark:bg-gray-900 border-b border-r border-gray-200 dark:border-gray-700 rounded-full -mt-6 absolute top-0 print:bg-white print:border-black"></div>
+                    <div className="w-px h-full border-l border-dashed border-gray-300 dark:border-gray-600 print:border-black"></div>
+                    <div className="w-4 h-4 bg-gray-50 dark:bg-gray-900 border-t border-r border-gray-200 dark:border-gray-700 rounded-full -mb-6 absolute bottom-0 print:bg-white print:border-black"></div>
+                  </div>
+                  {/* Mobile: Horizontal Divider */}
+                  <div className="flex md:hidden items-center justify-between px-4 relative w-full print:hidden">
+                    <div className="w-4 h-4 bg-gray-50 dark:bg-gray-900 border-r border-b border-gray-200 dark:border-gray-700 rounded-full -ml-2 absolute left-0"></div>
+                    <div className="w-full h-px border-t border-dashed border-gray-300 dark:border-gray-600"></div>
+                    <div className="w-4 h-4 bg-gray-50 dark:bg-gray-900 border-l border-b border-gray-200 dark:border-gray-700 rounded-full -mr-2 absolute right-0"></div>
+                  </div>
+
+                  {/* Right Side: Ticket Stub & Barcode */}
+                  <div className="w-full md:w-56 bg-gray-50/50 dark:bg-gray-800/30 p-6 md:p-8 flex flex-col justify-between items-center border-t md:border-t-0 md:border-l border-gray-100 dark:border-gray-700 print:border-black print:text-black">
+                    <div className="w-full text-center space-y-4">
+                      <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                        BOARDING PASS STUB
+                      </div>
+                      
+                      <div className="flex justify-between items-center text-xs border-b border-gray-100 dark:border-gray-700 pb-2 print:border-black">
+                        <div>
+                          <span className="text-[10px] text-gray-400 block">FLIGHT</span>
+                          <span className="font-bold">{f.flightNumber}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-gray-400 block">SEAT</span>
+                          <span className="font-extrabold text-booking-lightblue">{b.seatNumber || "—"}</span>
+                        </div>
+                        <div>
+                          <span className="text-[10px] text-gray-400 block">GATE</span>
+                          <span className="font-bold">G-12</span>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between items-center text-sm py-1 font-extrabold text-booking-lightblue">
+                        <span>{f.origin}</span>
+                        <span>→</span>
+                        <span>{f.destination}</span>
+                      </div>
+                    </div>
+
+                    {/* Barcode graphic - constructed purely in CSS */}
+                    <div className="w-full mt-6 space-y-1">
+                      <div className="h-10 w-full flex items-center justify-center gap-0.5 overflow-hidden">
+                        {[
+                          1, 2, 0.5, 3, 1, 0.5, 2.5, 1.5, 0.5, 2, 1, 3, 0.5, 1, 2.5, 0.5, 2, 1, 1.5,
+                          2, 1, 0.5, 3, 1, 0.5, 2.5, 1.5, 0.5, 2, 1, 3, 0.5, 1, 2.5, 0.5, 2, 1, 1.5
+                        ].map((width, i) => (
+                          <div
+                            key={i}
+                            className="bg-gray-800 dark:bg-gray-300 print:bg-black h-full"
+                            style={{ width: `${width}px` }}
+                          ></div>
+                        ))}
+                      </div>
+                      <div className="text-[8px] text-gray-400 dark:text-gray-500 font-mono tracking-widest text-center">
+                        {b.id.slice(0, 8).toUpperCase()}-{b.userId.slice(0, 4).toUpperCase()}
+                      </div>
+                    </div>
+
+                    {/* print:hidden actions */}
+                    {isConfirmed && (
+                      <div className="w-full mt-4 flex gap-2 print:hidden">
+                        <button
+                          onClick={() => handlePrintSingle(b.id)}
+                          className="w-full py-1.5 bg-booking-lightblue/10 hover:bg-booking-lightblue/20 text-booking-lightblue border border-booking-lightblue/30 rounded-lg text-xs font-semibold transition-colors duration-200"
+                        >
+                          🖨 Print Ticket
+                        </button>
+                        <button
+                          onClick={() => cancelBooking(b.id)}
+                          className="w-full py-1.5 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900 rounded-lg text-xs font-semibold transition-colors duration-200"
+                        >
+                          Cancel Booking
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
       </div>
     </div>
   );

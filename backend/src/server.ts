@@ -15,7 +15,7 @@ app.set("trust proxy", 1);
 app.disable("x-powered-by");
 
 // --------------------------------------------------------
-// ❤️ HEALTH CHECK (NO CORS RESTRICTIONS)
+// Health Check Endpoint
 // --------------------------------------------------------
 app.get("/health", (_req, res) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -23,7 +23,7 @@ app.get("/health", (_req, res) => {
 });
 
 // --------------------------------------------------------
-// CORS CONFIGURATION 
+// CORS Configuration
 // --------------------------------------------------------
 const allowedOrigins = [
   "http://localhost:5173",
@@ -49,12 +49,12 @@ app.use(
 );
 
 // --------------------------------------------------------
-// 🔥 HANDLE PREFLIGHT REQUESTS EARLY (CRITICAL FOR FIXING CORS)
+// Handle preflight requests early
 // --------------------------------------------------------
 app.options("*", cors());
 
 // --------------------------------------------------------
-// 🛡 SECURITY HEADERS
+// HTTP Security Headers
 // --------------------------------------------------------
 app.use(
   helmet({
@@ -63,17 +63,17 @@ app.use(
 );
 
 // --------------------------------------------------------
-// 📦 COMPRESSION
+// Response Compression
 // --------------------------------------------------------
 app.use(compression());
 
 // --------------------------------------------------------
-// 📦 JSON BODY PARSING
+// JSON Request Body Parsing
 // --------------------------------------------------------
 app.use(express.json({ limit: "200kb" }));
 
 // --------------------------------------------------------
-// 📝 LOGGING (OPTIONAL BUT USEFUL)
+// Request Logger Middleware
 // --------------------------------------------------------
 app.use((req, res, next) => {
   const start = Date.now();
@@ -85,22 +85,30 @@ app.use((req, res, next) => {
 });
 
 // --------------------------------------------------------
-// 🚀 ROUTES (MUST COME BEFORE RATE LIMITERS!)
+// API Rate Limiting Middleware
 // --------------------------------------------------------
-app.use("/api", router);
+const authLimiter = rateLimit({ 
+  windowMs: 60_000, 
+  max: 30,
+  skip: (req) => req.method === "OPTIONS"
+});
 
-// --------------------------------------------------------
-// ⏱ RATE LIMITERS — MUST BE AFTER ROUTES
-// Otherwise OPTIONS requests get blocked → CORS errors
-// --------------------------------------------------------
-const authLimiter = rateLimit({ windowMs: 60_000, max: 30 });
-const chatLimiter = rateLimit({ windowMs: 60_000, max: 20 });
+const chatLimiter = rateLimit({ 
+  windowMs: 60_000, 
+  max: 20,
+  skip: (req) => req.method === "OPTIONS"
+});
 
 app.use("/api/auth", authLimiter);
 app.use("/api/chat", chatLimiter);
 
 // --------------------------------------------------------
-// ❌ ERROR HANDLER — ALWAYS LAST
+// Application Routes
+// --------------------------------------------------------
+app.use("/api", router);
+
+// --------------------------------------------------------
+// Global Error Handler
 // --------------------------------------------------------
 app.use(errorHandler);
 
@@ -109,7 +117,7 @@ app.use(errorHandler);
 // --------------------------------------------------------
 const port = Number(process.env.PORT) || 4000;
 const server = app.listen(port, "0.0.0.0", () => {
-  console.log(`🚀 Backend running on port ${port}`);
+  console.log(`Backend running on port ${port}`);
 });
 
 async function shutdown(signal: string) {

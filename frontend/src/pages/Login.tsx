@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import api, { setAuthToken } from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
 import Header from "../components/Header";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Login() {
   const [identifier, setIdentifier] = useState("");
@@ -153,9 +154,16 @@ export default function Login() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="btn-primary"
+                    className="btn-primary flex items-center justify-center gap-2"
                   >
-                    {loading ? "Signing in..." : "Sign In"}
+                    {loading ? (
+                      <>
+                        <LoadingSpinner size="sm" />
+                        <span>Signing in...</span>
+                      </>
+                    ) : (
+                      "Sign In"
+                    )}
                   </button>
                 </div>
               </form>
@@ -184,8 +192,19 @@ export default function Login() {
                       </div>
                     )}
                   </div>
-                  <button type="submit" disabled={loading || !identifierValid} className="btn-primary w-full">
-                    {loading ? "Sending..." : "Request OTP"}
+                  <button
+                    type="submit"
+                    disabled={loading || !identifierValid}
+                    className="btn-primary w-full flex items-center justify-center gap-2"
+                  >
+                    {loading ? (
+                      <>
+                        <LoadingSpinner size="sm" />
+                        <span>Sending...</span>
+                      </>
+                    ) : (
+                      "Request OTP"
+                    )}
                   </button>
                 </form>
                 <form onSubmit={resetPwd} className="space-y-4">
@@ -219,8 +238,19 @@ export default function Login() {
                     <button type="button" onClick={() => setForgotMode(false)} className="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
                       Back to Login
                     </button>
-                    <button type="submit" disabled={loading} className="btn-primary">
-                      {loading ? "Resetting..." : "Reset Password"}
+                    <button
+                      type="submit"
+                      disabled={loading}
+                      className="btn-primary flex items-center justify-center gap-2"
+                    >
+                      {loading ? (
+                        <>
+                          <LoadingSpinner size="sm" />
+                          <span>Resetting...</span>
+                        </>
+                      ) : (
+                        "Reset Password"
+                      )}
                     </button>
                   </div>
                 </form>

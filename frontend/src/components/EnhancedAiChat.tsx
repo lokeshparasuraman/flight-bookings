@@ -11,9 +11,9 @@ interface EnhancedAiChatProps {
 }
 
 export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: EnhancedAiChatProps) {
-  const [messages, setMessages] = useState<{ 
-    role: string; 
-    text: string; 
+  const [messages, setMessages] = useState<{
+    role: string;
+    text: string;
     timestamp: Date;
     flights?: any[];
     type?: 'text' | 'flights';
@@ -35,7 +35,9 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (messages.length > 0) {
+      scrollToBottom();
+    }
   }, [messages]);
 
   const sendInitialMessage = async () => {
@@ -46,10 +48,10 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
   const sendMessage = async (messageText?: string) => {
     const messageToSend = messageText || text.trim();
     if (!messageToSend || loading) return;
-    
-    const userMsg = { 
-      role: "user", 
-      text: messageToSend, 
+
+    const userMsg = {
+      role: "user",
+      text: messageToSend,
       timestamp: new Date(),
       type: 'text' as const
     };
@@ -58,31 +60,31 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
     setLoading(true);
 
     try {
-      const res = await api.post("/chat/message", { 
-        message: messageToSend, 
-        sessionId: sessionId || "default" 
+      const res = await api.post("/chat/message", {
+        message: messageToSend,
+        sessionId: sessionId || "default"
       });
       const data = res.data;
-      
+
       // Check if flights are returned
       if (data.intent === "search_flights" && data.parameters?.flights && Array.isArray(data.parameters.flights)) {
         const flights = data.parameters.flights;
-        setMessages((m) => [...m, { 
-          role: "assistant", 
+        setMessages((m) => [...m, {
+          role: "assistant",
           text: data.reply_text || `Found ${flights.length} flight${flights.length !== 1 ? 's' : ''} for you! 🎉`,
           timestamp: new Date(),
           flights: flights,
           type: 'flights'
         }]);
       } else {
-        setMessages((m) => [...m, { 
-          role: "assistant", 
+        setMessages((m) => [...m, {
+          role: "assistant",
           text: data.reply_text || JSON.stringify(data),
           timestamp: new Date(),
           type: 'text'
         }]);
       }
-      
+
       // Navigate if needed (for non-floating chat)
       if (data.intent === "search_flights" && data.parameters && !onClose) {
         const p = data.parameters;
@@ -91,8 +93,8 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
         }
       }
     } catch (e) {
-      setMessages((m) => [...m, { 
-        role: "assistant", 
+      setMessages((m) => [...m, {
+        role: "assistant",
         text: "Sorry, I encountered an error. Please try again.",
         timestamp: new Date(),
         type: 'text'
@@ -114,9 +116,36 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
     }
   };
 
-  const handleQuickSearch = (query: string) => {
-    setText(query);
-    setTimeout(() => sendMessage(query), 100);
+  const handleQuickAction = (actionType: "SEARCH" | "DEALS" | "OPTIONS") => {
+    let assistantReply = "";
+    let userHintText = "";
+
+    if (actionType === "SEARCH") {
+      assistantReply = "🛫 Great! Where would you like to fly from and to? Please tell me your origin and destination (e.g., 'Delhi to Mumbai').";
+      userHintText = "Fly from Delhi to Mumbai tomorrow";
+    } else if (actionType === "DEALS") {
+      assistantReply = "💰 Let's find some great deals! Which city or route are you interested in? (e.g., 'deals to Bangalore' or 'cheap flights from Delhi').";
+      userHintText = "Cheap flights to Bangalore";
+    } else if (actionType === "OPTIONS") {
+      assistantReply = "📅 I'll find the best options for you. Where are you planning to travel and when? (e.g., 'best flights to Goa next week').";
+      userHintText = "Best flights to Goa next week";
+    }
+
+    setMessages((m) => [
+      ...m,
+      {
+        role: "assistant",
+        text: assistantReply,
+        timestamp: new Date(),
+        type: 'text'
+      }
+    ]);
+    
+    setText("");
+    if (inputRef.current) {
+      inputRef.current.placeholder = `E.g., "${userHintText}"`;
+      inputRef.current.focus();
+    }
   };
 
   const handleBookFlight = async (flightId: string) => {
@@ -180,23 +209,23 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
               I can help you find flights with exclusive discounts and offers!
             </p>
-            
+
             {/* Quick Actions */}
             <div className="space-y-2 max-w-xs mx-auto">
               <button
-                onClick={() => handleQuickSearch("Find flights from Delhi to Mumbai")}
+                onClick={() => handleQuickAction("SEARCH")}
                 className="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-booking-lightblue text-booking-lightblue rounded-lg hover:bg-booking-lightblue hover:text-white transition-all duration-200 text-sm font-semibold"
               >
                 🔍 Search Flights
               </button>
               <button
-                onClick={() => handleQuickSearch("Show me cheap flights to Bangalore")}
+                onClick={() => handleQuickAction("DEALS")}
                 className="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-booking-lightblue text-booking-lightblue rounded-lg hover:bg-booking-lightblue hover:text-white transition-all duration-200 text-sm font-semibold"
               >
                 💰 Find Deals
               </button>
               <button
-                onClick={() => handleQuickSearch("What are the best flight options for next week?")}
+                onClick={() => handleQuickAction("OPTIONS")}
                 className="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-booking-lightblue text-booking-lightblue rounded-lg hover:bg-booking-lightblue hover:text-white transition-all duration-200 text-sm font-semibold"
               >
                 📅 Best Options
@@ -204,7 +233,7 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
             </div>
           </div>
         )}
-        
+
         {messages.map((m, i) => (
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"} animate-slide-up`}>
             {m.type === 'flights' && m.flights ? (
@@ -231,17 +260,15 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
               </div>
             ) : (
               <div
-                className={`max-w-[80%] rounded-2xl px-4 py-2 ${
-                  m.role === "user"
+                className={`max-w-[80%] rounded-2xl px-4 py-2 ${m.role === "user"
                     ? "bg-booking-lightblue text-white"
                     : "bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow-sm"
-                }`}
+                  }`}
               >
                 <div className="text-sm whitespace-pre-wrap break-words">{m.text}</div>
                 <div
-                  className={`text-xs mt-1 ${
-                    m.role === "user" ? "text-white/70" : "text-gray-500 dark:text-gray-400"
-                  }`}
+                  className={`text-xs mt-1 ${m.role === "user" ? "text-white/70" : "text-gray-500 dark:text-gray-400"
+                    }`}
                 >
                   {m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </div>
@@ -249,7 +276,7 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
             )}
           </div>
         ))}
-        
+
         {loading && (
           <div className="flex justify-start animate-fade-in">
             <div className="bg-white dark:bg-gray-700 rounded-2xl px-4 py-2 shadow-sm">

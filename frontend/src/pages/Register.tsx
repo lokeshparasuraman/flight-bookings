@@ -2,6 +2,7 @@ import React, { useState} from "react";
 import api, { setAuthToken } from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
 import Header from "../components/Header";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Register() {
   const IS_DEV = (import.meta as any).env?.DEV === true;
@@ -177,9 +178,16 @@ export default function Register() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full btn-primary text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full btn-primary text-lg py-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                {loading ? "Creating account..." : "Create Account"}
+                {loading ? (
+                  <>
+                    <LoadingSpinner size="sm" />
+                    <span>Creating account...</span>
+                  </>
+                ) : (
+                  "Create Account"
+                )}
               </button>
             </form>
             )}
@@ -215,9 +223,16 @@ export default function Register() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="btn-primary"
+                    className="btn-primary flex items-center justify-center gap-2"
                   >
-                    {loading ? "Verifying..." : "Verify & Continue"}
+                    {loading ? (
+                      <>
+                        <LoadingSpinner size="sm" />
+                        <span>Verifying...</span>
+                      </>
+                    ) : (
+                      "Verify & Continue"
+                    )}
                   </button>
                 </div>
                 {IS_DEV && (

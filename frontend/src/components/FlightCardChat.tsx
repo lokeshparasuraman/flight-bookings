@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
+import { useToast } from "../contexts/ToastContext";
 
 interface FlightCardChatProps {
   flight: any;
@@ -19,6 +20,7 @@ export default function FlightCardChat({
   onBook 
 }: FlightCardChatProps) {
   const navigate = useNavigate();
+  const { showToast } = useToast();
   
   const formatTime = (date: string) => {
     return new Date(date).toLocaleTimeString('en-US', { 
@@ -65,10 +67,10 @@ export default function FlightCardChat({
 
     try {
       await api.post("/bookings", { flightId: flight.id });
-      alert("Booking successful! 🎉");
+      showToast("success", "Booking successful! 🎉");
       navigate("/");
     } catch (err: any) {
-      alert(err?.response?.data?.error || "Booking failed. Please try again.");
+      showToast("error", err?.response?.data?.error || "Booking failed. Please try again.");
     }
   };
 

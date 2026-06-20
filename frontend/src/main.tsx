@@ -9,31 +9,37 @@ const FlightDetail = lazy(() => import("./pages/FlightDetail"));
 const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Bookings = lazy(() => import("./pages/Bookings"));
+const AvailableRoutes = lazy(() => import("./pages/AvailableRoutes"));
 import "./index.css";
+
+import { ToastProvider } from "./contexts/ToastContext";
 
 function App() {
   return (
     <ThemeProvider>
-      <ErrorBoundary>
-        <BrowserRouter>
-          <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/search" element={<SearchResults />} />
-              <Route path="/flight/:id" element={<FlightDetail />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<Register />} />
-              <Route path="/bookings" element={<Bookings />} />
-            </Routes>
-          </Suspense>
-          <FloatingAiChat />
-        </BrowserRouter>
-      </ErrorBoundary>
+      <ToastProvider>
+        <ErrorBoundary>
+          <BrowserRouter>
+            <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/search" element={<SearchResults />} />
+                <Route path="/flight/:id" element={<FlightDetail />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/bookings" element={<Bookings />} />
+                <Route path="/routes" element={<AvailableRoutes />} />
+              </Routes>
+            </Suspense>
+            <FloatingAiChat />
+          </BrowserRouter>
+        </ErrorBoundary>
+      </ToastProvider>
     </ThemeProvider>
   );
 }
 
-class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }>{
+class ErrorBoundary extends React.Component<{ children: React.ReactNode }, { hasError: boolean }> {
   constructor(props: any) {
     super(props);
     this.state = { hasError: false };

@@ -110,7 +110,6 @@ router.post(
   }
 );
 
-export default router;
 router.post(
   "/login-otp/send",
   body("identifier").isString(),
@@ -163,3 +162,5 @@ router.post(
     }
   }
 );
+
+export default router;

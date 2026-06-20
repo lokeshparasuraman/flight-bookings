@@ -28,3 +28,5 @@ prisma/generated/
 
 # Optional: local database files
 *.sqlite
+*.db
+dist-prisma/

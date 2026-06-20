@@ -18,17 +18,35 @@ function assertOwnership(
   }
 }
 
-export async function createBooking(userId: string, flightId: string) {
+export async function createBooking(
+  userId: string,
+  flightId: string,
+  options?: {
+    seatNumber?: string;
+    luggageOption?: string;
+    mealOption?: string;
+    wifiOption?: string;
+    insuranceOption?: string;
+    totalPriceCents?: number;
+  }
+) {
   const flight = await prisma.flight.findUnique({ where: { id: flightId } });
 
   if (!flight) throw Object.assign(new Error("Flight not found"), { status: 404 });
+
+  const finalPrice = options?.totalPriceCents ?? flight.basePriceCents;
 
   return prisma.booking.create({
     data: {
       userId,
       flightId,
       status: "PENDING",
-      priceCents: flight.basePriceCents,
+      priceCents: finalPrice,
+      seatNumber: options?.seatNumber || null,
+      luggageOption: options?.luggageOption || null,
+      mealOption: options?.mealOption || null,
+      wifiOption: options?.wifiOption || null,
+      insuranceOption: options?.insuranceOption || null,
     },
   });
 }

@@ -19,6 +19,7 @@ export default function SearchResults() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     setLoading(true);
     api.get("/flights/search", { params: { origin, destination, date } })
       .then((r) => setFlights(r.data))

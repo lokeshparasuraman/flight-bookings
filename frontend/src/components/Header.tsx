@@ -2,6 +2,9 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 import { useState } from "react";
 
+const IS_DEV = (import.meta as any).env?.DEV === true;
+const VITE_API_URL = (import.meta as any).env?.VITE_API_URL || "";
+
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -14,12 +17,19 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50 transition-all duration-300">
+    <>
+      {!IS_DEV && !VITE_API_URL && (
+        <div className="bg-gradient-to-r from-amber-500 to-orange-600 text-white text-center py-2 px-4 text-xs font-semibold shadow-inner animate-fade-in relative z-50">
+          ⚠️ Environment Variable <code className="bg-black/20 px-1 py-0.5 rounded font-mono">VITE_API_URL</code> is missing! 
+          Please configure it in Vercel settings pointing to your Render backend API (e.g. <code className="bg-black/20 px-1.5 py-0.5 rounded font-mono">https://your-backend.onrender.com/api</code>) to make the live application work.
+        </div>
+      )}
+      <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50 transition-all duration-300">
       <div className="container">
         <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
-          <Link 
-            to="/" 
+          <Link
+            to="/"
             className="flex items-center space-x-2 group"
           >
             <div className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-booking-lightblue to-booking-blue bg-clip-text text-transparent font-['Poppins']">
@@ -29,10 +39,10 @@ export default function Header() {
 
           <nav className="hidden md:flex items-center space-x-4 md:space-x-6">
             <Link
-              to="/"
+              to="/routes"
               className="text-gray-700 dark:text-gray-300 hover:text-booking-lightblue dark:hover:text-booking-lightblue font-medium transition-colors duration-200"
             >
-              Search Flights
+              Available Routes
             </Link>
             {token && (
               <Link
@@ -103,11 +113,11 @@ export default function Header() {
           <div className="md:hidden py-3">
             <div className="flex flex-col space-y-2">
               <Link
-                to="/"
+                to="/routes"
                 onClick={() => setMenuOpen(false)}
                 className="px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
               >
-                Search Flights
+                Available Routes
               </Link>
               {token && (
                 <Link
@@ -149,5 +159,6 @@ export default function Header() {
         )}
       </div>
     </header>
+    </>
   );
 }

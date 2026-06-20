@@ -66,12 +66,12 @@ export async function registerUser(email: string, password: string, name?: strin
 export async function loginUser(email: string, password: string) {
   const user = await prisma.user.findUnique({ where: { email }, select: { id: true, email: true, password: true } });
   if (!user) {
-    throw Object.assign(new Error("Invalid credentials"), { status: 401 });
+    throw Object.assign(new Error("Invalid user ID"), { status: 401 });
   }
 
   const matches = await bcrypt.compare(password, user.password);
   if (!matches) {
-    throw Object.assign(new Error("Invalid credentials"), { status: 401 });
+    throw Object.assign(new Error("Invalid password"), { status: 401 });
   }
 
   const token = jwt.sign({ sub: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });
@@ -105,12 +105,12 @@ async function findUserByIdentifier(identifier: string) {
 export async function loginByIdentifier(identifier: string, password: string) {
   const user = await findUserByIdentifier(identifier);
   if (!user) {
-    throw Object.assign(new Error("Invalid credentials"), { status: 401 });
+    throw Object.assign(new Error("Invalid user ID"), { status: 401 });
   }
 
   const matches = await bcrypt.compare(password, user.password);
   if (!matches) {
-    throw Object.assign(new Error("Invalid credentials"), { status: 401 });
+    throw Object.assign(new Error("Invalid password"), { status: 401 });
   }
 
   const token = jwt.sign({ sub: user.id, email: user.email }, JWT_SECRET, { expiresIn: "7d" });

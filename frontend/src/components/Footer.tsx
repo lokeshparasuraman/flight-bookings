@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "../contexts/LanguageContext";
-import { 
-  FlightIcon, 
-  OfficeBuildingIcon, 
+import {
+  FlightIcon,
+  OfficeBuildingIcon,
   ChartIcon,
   SecureIcon,
   ShieldIcon
@@ -14,8 +14,14 @@ export default function Footer() {
   const [showTerms, setShowTerms] = useState(false);
   const [showRefunds, setShowRefunds] = useState(false);
   return (
-    <footer className="bg-booking-blue text-gray-300 dark:bg-gray-950 dark:text-gray-400 border-t border-gray-200/10 transition-colors duration-300">
-      <div className="container max-w-7xl mx-auto px-4 py-12 md:py-16">
+    <footer
+      className="relative bg-cover bg-center text-gray-300 border-t border-gray-200/10 transition-all duration-300"
+      style={{ backgroundImage: "url('/footer_travel_bg.png')" }}
+    >
+      {/* Dark overlay to ensure premium readability and contrast */}
+      <div className="absolute inset-0 bg-gray-900/92 dark:bg-gray-955/96 z-0"></div>
+
+      <div className="container max-w-7xl mx-auto px-4 py-12 md:py-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
           {/* Column 1: Brand Info */}
           <div className="space-y-4">
@@ -60,8 +66,8 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2.5 text-xs font-semibold">
               <li>
-                <Link 
-                  to="/airline/register" 
+                <Link
+                  to="/airline/register"
                   className="hover:text-booking-lightblue transition-colors flex items-center gap-1.5"
                   data-tooltip={t("tooltip_register_business")}
                 >
@@ -70,8 +76,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/airline/login" 
+                <Link
+                  to="/airline/login"
                   className="hover:text-booking-lightblue transition-colors flex items-center gap-1.5"
                   data-tooltip={t("tooltip_partner_login")}
                 >
@@ -80,8 +86,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link 
-                  to="/airline/dashboard" 
+                <Link
+                  to="/airline/dashboard"
                   className="hover:text-booking-lightblue transition-colors flex items-center gap-1.5"
                   data-tooltip={t("tooltip_operator_dashboard")}
                 >
@@ -102,7 +108,7 @@ export default function Footer() {
                 {t("support_line")}: <span className="text-white font-bold">+91 98765 43210</span>
               </li>
               <li>
-                <span 
+                <span
                   onClick={() => setShowRefunds(true)}
                   className="cursor-pointer hover:text-booking-lightblue transition-colors"
                   data-tooltip={t("tooltip_cancellation_details")}
@@ -111,7 +117,7 @@ export default function Footer() {
                 </span>
               </li>
               <li>
-                <span 
+                <span
                   onClick={() => setShowTerms(true)}
                   className="cursor-pointer hover:text-booking-lightblue transition-colors"
                   data-tooltip={t("tooltip_view_terms")}
@@ -134,7 +140,7 @@ export default function Footer() {
       {showRefunds && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in text-gray-900 dark:text-gray-100">
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 w-full max-w-xl p-6 md:p-8 relative shadow-2xl animate-scale-in">
-            <button 
+            <button
               onClick={() => setShowRefunds(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-655 dark:hover:text-gray-200 font-extrabold text-sm"
             >
@@ -144,12 +150,12 @@ export default function Footer() {
               <ShieldIcon className="w-6 h-6 text-booking-lightblue" />
               <h3 className="text-xl font-extrabold font-display uppercase tracking-wider">{t("cancellations_refunds")}</h3>
             </div>
-            
+
             <div className="space-y-4 text-xs md:text-sm text-gray-655 dark:text-gray-400 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin">
               <p>
                 {t("refunds_intro")}
               </p>
-              
+
               <div className="space-y-3">
                 <div className="p-3 bg-green-50 dark:bg-green-950/20 border-l-4 border-green-500">
                   <h4 className="font-extrabold text-green-700 dark:text-green-400 uppercase tracking-wide text-xs">{t("refunds_policy_1")}</h4>
@@ -176,9 +182,9 @@ export default function Footer() {
                 </ol>
               </div>
             </div>
-            
+
             <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-end">
-              <button 
+              <button
                 onClick={() => setShowRefunds(false)}
                 className="btn-primary py-2 px-6 text-xs uppercase"
               >
@@ -189,11 +195,11 @@ export default function Footer() {
         </div>
       )}
 
-      {/* Terms of Service Modal */}
+      {/* Terms of Service Model */}
       {showTerms && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in text-gray-900 dark:text-gray-100">
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 w-full max-w-xl p-6 md:p-8 relative shadow-2xl animate-scale-in">
-            <button 
+            <button
               onClick={() => setShowTerms(false)}
               className="absolute top-4 right-4 text-gray-400 hover:text-gray-655 dark:hover:text-gray-200 font-extrabold text-sm"
             >
@@ -203,12 +209,12 @@ export default function Footer() {
               <SecureIcon className="w-6 h-6 text-booking-lightblue" />
               <h3 className="text-xl font-extrabold font-display uppercase tracking-wider">{t("terms_of_service")}</h3>
             </div>
-            
+
             <div className="space-y-4 text-xs md:text-sm text-gray-655 dark:text-gray-400 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin">
               <p>
                 {t("terms_intro")}
               </p>
-              
+
               <div className="space-y-3 text-xs">
                 <div>
                   <h4 className="font-extrabold text-gray-800 dark:text-gray-200">{t("terms_section_1")}</h4>
@@ -239,9 +245,9 @@ export default function Footer() {
                 </div>
               </div>
             </div>
-            
+
             <div className="mt-6 pt-4 border-t border-gray-100 dark:border-gray-800 flex justify-end">
-              <button 
+              <button
                 onClick={() => setShowTerms(false)}
                 className="btn-primary py-2 px-6 text-xs uppercase"
               >

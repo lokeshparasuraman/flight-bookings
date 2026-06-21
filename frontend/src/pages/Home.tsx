@@ -145,7 +145,7 @@ export default function Home() {
           style={{ backgroundImage: "url('/travel_hero_bg.png')" }}
         >
           {/* Overlay to ensure readability and dark mode contrast */}
-          <div className="absolute inset-0 bg-[#0a2240]/35 dark:bg-gray-955/70 z-0"></div>
+          <div className="absolute inset-0 bg-[#18181b]/40 dark:bg-[#09090b]/80 z-0"></div>
           
           <div className="container max-w-6xl mx-auto text-center relative z-10">
             <h1 className="text-4xl md:text-5xl font-extrabold mb-3 tracking-tight">

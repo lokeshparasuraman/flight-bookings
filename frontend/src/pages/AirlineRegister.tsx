@@ -51,7 +51,7 @@ export default function AirlineRegister() {
       style={{ backgroundImage: "url('/travel_hero_bg.png')" }}
     >
       {/* Background overlay */}
-      <div className="absolute inset-0 bg-[#0a2240]/40 dark:bg-gray-955/80 z-0"></div>
+      <div className="absolute inset-0 bg-[#18181b]/50 dark:bg-[#09090b]/80 z-0"></div>
       
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header />

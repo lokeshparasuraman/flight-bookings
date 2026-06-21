@@ -273,7 +273,7 @@ export default function Header() {
                     className="relative bg-cover bg-center p-4 border-b border-gray-150 dark:border-gray-850"
                     style={{ backgroundImage: "url('/travel_hero_bg.png')" }}
                   >
-                    <div className="absolute inset-0 bg-[#0a2240]/65 dark:bg-gray-955/80 z-0"></div>
+                    <div className="absolute inset-0 bg-[#18181b]/70 dark:bg-[#09090b]/80 z-0"></div>
                     <div className="relative z-10 text-white text-left">
                       <h4 className="font-extrabold text-xs uppercase tracking-wider truncate">
                         {(() => {

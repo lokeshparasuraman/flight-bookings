@@ -95,7 +95,7 @@ export default function SearchResults() {
       case 'akasa air':
         return 'from-orange-400 to-amber-500';
       default:
-        return 'from-indigo-500 to-indigo-650';
+        return 'from-zinc-600 to-zinc-800';
     }
   };
 

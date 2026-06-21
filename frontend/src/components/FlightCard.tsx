@@ -89,7 +89,7 @@ export default function FlightCard({ f, origin, destination }: any) {
       case 'akasa air':
         return 'from-orange-400 to-amber-500 shadow-amber-500/20';
       default:
-        return 'from-indigo-500 to-indigo-600 shadow-indigo-500/20';
+        return 'from-zinc-600 to-zinc-800 shadow-zinc-700/10';
     }
   };
 

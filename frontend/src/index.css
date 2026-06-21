@@ -88,7 +88,7 @@ input[type=number] {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: radial-gradient(rgba(0, 113, 194, 0.08) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(113, 113, 122, 0.08) 1px, transparent 1px);
   background-size: 24px 24px;
   opacity: 0.8;
   z-index: 1;
@@ -105,7 +105,7 @@ input[type=number] {
 }
 
 .blob-1 {
-  background: radial-gradient(circle, #0071c2 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(249, 115, 22, 0.15) 0%, transparent 70%);
   top: -10%;
   left: -10%;
 }
@@ -147,11 +147,11 @@ input[type=number] {
   background: transparent;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(0, 140, 255, 0.2);
+  background: rgba(113, 113, 122, 0.3);
   border-radius: 0px;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 140, 255, 0.4);
+  background: rgba(113, 113, 122, 0.5);
 }
 
 @keyframes slideLeft {
@@ -177,7 +177,7 @@ input[type=number] {
   bottom: 125%;
   left: 50%;
   transform: translateX(-50%) translateY(4px);
-  background-color: #0b1523;
+  background-color: #18181b;
   color: #ffffff;
   padding: 6px 10px;
   font-size: 10px;
@@ -209,7 +209,7 @@ input[type=number] {
   top: 125%;
   left: 50%;
   transform: translateX(-50%) translateY(-4px);
-  background-color: #0b1523;
+  background-color: #18181b;
   color: #ffffff;
   padding: 6px 10px;
   font-size: 10px;

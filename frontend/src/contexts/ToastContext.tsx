@@ -59,7 +59,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               icon = "⚠️";
               break;
             case "info":
-              borderColor = "border-blue-500";
+              borderColor = "border-gray-400";
               icon = "ℹ️";
               break;
           }
@@ -67,7 +67,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           return (
             <div
               key={toast.id}
-              className={`pointer-events-auto flex items-center p-4 rounded-xl shadow-lg border border-gray-150 dark:border-gray-700 transition-all duration-300 animate-slide-up ${bgClass} ${borderColor}`}
+              className={`pointer-events-auto flex items-center p-4 rounded-none shadow-lg border border-gray-150 dark:border-gray-700 transition-all duration-300 animate-slide-up ${bgClass} ${borderColor}`}
               role="alert"
             >
               <div className="text-xl mr-3">{icon}</div>

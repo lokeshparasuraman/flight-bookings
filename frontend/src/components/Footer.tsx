@@ -14,14 +14,8 @@ export default function Footer() {
   const [showTerms, setShowTerms] = useState(false);
   const [showRefunds, setShowRefunds] = useState(false);
   return (
-    <footer
-      className="relative bg-cover bg-center text-gray-300 border-t border-gray-200/10 transition-all duration-300"
-      style={{ backgroundImage: "url('/footer_travel_bg.png')" }}
-    >
-      {/* Dark overlay to ensure premium readability and contrast */}
-      <div className="absolute inset-0 bg-gray-900/92 dark:bg-gray-955/96 z-0"></div>
-
-      <div className="container max-w-7xl mx-auto px-4 py-12 md:py-16 relative z-10">
+    <footer className="bg-booking-blue text-gray-300 dark:bg-gray-955 dark:text-gray-400 border-t border-gray-200/10 transition-colors duration-300">
+      <div className="container max-w-7xl mx-auto px-4 py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
           {/* Column 1: Brand Info */}
           <div className="space-y-4">

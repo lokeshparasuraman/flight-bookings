@@ -3,8 +3,8 @@ module.exports = {
     darkMode: 'class',
     theme: { 
       fontFamily: {
-        sans: ['Poppins', 'Inter', 'system-ui', 'sans-serif'],
-        display: ['Poppins', 'sans-serif'],
+        sans: ['Lato', 'Inter', 'system-ui', 'sans-serif'],
+        display: ['Outfit', 'Plus Jakarta Sans', 'sans-serif'],
       },
       extend: {
         colors: {
@@ -20,11 +20,33 @@ module.exports = {
             800: '#5b21b6',
             900: '#4c1d95',
           },
+          gray: {
+            50: '#f8fafc',
+            100: '#f1f5f9',
+            200: '#e2e8f0',
+            205: '#e2e8f0',
+            300: '#cbd5e1',
+            400: '#94a3b8',
+            450: '#94a3b8',
+            455: '#64748b',
+            500: '#64748b',
+            600: '#475569',
+            650: '#475569',
+            655: '#334155',
+            700: '#334155',
+            750: '#1e293b',
+            800: '#1e293b',
+            850: '#0f172a',
+            855: '#0f172a',
+            900: '#0f172a',
+            950: '#020617',
+            955: '#020617',
+          },
           booking: {
-            blue: '#4f46e5',
-            lightblue: '#6366f1',
-            orange: '#f43f5e',
-            yellow: '#f59e0b',
+            blue: '#334155',
+            lightblue: '#788896',
+            orange: '#ff5e36',
+            yellow: '#ff9900',
           }
         },
         animation: {

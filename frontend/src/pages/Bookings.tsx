@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import api, { setAuthToken } from "../services/api";
 import { useToast } from "../contexts/ToastContext";
+import { FlightIcon, MealIcon, BaggageIcon, WifiIcon, ShieldIcon } from "../components/Icons";
+import Footer from "../components/Footer";
 
 export default function Bookings() {
   const nav = useNavigate();
@@ -130,7 +132,7 @@ export default function Bookings() {
           {/* Header bar */}
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <span className={`text-2xl print:text-black ${isCancelled ? "text-gray-400" : "text-booking-lightblue"}`}>✈️</span>
+              <FlightIcon className={`w-6 h-6 transform -rotate-45 ${isCancelled ? "text-gray-400" : "text-booking-lightblue"}`} />
               <span className={`font-extrabold tracking-wider uppercase text-sm ${isCancelled ? "text-gray-400 dark:text-gray-500" : "text-gray-800 dark:text-gray-200"}`}>
                 FlyFast Airlines
               </span>
@@ -189,7 +191,9 @@ export default function Bookings() {
               </span>
               <div className="w-full flex items-center relative">
                 <div className="flex-1 h-px border-t border-dashed border-gray-300 dark:border-gray-600 print:border-black"></div>
-                <div className="mx-2 text-xl text-gray-400 dark:text-gray-500 print:text-black">✈️</div>
+                <div className="mx-2">
+                  <FlightIcon className="w-5 h-5 text-gray-400 dark:text-gray-500 print:text-black transform -rotate-45" />
+                </div>
                 <div className="flex-1 h-px border-t border-dashed border-gray-300 dark:border-gray-600 print:border-black"></div>
               </div>
               <span className={`text-[10px] font-bold mt-1 ${isCancelled ? "text-gray-400" : "text-booking-lightblue"}`}>
@@ -211,42 +215,51 @@ export default function Bookings() {
           </div>
 
           {/* Passenger & Gate details */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div>
-              <span className="text-gray-400 block mb-0.5">PASSENGER NAME</span>
-              <span className={`font-bold ${isCancelled ? "text-gray-400 dark:text-gray-500" : "text-gray-800 dark:text-gray-200"}`}>Lokesh Parasuraman</span>
+              <span className="text-gray-400 block mb-1 font-bold text-[10px] uppercase tracking-wider">Passenger Details</span>
+              <div className="space-y-1.5 pl-2.5 border-l-2 border-booking-lightblue">
+                {(() => {
+                  const namesList = (b.passengerNames || "").split(", ").filter((n: string) => n.trim().length > 0);
+                  return seats.map((seat: string, i: number) => (
+                    <div key={i} className="flex justify-between items-center text-sm font-semibold">
+                      <span className={isCancelled ? "text-gray-450" : "text-gray-800 dark:text-gray-200"}>
+                        {i + 1}. {namesList[i] || "Lokesh Parasuraman"}
+                      </span>
+                      <span className="text-[10px] font-extrabold text-booking-lightblue bg-booking-lightblue/5 px-2 py-0.5 rounded border border-booking-lightblue/15">
+                        Seat {seat}
+                      </span>
+                    </div>
+                  ));
+                })()}
+              </div>
             </div>
             
-            <div>
-              <span className="text-gray-400 block mb-0.5">SEAT NUMBER</span>
-              <span className={`font-extrabold text-sm ${isCancelled ? "text-gray-400 dark:text-gray-500" : "text-booking-lightblue"}`}>
-                {b.seatNumber || "—"}
-              </span>
-            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <span className="text-gray-400 block mb-0.5 text-[10px] font-bold">BOARDING GATE</span>
+                <span className={`font-bold ${isCancelled ? "text-gray-400" : "text-gray-800 dark:text-gray-200"}`}>G-12</span>
+              </div>
 
-            <div>
-              <span className="text-gray-400 block mb-0.5">BOARDING GATE</span>
-              <span className={`font-bold ${isCancelled ? "text-gray-450 dark:text-gray-550" : "text-gray-800 dark:text-gray-200"}`}>G-12</span>
-            </div>
-
-            <div>
-              <span className="text-gray-400 block mb-0.5">BOARDING TIME</span>
-              <span className={`font-bold ${isCancelled ? "text-gray-450 dark:text-gray-550" : "text-gray-800 dark:text-gray-200"}`}>
-                {(() => {
-                  const dep = new Date(f.departure);
-                  dep.setMinutes(dep.getMinutes() - 40);
-                  return dep.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
-                })()}
-              </span>
+              <div>
+                <span className="text-gray-400 block mb-0.5 text-[10px] font-bold">BOARDING TIME</span>
+                <span className={`font-bold ${isCancelled ? "text-gray-400" : "text-gray-800 dark:text-gray-200"}`}>
+                  {(() => {
+                    const dep = new Date(f.departure);
+                    dep.setMinutes(dep.getMinutes() - 40);
+                    return dep.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
+                  })()}
+                </span>
+              </div>
             </div>
           </div>
 
           {/* Flight Add-ons details footer */}
-          <div className="pt-4 border-t border-gray-100 dark:border-gray-700 print:border-black flex flex-wrap gap-x-6 gap-y-2 text-[11px] text-gray-500 dark:text-gray-400">
-            <div>🍽 Meal: <span className="font-semibold text-gray-700 dark:text-gray-300">{b.mealOption || "None"}</span></div>
-            <div>🧳 Baggage: <span className="font-semibold text-gray-700 dark:text-gray-300">{b.luggageOption || "15kg (Included)"}</span></div>
-            <div>📶 Wi-Fi: <span className="font-semibold text-gray-700 dark:text-gray-300">{b.wifiOption || "None"}</span></div>
-            <div>🛡 Insurance: <span className="font-semibold text-gray-700 dark:text-gray-300">{b.insuranceOption || "None"}</span></div>
+          <div className="pt-4 border-t border-gray-100 dark:border-gray-700 print:border-black flex flex-wrap gap-x-6 gap-y-2.5 text-[11px] text-gray-500 dark:text-gray-400">
+            <div className="flex items-center gap-1.5"><MealIcon size={14} className="text-gray-400 dark:text-gray-500" /> <span>Meal: <span className="font-semibold text-gray-700 dark:text-gray-300">{b.mealOption || "None"}</span></span></div>
+            <div className="flex items-center gap-1.5"><BaggageIcon size={14} className="text-gray-400 dark:text-gray-500" /> <span>Baggage: <span className="font-semibold text-gray-700 dark:text-gray-300">{b.luggageOption || "15kg (Included)"}</span></span></div>
+            <div className="flex items-center gap-1.5"><WifiIcon size={14} className="text-gray-400 dark:text-gray-500" /> <span>Wi-Fi: <span className="font-semibold text-gray-700 dark:text-gray-300">{b.wifiOption || "None"}</span></span></div>
+            <div className="flex items-center gap-1.5"><ShieldIcon size={14} className="text-gray-400 dark:text-gray-500" /> <span>Insurance: <span className="font-semibold text-gray-700 dark:text-gray-300">{b.insuranceOption || "None"}</span></span></div>
           </div>
         </div>
 
@@ -275,8 +288,10 @@ export default function Bookings() {
                 <span className="font-bold">{f.flightNumber}</span>
               </div>
               <div>
-                <span className="text-[10px] text-gray-400 block">SEAT</span>
-                <span className={`font-extrabold ${isCancelled ? "text-gray-400 dark:text-gray-500" : "text-booking-lightblue"}`}>{b.seatNumber || "—"}</span>
+                <span className="text-[10px] text-gray-400 block">SEATS</span>
+                <span className={`font-extrabold ${isCancelled ? "text-gray-400" : "text-booking-lightblue"}`}>
+                  {seats.join(", ")}
+                </span>
               </div>
               <div>
                 <span className="text-[10px] text-gray-400 block">GATE</span>
@@ -308,16 +323,14 @@ export default function Bookings() {
             <div className="text-[8px] text-gray-400 dark:text-gray-500 font-mono tracking-widest text-center">
               {b.id.slice(0, 8).toUpperCase()}-{b.userId.slice(0, 4).toUpperCase()}
             </div>
-          </div>
-
-          {/* print:hidden actions */}
+          </div>          {/* print:hidden actions */}
           {isConfirmed && !isCancelled && (
             <div className="w-full mt-4 flex gap-2 print:hidden">
               <button
                 onClick={() => handlePrintSingle(b.id)}
                 className="w-full py-1.5 bg-booking-lightblue/10 hover:bg-booking-lightblue/20 text-booking-lightblue border border-booking-lightblue/30 rounded-lg text-xs font-semibold transition-colors duration-200"
               >
-                🖨 Print Ticket
+                Print Ticket
               </button>
               <button
                 onClick={() => cancelBooking(b.id)}
@@ -330,7 +343,7 @@ export default function Bookings() {
 
           {isCancelled && (
             <div className="w-full mt-4 text-center py-2 bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20 rounded-xl text-[10px] font-bold uppercase tracking-wider print:hidden">
-              ❌ Cancelled & Refunded
+              Cancelled & Refunded
             </div>
           )}
         </div>
@@ -342,13 +355,10 @@ export default function Bookings() {
   const cancelledBookings = bookings.filter(b => b.status === "CANCELLED");
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-primary-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 print:bg-white print:text-black">
+    <div className="min-h-screen relative overflow-hidden bg-gray-50 dark:bg-gray-950 print:bg-white print:text-black">
       {/* Background Animations */}
       <div className="bg-blobs print:hidden">
         <div className="grid-pattern" />
-        <div className="blob blob-1" />
-        <div className="blob blob-2" />
-        <div className="blob blob-3" />
       </div>
 
       <div className="relative z-10">
@@ -466,6 +476,9 @@ export default function Bookings() {
           </div>
         )}
       </div>
+      </div>
+      <div className="print:hidden">
+        <Footer />
       </div>
     </div>
   );

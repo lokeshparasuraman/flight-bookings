@@ -2,47 +2,86 @@ import { callLLM } from "./llmClient";
 import * as flightService from "./flightService";
 
 // Helper to locally parse flight search intents
+// Helper to locally parse flight search intents
 function localParseQuery(message: string): any {
-  const m = message.toLowerCase();
+  const m = message.toLowerCase().trim();
   const cities: Record<string, string> = {
-    delhi: "DEL", del: "DEL",
-    mumbai: "BOM", bom: "BOM",
-    bangalore: "BLR", bengaluru: "BLR", blr: "BLR",
+    delhi: "DEL", del: "DEL", "new delhi": "DEL",
+    mumbai: "BOM", bom: "BOM", bombay: "BOM",
+    bangalore: "BLR", bengaluru: "BLR", blr: "BLR", banglore: "BLR",
+    chennai: "MAA", maa: "MAA", madras: "MAA",
+    kolkata: "CCU", ccu: "CCU", calcutta: "CCU",
+    hyderabad: "HYD", hyd: "HYD",
+    pune: "PNQ", pnq: "PNQ",
+    ahmedabad: "AMD", amd: "AMD",
+    goa: "GOI", goi: "GOI",
+    kochi: "COK", cochin: "COK", cok: "COK",
+    jaipur: "JAI", jai: "JAI",
     mysore: "MYS", mys: "MYS"
   };
 
   let origin: string | null = null;
   let destination: string | null = null;
 
-  // Match: from Origin to Destination
-  const routeMatch = m.match(/(delhi|mumbai|bangalore|bengaluru|mysore|del|bom|blr|mys)\s+(?:to\s+)(delhi|mumbai|bangalore|bengaluru|mysore|del|bom|blr|mys)/);
+  // 1. Try to find route like "X to Y" or "X - Y" or "X -> Y"
+  const routeMatch = m.match(/([a-z0-9\s]+?)\s*(?:to|-|->)\s*([a-z0-9\s]+)/);
   if (routeMatch) {
-    origin = cities[routeMatch[1]];
-    destination = cities[routeMatch[2]];
-  } else {
-    // Collect any codes/cities mentioned
-    const found: string[] = [];
-    for (const city of Object.keys(cities)) {
-      if (m.includes(city)) {
-        found.push(cities[city]);
+    const fromPart = routeMatch[1].trim();
+    const toPart = routeMatch[2].trim();
+    
+    // Check if parts match any city name/code in our map
+    for (const key of Object.keys(cities)) {
+      if (fromPart === key || fromPart.includes(key)) {
+        origin = cities[key];
       }
-    }
-    if (found.length >= 2) {
-      origin = found[0];
-      destination = found[1];
-    } else if (found.length === 1) {
-      origin = found[0];
+      if (toPart === key || toPart.includes(key)) {
+        destination = cities[key];
+      }
     }
   }
 
-  // Parse Date
-  let dateStr = "2025-12-20"; // default flight seed date
+  // 2. Fallback: if we haven't found origin and destination yet, search the whole message
+  if (!origin || !destination) {
+    const found: string[] = [];
+    for (const city of Object.keys(cities)) {
+      if (m.includes(city)) {
+        const code = cities[city];
+        if (!found.includes(code)) {
+          found.push(code);
+        }
+      }
+    }
+    if (found.length >= 2) {
+      if (!origin) origin = found[0];
+      if (!destination) destination = found[1];
+    } else if (found.length === 1) {
+      if (!origin) origin = found[0];
+    }
+  }
+
+  // 3. Parse Date: look for YYYY-MM-DD or tomorrow or today
+  let dateStr = new Date().toISOString().split("T")[0]; // default to today if not provided or parsed
+  
   const dateMatch = m.match(/\d{4}-\d{2}-\d{2}/);
-  if (dateMatch) dateStr = dateMatch[0];
+  if (dateMatch) {
+    dateStr = dateMatch[0];
+  } else if (m.includes("tomorrow")) {
+    const tmr = new Date();
+    tmr.setDate(tmr.getDate() + 1);
+    dateStr = tmr.toISOString().split("T")[0];
+  } else if (m.includes("day after tomorrow")) {
+    const dat = new Date();
+    dat.setDate(dat.getDate() + 2);
+    dateStr = dat.toISOString().split("T")[0];
+  } else if (m.includes("next week")) {
+    const nw = new Date();
+    nw.setDate(nw.getDate() + 7);
+    dateStr = nw.toISOString().split("T")[0];
+  }
 
   return {
-    origin: origin || "DEL",
-    destination: destination || "BOM",
+    origin: origin || null,
+    destination: destination || null,
     date: dateStr
   };
 }
@@ -89,11 +128,21 @@ Do not include any additional keys. Use ISO date strings.`;
 
   // --- LOCAL CHAT FALLBACK ---
   const lowerMsg = safeMessage.toLowerCase();
+  const parsedLocal = localParseQuery(safeMessage);
   
-  // Check if search intent
-  if (lowerMsg.includes("flight") || lowerMsg.includes("search") || lowerMsg.includes("go to") || lowerMsg.includes("fly")) {
-    const { origin, destination, date } = localParseQuery(safeMessage);
+  // Check if search intent (either explicitly mentions flight search, or contains origin and destination!)
+  if (
+    lowerMsg.includes("flight") || 
+    lowerMsg.includes("search") || 
+    lowerMsg.includes("go to") || 
+    lowerMsg.includes("fly") ||
+    (parsedLocal.origin && parsedLocal.destination) // If both origin and destination are parsed, treat as flight search!
+  ) {
+    const origin = parsedLocal.origin || "DEL";
+    const destination = parsedLocal.destination || "BOM";
+    const date = parsedLocal.date;
     const flights = await flightService.searchFlights(origin, destination, date);
+    
     return {
       reply_text: `Local AI Chat: I searched flights from ${origin} to ${destination} for ${date} and found ${flights.length} options!`,
       intent: "search_flights",

@@ -23,6 +23,7 @@ export async function createBooking(
   flightId: string,
   options?: {
     seatNumber?: string;
+    passengerNames?: string;
     luggageOption?: string;
     mealOption?: string;
     wifiOption?: string;
@@ -43,6 +44,7 @@ export async function createBooking(
       status: "PENDING",
       priceCents: finalPrice,
       seatNumber: options?.seatNumber || null,
+      passengerNames: options?.passengerNames || null,
       luggageOption: options?.luggageOption || null,
       mealOption: options?.mealOption || null,
       wifiOption: options?.wifiOption || null,

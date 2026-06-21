@@ -20,15 +20,27 @@ model User {
 }
 
 model Flight {
-  id             String   @id @default(uuid())
-  origin         String
-  destination    String
-  airline        String
-  flightNumber   String
-  departure      DateTime
-  arrival        DateTime
-  basePriceCents Int
-  bookings       Booking[]
+  id                  String   @id @default(uuid())
+  origin              String
+  destination         String
+  airline             String
+  flightNumber        String
+  departure           DateTime
+  arrival             DateTime
+  basePriceCents      Int
+  bookings            Booking[]
+  registeredAirline   Airline? @relation(fields: [registeredAirlineId], references: [id])
+  registeredAirlineId String?
+}
+
+model Airline {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  email     String   @unique
+  password  String
+  logoUrl   String?
+  flights   Flight[]
+  createdAt DateTime @default(now())
 }
 
 model Booking {
@@ -40,6 +52,7 @@ model Booking {
   status          String
   priceCents      Int
   seatNumber      String?
+  passengerNames  String?
   luggageOption   String?
   mealOption      String?
   wifiOption      String?

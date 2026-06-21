@@ -1,6 +1,56 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { FlightIcon, HeartIcon } from "./Icons";
+import { useToast } from "../contexts/ToastContext";
+import { useLanguage } from "../contexts/LanguageContext";
 
 export default function FlightCard({ f, origin, destination }: any) {
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const { showToast } = useToast();
+  const { t } = useLanguage();
+
+  useEffect(() => {
+    try {
+      const wl = JSON.parse(localStorage.getItem("wishlist") || "[]");
+      setIsWishlisted(wl.some((x: any) => x.id === f.id));
+    } catch (e) {
+      setIsWishlisted(false);
+    }
+    
+    const handleSync = () => {
+      try {
+        const wl = JSON.parse(localStorage.getItem("wishlist") || "[]");
+        setIsWishlisted(wl.some((x: any) => x.id === f.id));
+      } catch (e) {
+        setIsWishlisted(false);
+      }
+    };
+    window.addEventListener("wishlistUpdated", handleSync);
+    return () => window.removeEventListener("wishlistUpdated", handleSync);
+  }, [f.id]);
+
+  const toggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const wl = JSON.parse(localStorage.getItem("wishlist") || "[]");
+      const idx = wl.findIndex((x: any) => x.id === f.id);
+      let updated = [];
+      if (idx > -1) {
+        updated = wl.filter((x: any) => x.id !== f.id);
+        setIsWishlisted(false);
+        showToast("info", t("remove_from_wishlist"));
+      } else {
+        updated = [...wl, f];
+        setIsWishlisted(true);
+        showToast("success", t("add_to_wishlist"));
+      }
+      localStorage.setItem("wishlist", JSON.stringify(updated));
+      window.dispatchEvent(new Event("wishlistUpdated"));
+    } catch (e) {
+      showToast("error", "Failed to update wishlist");
+    }
+  };
   const formatTime = (date: string) => {
     return new Date(date).toLocaleTimeString('en-US', { 
       hour: '2-digit', 
@@ -55,7 +105,16 @@ export default function FlightCard({ f, origin, destination }: any) {
       {/* Visual Accent Hover Bar */}
       <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-booking-lightblue to-booking-blue transform -translate-x-full group-hover:translate-x-0 transition-transform duration-300" />
       
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10">
+      {/* Wishlist toggle button */}
+      <button
+        onClick={toggleWishlist}
+        className="absolute top-4 right-4 z-20 p-2.5 bg-gray-50/80 dark:bg-gray-750/80 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-red-500 transition-all focus:outline-none flex items-center justify-center shadow-sm"
+        aria-label="Add to Wishlist"
+      >
+        <HeartIcon className={`w-4.5 h-4.5 ${isWishlisted ? "text-red-500 fill-current scale-110" : "text-gray-400 dark:text-gray-500"} transition-all duration-200`} />
+      </button>
+
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10 pr-6">
         {/* Flight Details section */}
         <div className="flex-1">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-5 pb-4 border-b border-gray-100 dark:border-gray-700/50">
@@ -73,13 +132,13 @@ export default function FlightCard({ f, origin, destination }: any) {
               </div>
             </div>
             
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 mr-6">
               <span className="text-[10px] font-bold px-2.5 py-1 bg-gray-100 dark:bg-gray-700/60 text-gray-500 dark:text-gray-400 rounded-lg">
-                Non-stop
+                {t("non_stop")}
               </span>
               <span className="text-[10px] font-bold px-2.5 py-1 bg-green-500/10 text-green-600 dark:text-green-400 rounded-lg flex items-center">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5 animate-pulse" />
-                Live Status
+                {t("live_status")}
               </span>
             </div>
           </div>
@@ -106,12 +165,12 @@ export default function FlightCard({ f, origin, destination }: any) {
               </span>
               <div className="relative flex items-center justify-center my-1.5">
                 <div className="w-full h-[2px] bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-600 to-transparent" />
-                <div className="absolute text-gray-400/80 bg-white dark:bg-gray-800 px-2 text-sm group-hover:text-booking-lightblue group-hover:scale-110 transition-transform duration-300">
-                  ✈️
+                <div className="absolute text-gray-400/80 bg-white dark:bg-gray-800 px-2 text-sm group-hover:text-booking-lightblue group-hover:scale-110 transition-transform duration-300 flex items-center justify-center">
+                  <FlightIcon className="w-4 h-4 text-booking-lightblue transform -rotate-45" />
                 </div>
               </div>
               <span className="text-[9px] text-booking-lightblue dark:text-booking-lightblue/80 font-bold tracking-wider uppercase">
-                Economy
+                {t("economy")}
               </span>
             </div>
 
@@ -134,13 +193,13 @@ export default function FlightCard({ f, origin, destination }: any) {
         <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center md:min-w-[170px] border-t md:border-t-0 md:border-l border-gray-100 dark:border-gray-700/60 pt-4 md:pt-0 md:pl-6 gap-4">
           <div className="text-left md:text-right">
             <span className="text-xs text-gray-400 dark:text-gray-500 font-medium block">
-              Fare starting from
+              {t("fare_starting")}
             </span>
             <div className="text-3xl font-extrabold text-booking-lightblue dark:text-booking-lightblue font-display tracking-tight">
               ₹{price}
             </div>
             <span className="text-[10px] text-gray-400 dark:text-gray-500 block">
-              incl. taxes & fees
+              {t("taxes_fees")}
             </span>
           </div>
           
@@ -148,7 +207,7 @@ export default function FlightCard({ f, origin, destination }: any) {
             to={`/flight/${f.id}`}
             className="btn-primary py-2.5 px-6 rounded-xl text-sm font-bold shadow-soft hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-center w-auto min-w-[110px]"
           >
-            Select ➔
+            {t("select_flight")}
           </Link>
         </div>
       </div>

@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React, { Suspense, lazy } from "react";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import FloatingAiChat from "./components/FloatingAiChat";
+import { LanguageProvider } from "./contexts/LanguageContext";
 const Home = lazy(() => import("./pages/Home"));
 const SearchResults = lazy(() => import("./pages/SearchResults"));
 const FlightDetail = lazy(() => import("./pages/FlightDetail"));
@@ -10,32 +10,39 @@ const Login = lazy(() => import("./pages/Login"));
 const Register = lazy(() => import("./pages/Register"));
 const Bookings = lazy(() => import("./pages/Bookings"));
 const AvailableRoutes = lazy(() => import("./pages/AvailableRoutes"));
+const AirlineLogin = lazy(() => import("./pages/AirlineLogin"));
+const AirlineRegister = lazy(() => import("./pages/AirlineRegister"));
+const AirlineDashboard = lazy(() => import("./pages/AirlineDashboard"));
 import "./index.css";
 
 import { ToastProvider } from "./contexts/ToastContext";
 
 function App() {
   return (
-    <ThemeProvider>
-      <ToastProvider>
-        <ErrorBoundary>
-          <BrowserRouter>
-            <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/search" element={<SearchResults />} />
-                <Route path="/flight/:id" element={<FlightDetail />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/bookings" element={<Bookings />} />
-                <Route path="/routes" element={<AvailableRoutes />} />
-              </Routes>
-            </Suspense>
-            <FloatingAiChat />
-          </BrowserRouter>
-        </ErrorBoundary>
-      </ToastProvider>
-    </ThemeProvider>
+    <LanguageProvider>
+      <ThemeProvider>
+        <ToastProvider>
+          <ErrorBoundary>
+            <BrowserRouter>
+              <Suspense fallback={<div className="p-6 text-center">Loading…</div>}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/search" element={<SearchResults />} />
+                  <Route path="/flight/:id" element={<FlightDetail />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/bookings" element={<Bookings />} />
+                  <Route path="/routes" element={<AvailableRoutes />} />
+                  <Route path="/airline/login" element={<AirlineLogin />} />
+                  <Route path="/airline/register" element={<AirlineRegister />} />
+                  <Route path="/airline/dashboard" element={<AirlineDashboard />} />
+                </Routes>
+              </Suspense>
+            </BrowserRouter>
+          </ErrorBoundary>
+        </ToastProvider>
+      </ThemeProvider>
+    </LanguageProvider>
   );
 }
 

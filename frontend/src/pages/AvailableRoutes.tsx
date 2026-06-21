@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import api from "../services/api";
+import Footer from "../components/Footer";
 
 interface RouteInfo {
   origin: string;
@@ -173,13 +174,10 @@ export default function AvailableRoutes() {
   });
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-primary-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen relative overflow-hidden bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
       {/* Background Animations */}
       <div className="bg-blobs">
         <div className="grid-pattern" />
-        <div className="blob blob-1" />
-        <div className="blob blob-2" />
-        <div className="blob blob-3" />
       </div>
 
       <div className="relative z-10">
@@ -239,7 +237,7 @@ export default function AvailableRoutes() {
                     <div
                       key={`${r.origin}-${r.destination}-${idx}`}
                       onClick={() => handleRouteClick(r.origin, r.destination)}
-                      className="card p-5 cursor-pointer flex items-center justify-between hover:scale-[1.02] active:scale-[0.99] border border-gray-100 dark:border-gray-800 transition-all duration-300 group"
+                      className="bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-850 rounded-2xl p-5 cursor-pointer flex items-center justify-between hover:scale-[1.01] hover:shadow-soft active:scale-[0.99] transition-all duration-300 group shadow-sm"
                     >
                       <div className="flex items-center space-x-6">
                         <div className="text-center">
@@ -283,6 +281,7 @@ export default function AvailableRoutes() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

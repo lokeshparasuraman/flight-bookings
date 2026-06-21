@@ -7,13 +7,14 @@ const router = Router();
 // create booking
 router.post("/", requireAuth, async (req: AuthRequest, res, next) => {
   try {
-    const { flightId, seatNumber, luggageOption, mealOption, wifiOption, insuranceOption, totalPriceCents } = req.body;
+    const { flightId, seatNumber, passengerNames, luggageOption, mealOption, wifiOption, insuranceOption, totalPriceCents } = req.body;
     if (typeof flightId !== "string" || !flightId.trim()) {
       return res.status(400).json({ error: "Invalid input" });
     }
     const userId = req.userId as string;
     const booking = await bookingService.createBooking(userId, flightId, {
       seatNumber,
+      passengerNames,
       luggageOption,
       mealOption,
       wifiOption,

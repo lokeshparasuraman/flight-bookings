@@ -317,5 +317,8 @@
   "places_overview_label": "Overview",
   "places_action_book": "Book Reservation",
   "places_action_select": "Set as Destination",
-  "places_close_details": "Close Details"
+  "places_close_details": "Close Details",
+  "places_user_rating_label": "User Rating",
+  "places_duration_label": "Duration",
+  "places_ajanta_duration": "2 Days"
 }

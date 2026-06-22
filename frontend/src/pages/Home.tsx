@@ -38,28 +38,33 @@ export default function Home() {
   const [showAiChat, setShowAiChat] = useState(false);
   const [activeTab, setActiveTab] = useState("flights");
   const [selectedExplorePlace, setSelectedExplorePlace] = useState<any | null>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+
+  React.useEffect(() => {
+    setActiveImageIndex(0);
+  }, [selectedExplorePlace]);
 
   const destinationHighlights = {
     flights: [
-      { id: "agra", code: "DEL", titleKey: "places_agra_title", descKey: "places_agra_desc", detailsKey: "places_agra_details", highlightsKey: "places_agra_highlights", bestTimeKey: "places_agra_best_time", img: "/places/taj_mahal.png", price: "₹2,499" },
-      { id: "goa", code: "GOI", titleKey: "places_goa_title", descKey: "places_goa_desc", detailsKey: "places_goa_details", highlightsKey: "places_goa_highlights", bestTimeKey: "places_goa_best_time", img: "/places/goa_beach.png", price: "₹3,199" },
-      { id: "kerala", code: "COK", titleKey: "places_kerala_title", descKey: "places_kerala_desc", detailsKey: "places_kerala_details", highlightsKey: "places_kerala_highlights", bestTimeKey: "places_kerala_best_time", img: "/places/kerala_houseboat.png", price: "₹4,299" }
+      { id: "agra", code: "DEL", titleKey: "places_agra_title", descKey: "places_agra_desc", detailsKey: "places_agra_details", highlightsKey: "places_agra_highlights", bestTimeKey: "places_agra_best_time", img: "/places/taj_mahal.png", imgs: ["/places/taj_mahal.png", "/places/taj_mahal_detail.png"], price: "₹2,499" },
+      { id: "goa", code: "GOI", titleKey: "places_goa_title", descKey: "places_goa_desc", detailsKey: "places_goa_details", highlightsKey: "places_goa_highlights", bestTimeKey: "places_goa_best_time", img: "/places/goa_beach.png", imgs: ["/places/goa_beach.png", "/places/goa_sunset.png"], price: "₹3,199" },
+      { id: "kerala", code: "COK", titleKey: "places_kerala_title", descKey: "places_kerala_desc", detailsKey: "places_kerala_details", highlightsKey: "places_kerala_highlights", bestTimeKey: "places_kerala_best_time", img: "/places/kerala_houseboat.png", imgs: ["/places/kerala_houseboat.png"], price: "₹4,299" }
     ],
     hotels: [
-      { id: "udaipur", titleKey: "places_udaipur_title", descKey: "places_udaipur_desc", detailsKey: "places_udaipur_details", highlightsKey: "places_udaipur_highlights", bestTimeKey: "places_udaipur_best_time", img: "/places/lake_palace.png", rating: "4.9 ★" },
-      { id: "delhi", titleKey: "places_delhi_title", descKey: "places_delhi_desc", detailsKey: "places_delhi_details", highlightsKey: "places_delhi_highlights", bestTimeKey: "places_delhi_best_time", img: "/places/lake_palace.png", rating: "4.8 ★" }
+      { id: "udaipur", titleKey: "places_udaipur_title", descKey: "places_udaipur_desc", detailsKey: "places_udaipur_details", highlightsKey: "places_udaipur_highlights", bestTimeKey: "places_udaipur_best_time", img: "/places/lake_palace.png", imgs: ["/places/lake_palace.png"], rating: "4.9 ★" },
+      { id: "delhi", titleKey: "places_delhi_title", descKey: "places_delhi_desc", detailsKey: "places_delhi_details", highlightsKey: "places_delhi_highlights", bestTimeKey: "places_delhi_best_time", img: "/places/lake_palace.png", imgs: ["/places/lake_palace.png"], rating: "4.8 ★" }
     ],
     homestays: [
-      { id: "coorg", titleKey: "places_coorg_title", descKey: "places_coorg_desc", detailsKey: "places_coorg_details", highlightsKey: "places_coorg_highlights", bestTimeKey: "places_coorg_best_time", img: "/places/goa_beach.png", rating: "4.7 ★" }
+      { id: "coorg", titleKey: "places_coorg_title", descKey: "places_coorg_desc", detailsKey: "places_coorg_details", highlightsKey: "places_coorg_highlights", bestTimeKey: "places_coorg_best_time", img: "/places/goa_beach.png", imgs: ["/places/goa_beach.png"], rating: "4.7 ★" }
     ],
     buses: [
-      { id: "ooty", titleKey: "places_ooty_title", descKey: "places_ooty_desc", detailsKey: "places_ooty_details", highlightsKey: "places_ooty_highlights", bestTimeKey: "places_ooty_best_time", img: "/places/kerala_houseboat.png", price: "₹899" }
+      { id: "ooty", titleKey: "places_ooty_title", descKey: "places_ooty_desc", detailsKey: "places_ooty_details", highlightsKey: "places_ooty_highlights", bestTimeKey: "places_ooty_best_time", img: "/places/kerala_houseboat.png", imgs: ["/places/kerala_houseboat.png"], price: "₹899" }
     ],
     cruise: [
-      { id: "lakshadweep", titleKey: "places_lakshadweep_title", descKey: "places_lakshadweep_desc", detailsKey: "places_lakshadweep_details", highlightsKey: "places_lakshadweep_highlights", bestTimeKey: "places_lakshadweep_best_time", img: "/places/lakshadweep_cruise.png", price: "₹18,500" }
+      { id: "lakshadweep", titleKey: "places_lakshadweep_title", descKey: "places_lakshadweep_desc", detailsKey: "places_lakshadweep_details", highlightsKey: "places_lakshadweep_highlights", bestTimeKey: "places_lakshadweep_best_time", img: "/places/lakshadweep_cruise.png", imgs: ["/places/lakshadweep_cruise.png"], price: "₹18,500" }
     ],
     tours: [
-      { id: "ajanta", titleKey: "places_ajanta_title", descKey: "places_ajanta_desc", detailsKey: "places_ajanta_details", highlightsKey: "places_ajanta_highlights", bestTimeKey: "places_ajanta_best_time", img: "/places/taj_mahal.png", duration: "2 Days" }
+      { id: "ajanta", titleKey: "places_ajanta_title", descKey: "places_ajanta_desc", detailsKey: "places_ajanta_details", highlightsKey: "places_ajanta_highlights", bestTimeKey: "places_ajanta_best_time", img: "/places/taj_mahal.png", imgs: ["/places/taj_mahal.png"], durationKey: "places_ajanta_duration" }
     ]
   };
   const nav = useNavigate();
@@ -405,9 +410,9 @@ export default function Home() {
                           {place.rating}
                         </div>
                       )}
-                      {place.duration && (
+                      {place.durationKey && (
                         <div className="absolute bottom-3 left-3 bg-booking-lightblue text-white text-[10px] font-extrabold px-2.5 py-1 tracking-wider uppercase">
-                          {place.duration}
+                          {t(place.durationKey)}
                         </div>
                       )}
                     </div>
@@ -540,19 +545,58 @@ export default function Home() {
             <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in backdrop-blur-sm">
               <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 w-full max-w-lg shadow-2xl animate-scale-in overflow-hidden flex flex-col max-h-[90vh]">
                 
-                {/* Image Header Block */}
+                {/* Image Header Block with Carousel */}
                 <div className="relative h-56 bg-gray-100 dark:bg-gray-955 overflow-hidden shrink-0">
-                  <img 
-                    src={selectedExplorePlace.img} 
-                    alt={t(selectedExplorePlace.titleKey)} 
-                    className="w-full h-full object-cover"
-                  />
+                  {(() => {
+                    const imgs = selectedExplorePlace.imgs || [selectedExplorePlace.img];
+                    return (
+                      <>
+                        <img 
+                          src={imgs[activeImageIndex]} 
+                          alt={t(selectedExplorePlace.titleKey)} 
+                          className="w-full h-full object-cover transition-all duration-300"
+                        />
+                        {imgs.length > 1 && (
+                          <>
+                            {/* Slide Navigation Arrows */}
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveImageIndex((prev) => (prev === 0 ? imgs.length - 1 : prev - 1));
+                              }}
+                              className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center font-bold transition-all focus:outline-none z-10"
+                            >
+                              ◀
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setActiveImageIndex((prev) => (prev === imgs.length - 1 ? 0 : prev + 1));
+                              }}
+                              className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 hover:bg-black/60 text-white flex items-center justify-center font-bold transition-all focus:outline-none z-10"
+                            >
+                              ▶
+                            </button>
+                            {/* Dot Indicators */}
+                            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
+                              {imgs.map((_: any, idx: number) => (
+                                <span 
+                                  key={idx}
+                                  className={`w-1.5 h-1.5 rounded-full transition-all ${idx === activeImageIndex ? 'bg-white scale-125' : 'bg-white/50'}`}
+                                />
+                              ))}
+                            </div>
+                          </>
+                        )}
+                      </>
+                    );
+                  })()}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent"></div>
                   
                   {/* Close floating button */}
                   <button 
                     onClick={() => setSelectedExplorePlace(null)}
-                    className="absolute top-4 right-4 w-9 h-9 bg-black/40 hover:bg-black/60 text-white flex items-center justify-center font-bold transition-all focus:outline-none"
+                    className="absolute top-4 right-4 w-9 h-9 bg-black/40 hover:bg-black/60 text-white flex items-center justify-center font-bold transition-all focus:outline-none z-10"
                     aria-label={t("places_close_details")}
                   >
                     ✕
@@ -617,15 +661,15 @@ export default function Home() {
 
                   {selectedExplorePlace.rating && (
                     <div className="pt-3 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-xs">
-                      <span className="text-gray-400 font-bold uppercase tracking-wider">User Rating</span>
+                      <span className="text-gray-400 font-bold uppercase tracking-wider">{t("places_user_rating_label")}</span>
                       <span className="text-xs font-extrabold bg-amber-500 text-gray-950 px-2 py-0.5 font-mono">{selectedExplorePlace.rating}</span>
                     </div>
                   )}
 
-                  {selectedExplorePlace.duration && (
+                  {selectedExplorePlace.durationKey && (
                     <div className="pt-3 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-xs">
-                      <span className="text-gray-400 font-bold uppercase tracking-wider">Duration</span>
-                      <span className="text-xs font-extrabold text-[#ff6636] bg-[#ff6636]/10 px-2 py-0.5">{selectedExplorePlace.duration}</span>
+                      <span className="text-gray-400 font-bold uppercase tracking-wider">{t("places_duration_label")}</span>
+                      <span className="text-xs font-extrabold text-[#ff6636] bg-[#ff6636]/10 px-2 py-0.5">{t(selectedExplorePlace.durationKey)}</span>
                     </div>
                   )}
                 </div>

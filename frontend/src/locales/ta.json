@@ -317,5 +317,8 @@
   "places_overview_label": "கண்ணோட்டம்",
   "places_action_book": "முன்பதிவு செய்",
   "places_action_select": "இலக்காக தேர்ந்தெடு",
-  "places_close_details": "விவரங்களை மூடு"
+  "places_close_details": "விவரங்களை மூடு",
+  "places_user_rating_label": "பயனர் மதிப்பீடு",
+  "places_duration_label": "கால அளவு",
+  "places_ajanta_duration": "2 நாட்கள்"
 }

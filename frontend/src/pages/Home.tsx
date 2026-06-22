@@ -215,7 +215,8 @@ export default function Home() {
         {/* Main Search Panel Container (Floating Over Hero) */}
         <div className="container max-w-6xl mx-auto -mt-24 px-4 relative z-20">
 
-          <div className="bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800/80 shadow-xl rounded-3xl mb-6 w-full grid grid-cols-5 md:grid-cols-10 select-none px-2 py-3 relative z-30 gap-y-2 gap-x-1 md:gap-x-2">
+          {/* Spacing-Optimized Adaptive Grid Layout for Navigation Tabs */}
+          <div className="bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800/80 shadow-xl rounded-3xl mb-6 w-full grid grid-cols-2 min-[400px]:grid-cols-3 sm:grid-cols-5 lg:grid-cols-10 select-none px-2 py-3.5 relative z-30 gap-y-3.5 gap-x-2 sm:gap-x-3">
             {tabs.map((tab: any) => {
               const isActive = activeTab === tab.id;
               return (
@@ -226,7 +227,7 @@ export default function Home() {
                   data-tooltip-bottom={tab.disabled ? `${t("coming_soon")}: ${t(tab.id)}` : `${t("search")} ${t(tab.id)}`}
                   className={`relative flex flex-col items-center justify-center py-2 px-1 text-center transition-all duration-200 outline-none rounded-2xl group w-full ${isActive
                     ? "text-[#008cff] font-extrabold scale-105"
-                    : "text-gray-555 dark:text-gray-400 hover:text-[#008cff] dark:hover:text-blue-400 disabled:opacity-40 disabled:cursor-not-allowed"
+                    : "text-gray-500 dark:text-gray-400 hover:text-[#008cff] dark:hover:text-blue-400 disabled:opacity-40 disabled:cursor-not-allowed"
                     }`}
                 >
                   {tab.badge && (
@@ -237,10 +238,10 @@ export default function Home() {
                   <div className={`flex items-center justify-center mb-1 p-1.5 md:p-2 rounded-full transition-colors ${isActive ? "bg-blue-50 dark:bg-blue-955/40 text-[#008cff]" : "bg-gray-50 dark:bg-gray-800 text-gray-400 group-hover:bg-blue-50/50 dark:group-hover:bg-blue-955/20 group-hover:text-[#008cff]"}`}>
                     {renderTabIcon(tab.id, "w-5 h-5 md:w-6 md:h-6")}
                   </div>
-                  <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-wider leading-tight block whitespace-nowrap">
+                  <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-wider leading-tight block whitespace-normal w-full px-0.5">
                     {t(`tab_${tab.id}_l1`)}
                   </span>
-                  <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-wider leading-tight block whitespace-nowrap">
+                  <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-wider leading-tight block whitespace-normal w-full px-0.5">
                     {t(`tab_${tab.id}_l2`)}
                   </span>
                   {isActive && (
@@ -253,32 +254,7 @@ export default function Home() {
 
           <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-200/70 dark:border-gray-800/80 p-6 md:p-8 animate-scale-in relative z-20">
 
-            {/* FlyFast AI Assistant Search Widget with colorful gradient border */}
-            <div 
-              className="p-[1.5px] bg-gradient-to-r from-purple-500 via-pink-500 to-[#008cff] rounded-2xl mb-6 shadow-md cursor-pointer hover:shadow-lg transition-all duration-200" 
-              onClick={() => setShowAiChat(true)}
-            >
-              <div className="bg-white dark:bg-gray-900 rounded-[14px] px-4 py-3 flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-[#008cff] flex items-center justify-center text-white shadow-sm">
-                    <RobotIcon className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-extrabold text-gray-800 dark:text-white flex items-center gap-1.5">
-                      FlyFast AI Assistant
-                      <span className="text-[9px] bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-300 px-2 py-0.5 rounded-full font-extrabold uppercase tracking-wider">Beta</span>
-                    </p>
-                    <p className="text-[11px] text-gray-500 dark:text-gray-400 font-semibold mt-0.5">
-                      Search flights with natural language, e.g., "Find flights from Delhi to Mumbai tomorrow"
-                    </p>
-                  </div>
-                </div>
-                <div className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1 shrink-0">
-                  <span>Ask FlyFast AI</span>
-                  <span>➔</span>
-                </div>
-              </div>
-            </div>
+
 
             {/* Trip Type Select Row */}
             <div className="flex items-center justify-between gap-6 mb-6 pb-4 border-b border-gray-150 dark:border-gray-800">

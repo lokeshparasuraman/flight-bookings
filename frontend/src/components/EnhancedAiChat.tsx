@@ -421,7 +421,7 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
             <RobotIcon className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h3 className="font-bold text-lg">AI Travel Assistant</h3>
+            <h3 className="font-bold text-lg">FlyFast AI Assistant</h3>
             <p className="text-xs text-white/80">Ask me to find flights with exclusive deals!</p>
           </div>
         </div>
@@ -445,7 +445,7 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
               <RobotIcon className="w-12 h-12 text-purple-500" />
             </div>
             <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">
-              Hi! I'm your AI travel assistant
+              Hi! I'm your FlyFast AI assistant
             </h4>
             <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
               I can help you find flights with exclusive discounts and offers!

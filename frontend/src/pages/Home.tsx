@@ -4,16 +4,16 @@ import Header from "../components/Header";
 import EnhancedAiChat from "../components/EnhancedAiChat";
 import { useLanguage } from "../contexts/LanguageContext";
 
-import { 
-  FlightIcon, 
-  HotelIcon, 
-  VillaIcon, 
-  HolidayIcon, 
-  TrainIcon, 
-  BusIcon, 
-  CabIcon, 
-  ToursIcon, 
-  VisaIcon, 
+import {
+  FlightIcon,
+  HotelIcon,
+  VillaIcon,
+  HolidayIcon,
+  TrainIcon,
+  BusIcon,
+  CabIcon,
+  ToursIcon,
+  VisaIcon,
   CruiseIcon,
   ForexIcon,
   InsuranceIcon,
@@ -39,34 +39,60 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState("flights");
   const [selectedExplorePlace, setSelectedExplorePlace] = useState<any | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedState, setSelectedState] = useState("all");
+  const [selectedSpecialFare, setSelectedSpecialFare] = useState("regular");
+
+  const handleSwap = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const temp = origin;
+    setOrigin(destination);
+    setDestination(temp);
+  };
 
   React.useEffect(() => {
     setActiveImageIndex(0);
+    if (!selectedExplorePlace) return;
+    const imgs = selectedExplorePlace.imgs || [selectedExplorePlace.img];
+    if (imgs.length <= 1) return;
+
+    const timer = setInterval(() => {
+      setActiveImageIndex((prev) => (prev === imgs.length - 1 ? 0 : prev + 1));
+    }, 4500);
+
+    return () => clearInterval(timer);
   }, [selectedExplorePlace]);
 
-  const destinationHighlights = {
-    flights: [
-      { id: "agra", code: "DEL", titleKey: "places_agra_title", descKey: "places_agra_desc", detailsKey: "places_agra_details", highlightsKey: "places_agra_highlights", bestTimeKey: "places_agra_best_time", img: "/places/taj_mahal.png", imgs: ["/places/taj_mahal.png", "/places/taj_mahal_detail.png"], price: "₹2,499" },
-      { id: "goa", code: "GOI", titleKey: "places_goa_title", descKey: "places_goa_desc", detailsKey: "places_goa_details", highlightsKey: "places_goa_highlights", bestTimeKey: "places_goa_best_time", img: "/places/goa_beach.png", imgs: ["/places/goa_beach.png", "/places/goa_sunset.png"], price: "₹3,199" },
-      { id: "kerala", code: "COK", titleKey: "places_kerala_title", descKey: "places_kerala_desc", detailsKey: "places_kerala_details", highlightsKey: "places_kerala_highlights", bestTimeKey: "places_kerala_best_time", img: "/places/kerala_houseboat.png", imgs: ["/places/kerala_houseboat.png"], price: "₹4,299" }
-    ],
-    hotels: [
-      { id: "udaipur", titleKey: "places_udaipur_title", descKey: "places_udaipur_desc", detailsKey: "places_udaipur_details", highlightsKey: "places_udaipur_highlights", bestTimeKey: "places_udaipur_best_time", img: "/places/lake_palace.png", imgs: ["/places/lake_palace.png", "/places/goa_sunset.png"], rating: "4.9 ★" },
-      { id: "delhi", titleKey: "places_delhi_title", descKey: "places_delhi_desc", detailsKey: "places_delhi_details", highlightsKey: "places_delhi_highlights", bestTimeKey: "places_delhi_best_time", img: "/places/delhi_imperial.png", imgs: ["/places/delhi_imperial.png", "/places/taj_mahal_detail.png"], rating: "4.8 ★" }
-    ],
-    homestays: [
-      { id: "coorg", titleKey: "places_coorg_title", descKey: "places_coorg_desc", detailsKey: "places_coorg_details", highlightsKey: "places_coorg_highlights", bestTimeKey: "places_coorg_best_time", img: "/places/coorg_plantation.png", imgs: ["/places/coorg_plantation.png", "/places/lake_palace.png"], rating: "4.7 ★" }
-    ],
-    buses: [
-      { id: "ooty", titleKey: "places_ooty_title", descKey: "places_ooty_desc", detailsKey: "places_ooty_details", highlightsKey: "places_ooty_highlights", bestTimeKey: "places_ooty_best_time", img: "/places/ooty_tea_gardens.png", imgs: ["/places/ooty_tea_gardens.png", "/places/kerala_houseboat.png"], price: "₹899" }
-    ],
-    cruise: [
-      { id: "lakshadweep", titleKey: "places_lakshadweep_title", descKey: "places_lakshadweep_desc", detailsKey: "places_lakshadweep_details", highlightsKey: "places_lakshadweep_highlights", bestTimeKey: "places_lakshadweep_best_time", img: "/places/lakshadweep_cruise.png", imgs: ["/places/lakshadweep_cruise.png", "/places/lakshadweep_beach.png"], price: "₹18,500" }
-    ],
-    tours: [
-      { id: "ajanta", titleKey: "places_ajanta_title", descKey: "places_ajanta_desc", detailsKey: "places_ajanta_details", highlightsKey: "places_ajanta_highlights", bestTimeKey: "places_ajanta_best_time", img: "/places/ajanta_caves.png", imgs: ["/places/ajanta_caves.png", "/places/taj_mahal_detail.png"], durationKey: "places_ajanta_duration" }
-    ]
-  };
+  const allPlaces = [
+    // Flights category
+    { id: "agra", type: "flights", state: "Uttar Pradesh", code: "DEL", titleKey: "places_agra_title", descKey: "places_agra_desc", detailsKey: "places_agra_details", highlightsKey: "places_agra_highlights", bestTimeKey: "places_agra_best_time", img: "/places/taj_mahal.png", imgs: ["/places/taj_mahal.png", "/places/taj_mahal_detail.png"], price: "₹2,499" },
+    { id: "goa", type: "flights", state: "Goa", code: "GOI", titleKey: "places_goa_title", descKey: "places_goa_desc", detailsKey: "places_goa_details", highlightsKey: "places_goa_highlights", bestTimeKey: "places_goa_best_time", img: "/places/goa_beach.png", imgs: ["/places/goa_beach.png", "/places/goa_sunset.png"], price: "₹3,199" },
+    { id: "kerala", type: "flights", state: "Kerala", code: "COK", titleKey: "places_kerala_title", descKey: "places_kerala_desc", detailsKey: "places_kerala_details", highlightsKey: "places_kerala_highlights", bestTimeKey: "places_kerala_best_time", img: "/places/kerala_houseboat.png", imgs: ["/places/kerala_houseboat.png"], price: "₹4,299" },
+    { id: "ooty_tn_flight", type: "flights", state: "Tamil Nadu", code: "CJB", titleKey: "places_ooty_tn_title", descKey: "places_ooty_tn_desc", detailsKey: "places_ooty_tn_details", highlightsKey: "places_ooty_tn_highlights", bestTimeKey: "places_ooty_tn_best_time", img: "/places/ooty_tea_gardens.png", imgs: ["/places/ooty_tea_gardens.png"], price: "₹3,499" },
+    { id: "madurai_tn_flight", type: "flights", state: "Tamil Nadu", code: "IXM", titleKey: "places_madurai_tn_title", descKey: "places_madurai_tn_desc", detailsKey: "places_madurai_tn_details", highlightsKey: "places_madurai_tn_highlights", bestTimeKey: "places_madurai_tn_best_time", img: "/places/madurai_temple.png", imgs: ["/places/madurai_temple.png"], price: "₹2,999" },
+    { id: "mahabalipuram_tn_flight", type: "flights", state: "Tamil Nadu", code: "MAA", titleKey: "places_mahabalipuram_tn_title", descKey: "places_mahabalipuram_tn_desc", detailsKey: "places_mahabalipuram_tn_details", highlightsKey: "places_mahabalipuram_tn_highlights", bestTimeKey: "places_mahabalipuram_tn_best_time", img: "/places/mahabalipuram_shore.png", imgs: ["/places/mahabalipuram_shore.png"], price: "₹2,799" },
+
+    // Hotels category
+    { id: "udaipur", type: "hotels", state: "Rajasthan", titleKey: "places_udaipur_title", descKey: "places_udaipur_desc", detailsKey: "places_udaipur_details", highlightsKey: "places_udaipur_highlights", bestTimeKey: "places_udaipur_best_time", img: "/places/lake_palace.png", imgs: ["/places/lake_palace.png"], rating: "4.9 ★" },
+    { id: "delhi", type: "hotels", state: "Delhi", titleKey: "places_delhi_title", descKey: "places_delhi_desc", detailsKey: "places_delhi_details", highlightsKey: "places_delhi_highlights", bestTimeKey: "places_delhi_best_time", img: "/places/delhi_imperial.png", imgs: ["/places/delhi_imperial.png"], rating: "4.8 ★" },
+
+    // Homestays category
+    { id: "coorg", type: "homestays", state: "Karnataka", titleKey: "places_coorg_title", descKey: "places_coorg_desc", detailsKey: "places_coorg_details", highlightsKey: "places_coorg_highlights", bestTimeKey: "places_coorg_best_time", img: "/places/coorg_plantation.png", imgs: ["/places/coorg_plantation.png"], rating: "4.7 ★" },
+    { id: "kodaikanal_tn_home", type: "homestays", state: "Tamil Nadu", titleKey: "places_kodaikanal_tn_title", descKey: "places_kodaikanal_tn_desc", detailsKey: "places_kodaikanal_tn_details", highlightsKey: "places_kodaikanal_tn_highlights", bestTimeKey: "places_kodaikanal_tn_best_time", img: "/places/coorg_plantation.png", imgs: ["/places/coorg_plantation.png"], rating: "4.6 ★" },
+
+    // Buses category
+    { id: "ooty", type: "buses", state: "Tamil Nadu", titleKey: "places_ooty_title", descKey: "places_ooty_desc", detailsKey: "places_ooty_details", highlightsKey: "places_ooty_highlights", bestTimeKey: "places_ooty_best_time", img: "/places/ooty_tea_gardens.png", imgs: ["/places/ooty_tea_gardens.png"], price: "₹899" },
+
+    // Cruise category
+    { id: "lakshadweep", type: "cruise", state: "Lakshadweep", titleKey: "places_lakshadweep_title", descKey: "places_lakshadweep_desc", detailsKey: "places_lakshadweep_details", highlightsKey: "places_lakshadweep_highlights", bestTimeKey: "places_lakshadweep_best_time", img: "/places/lakshadweep_cruise.png", imgs: ["/places/lakshadweep_cruise.png", "/places/lakshadweep_beach.png"], price: "₹18,500" },
+
+    // Tours category
+    { id: "ajanta", type: "tours", state: "Maharashtra", titleKey: "places_ajanta_title", descKey: "places_ajanta_desc", detailsKey: "places_ajanta_details", highlightsKey: "places_ajanta_highlights", bestTimeKey: "places_ajanta_best_time", img: "/places/ajanta_caves.png", imgs: ["/places/ajanta_caves.png"], durationKey: "places_ajanta_duration" },
+    { id: "madurai_tn_tour", type: "tours", state: "Tamil Nadu", titleKey: "places_madurai_tn_title", descKey: "places_madurai_tn_desc", detailsKey: "places_madurai_tn_details", highlightsKey: "places_madurai_tn_highlights", bestTimeKey: "places_madurai_tn_best_time", img: "/places/madurai_temple.png", imgs: ["/places/madurai_temple.png"], price: "₹1,499" },
+    { id: "mahabalipuram_tn_tour", type: "tours", state: "Tamil Nadu", titleKey: "places_mahabalipuram_tn_title", descKey: "places_mahabalipuram_tn_desc", detailsKey: "places_mahabalipuram_tn_details", highlightsKey: "places_mahabalipuram_tn_highlights", bestTimeKey: "places_mahabalipuram_tn_best_time", img: "/places/mahabalipuram_shore.png", imgs: ["/places/mahabalipuram_shore.png"], price: "₹999" },
+    { id: "rameshwaram_tn_tour", type: "tours", state: "Tamil Nadu", titleKey: "places_rameshwaram_tn_title", descKey: "places_rameshwaram_tn_desc", detailsKey: "places_rameshwaram_tn_details", highlightsKey: "places_rameshwaram_tn_highlights", bestTimeKey: "places_rameshwaram_tn_best_time", img: "/places/lakshadweep_beach.png", imgs: ["/places/lakshadweep_beach.png"], price: "₹2,199" }
+  ];
+
   const nav = useNavigate();
 
 
@@ -107,19 +133,39 @@ export default function Home() {
     return mapping[code.toUpperCase()] || "Airport, India";
   };
 
+  const formatDateDisplay = (dateStr: string) => {
+    if (!dateStr) return { day: "--", monthYear: "Select Date", weekday: "" };
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return { day: "--", monthYear: "Select Date", weekday: "" };
+    const day = d.getDate();
+    const month = d.toLocaleDateString("en-US", { month: 'short' });
+    const year = d.toLocaleDateString("en-US", { year: 'numeric' });
+    const monthYear = `${month}' ${year.slice(-2)}`;
+    const weekday = d.toLocaleDateString("en-US", { weekday: 'long' });
+    return { day, monthYear, weekday };
+  };
+
+  const specialFaresOptions = [
+    { id: "regular", title: "Regular", desc: "Regular Fares", badge: null },
+    { id: "student", title: "Student", desc: "Extra Baggage", badge: "Student" },
+    { id: "armed", title: "Armed Forces", desc: "Special Discounts", badge: "Defense" },
+    { id: "senior", title: "Senior Citizen", desc: "Up to 10% off", badge: "Senior" },
+    { id: "gst", title: "GST Business", desc: "Claim Tax Credit", badge: "Corporate" }
+  ];
+
   const tabs = [
     { id: "flights", label: "Flights" },
     { id: "hotels", label: "Hotels" },
     { id: "homestays", label: "Villas & Homestays" },
-    { id: "holidays", label: "Holiday Packages", disabled: true },
-    { id: "trains", label: "Trains", disabled: true },
+    { id: "holidays", label: "Holiday Packages" },
+    { id: "trains", label: "Trains" },
     { id: "buses", label: "Buses" },
-    { id: "cabs", label: "Cabs", disabled: true },
+    { id: "cabs", label: "Cabs" },
     { id: "tours", label: "Tours & Attractions" },
-    { id: "visa", label: "Visa", disabled: true },
+    { id: "visa", label: "Visa" },
     { id: "cruise", label: "Cruise", badge: "new" },
-    { id: "forex", label: "Forex Card & Currency", disabled: true },
-    { id: "insurance", label: "Travel Insurance", disabled: true }
+    { id: "forex", label: "Forex Card & Currency" },
+    { id: "insurance", label: "Travel Insurance" }
   ];
 
   const renderTabIcon = (id: string, className: string) => {
@@ -146,13 +192,13 @@ export default function Home() {
         <Header />
 
         {/* Hero Banner Area */}
-        <div 
+        <div
           className="relative bg-cover bg-center text-white pt-10 pb-36 px-4"
           style={{ backgroundImage: "url('/travel_hero_bg.png')" }}
         >
           {/* Overlay to ensure readability and dark mode contrast */}
           <div className="absolute inset-0 bg-[#18181b]/40 dark:bg-[#09090b]/80 z-0"></div>
-          
+
           <div className="container max-w-6xl mx-auto text-center relative z-10">
             <h1 className="text-4xl md:text-5xl font-extrabold mb-3 tracking-tight">
               {t("compare_book")}
@@ -165,9 +211,9 @@ export default function Home() {
 
         {/* Main Search Panel Container (Floating Over Hero) */}
         <div className="container max-w-6xl mx-auto -mt-24 px-4 relative z-20">
-          
-          {/* MakeMyTrip-Style Premium Category Navigation Bar */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200/65 dark:border-gray-750 shadow-lg mb-6 overflow-x-auto w-full flex justify-start items-stretch select-none scrollbar-thin">
+
+          {/* Stylish Premium Category Navigation Bar (FlyFast-Style Floating White Rounded Container) */}
+          <div className="bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800/80 shadow-xl rounded-3xl mb-6 overflow-x-auto w-full flex justify-start lg:justify-between items-center select-none scrollbar-none px-4 py-2 relative z-30">
             {tabs.map((tab: any) => {
               const isActive = activeTab === tab.id;
               return (
@@ -176,181 +222,283 @@ export default function Home() {
                   disabled={tab.disabled}
                   onClick={() => setActiveTab(tab.id)}
                   data-tooltip-bottom={tab.disabled ? `${t("coming_soon")}: ${t(tab.id)}` : `${t("search")} ${t(tab.id)}`}
-                  className={`relative flex flex-col items-center justify-between py-4 px-4 border-b-4 min-w-[125px] shrink-0 text-center transition-all duration-150 outline-none ${
-                    isActive
-                      ? "border-booking-lightblue text-booking-lightblue font-extrabold"
-                      : "border-transparent text-gray-500 dark:text-gray-400 hover:text-booking-lightblue dark:hover:text-booking-lightblue hover:bg-gray-50/50 dark:hover:bg-gray-750/30 disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-gray-500 disabled:hover:bg-transparent"
-                  }`}
+                  className={`relative flex flex-col items-center justify-center py-3 px-4 min-w-[100px] shrink-0 text-center transition-all duration-200 outline-none rounded-2xl group ${isActive
+                    ? "text-[#008cff] font-extrabold scale-105"
+                    : "text-gray-500 dark:text-gray-400 hover:text-[#008cff] dark:hover:text-blue-400 disabled:opacity-40 disabled:cursor-not-allowed"
+                    }`}
                 >
                   {tab.badge && (
-                    <span className="absolute top-1.5 right-6 bg-[#d946ef] text-white text-[8px] font-extrabold px-1.5 py-0.5 uppercase tracking-wide shadow-sm scale-90 select-none animate-pulse">
+                    <span className="absolute top-0 right-2 bg-[#d946ef] text-white text-[8px] font-extrabold px-1.5 py-0.5 uppercase tracking-wide rounded-full shadow-sm scale-90 select-none animate-pulse">
                       {tab.badge}
                     </span>
                   )}
-                  <div className="flex items-center justify-center mb-2">
-                    {renderTabIcon(tab.id, `w-7 h-7 ${isActive ? "text-booking-lightblue" : "text-gray-400 dark:text-gray-500"}`)}
+                  <div className={`flex items-center justify-center mb-1.5 p-2 rounded-full transition-colors ${isActive ? "bg-blue-50 dark:bg-blue-950/40 text-[#008cff]" : "bg-gray-50 dark:bg-gray-800 text-gray-400 group-hover:bg-blue-50/50 dark:group-hover:bg-blue-950/20 group-hover:text-[#008cff]"}`}>
+                    {renderTabIcon(tab.id, "w-6 h-6")}
                   </div>
                   <span className="text-[10px] uppercase font-bold tracking-wider leading-none whitespace-nowrap block">
                     {t(tab.id)}
                   </span>
+                  {isActive && (
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-1 bg-[#008cff] rounded-full"></span>
+                  )}
                 </button>
               );
             })}
           </div>
 
-          <div className="bg-white dark:bg-gray-805 rounded-3xl shadow-2xl border border-gray-200/50 dark:border-gray-700/50 p-6 md:p-8 animate-scale-in">
-            
-            {/* Trip Type Select Row */}
-            <div className="flex items-center gap-6 mb-6 pb-4 border-b border-gray-150 dark:border-gray-700">
-              <label className="flex items-center gap-2 cursor-pointer group">
-                <input
-                  type="radio"
-                  name="triptype"
-                  checked={tripType === "oneway"}
-                  onChange={() => setTripType("oneway")}
-                  className="w-4.5 h-4.5 text-booking-lightblue focus:ring-booking-lightblue border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-850"
-                />
-                <span className={`text-sm font-bold tracking-wide transition-colors ${tripType === "oneway" ? "text-booking-lightblue" : "text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"}`}>
-                  {t("one_way")}
-                </span>
-              </label>
+          <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-200/70 dark:border-gray-800/80 p-6 md:p-8 pb-16 animate-scale-in relative z-20">
 
-              <label className="flex items-center gap-2 cursor-pointer group">
-                <input
-                  type="radio"
-                  name="triptype"
-                  checked={tripType === "roundtrip"}
-                  onChange={() => setTripType("roundtrip")}
-                  className="w-4.5 h-4.5 text-booking-lightblue focus:ring-booking-lightblue border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-850"
-                />
-                <span className={`text-sm font-bold tracking-wide transition-colors ${tripType === "roundtrip" ? "text-booking-lightblue" : "text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"}`}>
-                  {t("round_trip")}
-                </span>
-              </label>
+            {/* FlyFast AI Assistant Search Widget with colorful gradient border */}
+            <div 
+              className="p-[1.5px] bg-gradient-to-r from-purple-500 via-pink-500 to-[#008cff] rounded-2xl mb-6 shadow-md cursor-pointer hover:shadow-lg transition-all duration-200" 
+              onClick={() => setShowAiChat(true)}
+            >
+              <div className="bg-white dark:bg-gray-900 rounded-[14px] px-4 py-3 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-[#008cff] flex items-center justify-center text-white shadow-sm">
+                    <RobotIcon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-extrabold text-gray-800 dark:text-white flex items-center gap-1.5">
+                      FlyFast AI Assistant
+                      <span className="text-[9px] bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-300 px-2 py-0.5 rounded-full font-extrabold uppercase tracking-wider">Beta</span>
+                    </p>
+                    <p className="text-[11px] text-gray-500 dark:text-gray-400 font-semibold mt-0.5">
+                      Search flights with natural language, e.g., "Find flights from Delhi to Mumbai tomorrow"
+                    </p>
+                  </div>
+                </div>
+                <div className="text-xs font-bold text-purple-600 dark:text-purple-400 hover:underline flex items-center gap-1 shrink-0">
+                  <span>Ask FlyFast AI</span>
+                  <span>➔</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Trip Type Select Row */}
+            <div className="flex items-center justify-between gap-6 mb-6 pb-4 border-b border-gray-150 dark:border-gray-800">
+              <div className="flex items-center gap-6">
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="radio"
+                    name="triptype"
+                    checked={tripType === "oneway"}
+                    onChange={() => setTripType("oneway")}
+                    className="w-4.5 h-4.5 text-[#008cff] focus:ring-[#008cff] border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-850"
+                  />
+                  <span className={`text-sm font-bold tracking-wide transition-colors ${tripType === "oneway" ? "text-[#008cff]" : "text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"}`}>
+                    {t("one_way")}
+                  </span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <input
+                    type="radio"
+                    name="triptype"
+                    checked={tripType === "roundtrip"}
+                    onChange={() => setTripType("roundtrip")}
+                    className="w-4.5 h-4.5 text-[#008cff] focus:ring-[#008cff] border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-850"
+                  />
+                  <span className={`text-sm font-bold tracking-wide transition-colors ${tripType === "roundtrip" ? "text-[#008cff]" : "text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"}`}>
+                    {t("round_trip")}
+                  </span>
+                </label>
+              </div>
+              <div className="hidden md:block text-xs font-bold text-gray-405 dark:text-gray-505 uppercase tracking-wider">
+                Book Domestic & International Flights
+              </div>
             </div>
 
             {/* Manual Flight Search Form */}
             <form onSubmit={search} className="relative">
               {/* Search Form Fields Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-5 gap-0.5 bg-gray-200 dark:bg-gray-700 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700">
-                {/* From Field */}
-                <div className="bg-white dark:bg-gray-850 p-4 hover:bg-booking-lightblue/5 dark:hover:bg-booking-lightblue/5 transition-colors cursor-pointer group">
-                  <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">{t("from")}</span>
-                  <input
-                    type="text"
-                    value={origin}
-                    onChange={(e) => setOrigin(e.target.value.toUpperCase())}
-                    className="w-full bg-transparent font-extrabold text-2xl text-gray-800 dark:text-white outline-none placeholder-gray-400 group-hover:text-booking-lightblue dark:group-hover:text-booking-lightblue"
-                    placeholder="DEL"
-                    maxLength={3}
-                    required
-                  />
-                  <span className="block text-xs text-gray-500 dark:text-gray-400 mt-1 truncate" title={getAirportName(origin)}>
-                    {getAirportName(origin)}
-                  </span>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-5 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800 mb-6">
+                
+                {/* From & To Combo with Floating Swap Button */}
+                <div className="md:col-span-2 relative flex flex-col md:grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800">
+                  {/* From Field */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-950/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("from")}</span>
+                    <input
+                      type="text"
+                      value={origin}
+                      onChange={(e) => setOrigin(e.target.value.toUpperCase())}
+                      className="w-full bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
+                      placeholder="DEL"
+                      maxLength={3}
+                      required
+                    />
+                    <span className="block text-xs text-gray-550 dark:text-gray-400 mt-1 truncate max-w-full font-semibold" title={getAirportName(origin)}>
+                      {getAirportName(origin)}
+                    </span>
+                  </div>
 
-                {/* Swap Icon / To Field */}
-                <div className="bg-white dark:bg-gray-850 p-4 hover:bg-booking-lightblue/5 dark:hover:bg-booking-lightblue/5 transition-colors cursor-pointer group">
-                  <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">{t("to")}</span>
-                  <input
-                    type="text"
-                    value={destination}
-                    onChange={(e) => setDestination(e.target.value.toUpperCase())}
-                    className="w-full bg-transparent font-extrabold text-2xl text-gray-800 dark:text-white outline-none placeholder-gray-400 group-hover:text-booking-lightblue dark:group-hover:text-booking-lightblue"
-                    placeholder="BOM"
-                    maxLength={3}
-                    required
-                  />
-                  <span className="block text-xs text-gray-500 dark:text-gray-400 mt-1 truncate" title={getAirportName(destination)}>
-                    {getAirportName(destination)}
-                  </span>
+                  {/* To Field */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-950/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("to")}</span>
+                    <input
+                      type="text"
+                      value={destination}
+                      onChange={(e) => setDestination(e.target.value.toUpperCase())}
+                      className="w-full bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
+                      placeholder="BOM"
+                      maxLength={3}
+                      required
+                    />
+                    <span className="block text-xs text-gray-550 dark:text-gray-400 mt-1 truncate max-w-full font-semibold" title={getAirportName(destination)}>
+                      {getAirportName(destination)}
+                    </span>
+                  </div>
+
+                  {/* Absolute Swap Button */}
+                  <button
+                    type="button"
+                    onClick={handleSwap}
+                    className="absolute z-35 w-9 h-9 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg flex items-center justify-center text-[#008cff] dark:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-750 transition-all duration-200 cursor-pointer active:scale-90
+                      bottom-0 right-6 translate-y-1/2 md:bottom-auto md:right-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2"
+                    title="Swap airports"
+                  >
+                    <span className="text-lg font-bold">⇄</span>
+                  </button>
                 </div>
 
                 {/* Departure Date */}
-                <div className="bg-white dark:bg-gray-850 p-4 hover:bg-booking-lightblue/5 dark:hover:bg-booking-lightblue/5 transition-colors cursor-pointer">
-                  <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">{t("departure")}</span>
-                  <input
-                    type="date"
-                    value={date}
-                    min={today}
-                    onChange={(e) => setDate(e.target.value)}
-                    className="w-full bg-transparent font-extrabold text-lg text-gray-800 dark:text-white outline-none mt-1"
-                    required
-                  />
-                  <span className="block text-xs text-gray-400 dark:text-gray-500 mt-1.5 font-medium">
-                    {date ? new Date(date).toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric' }) : t("select_date")}
-                  </span>
-                </div>
+                {(() => {
+                  const displayDate = formatDateDisplay(date);
+                  return (
+                    <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px]">
+                      <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("departure")}</span>
+                      <div className="flex items-baseline gap-1 mt-1">
+                        <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayDate.day}</span>
+                        <span className="text-sm font-bold text-gray-800 dark:text-white">{displayDate.monthYear}</span>
+                      </div>
+                      <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayDate.weekday}</span>
+                      <input
+                        type="date"
+                        value={date}
+                        min={today}
+                        onChange={(e) => setDate(e.target.value)}
+                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                        required
+                      />
+                    </div>
+                  );
+                })()}
 
                 {/* Return Date */}
-                <div 
-                  className={`bg-white dark:bg-gray-850 p-4 transition-colors cursor-pointer ${
-                    tripType === "oneway" 
-                      ? "opacity-60 hover:opacity-100 hover:bg-booking-lightblue/5 dark:hover:bg-booking-lightblue/5" 
-                      : "hover:bg-booking-lightblue/5 dark:hover:bg-booking-lightblue/5"
-                  }`}
-                  onClick={() => {
-                    if (tripType === "oneway") setTripType("roundtrip");
-                  }}
-                >
-                  <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">{t("return")}</span>
-                  {tripType === "oneway" ? (
-                    <div className="mt-2 text-sm font-extrabold text-booking-lightblue uppercase">
-                      + {t("add")} {t("return")}
+                {(() => {
+                  const displayReturn = formatDateDisplay(returnDate);
+                  const isOneWay = tripType === "oneway";
+                  return (
+                    <div 
+                      onClick={() => {
+                        if (isOneWay) setTripType("roundtrip");
+                      }}
+                      className={`bg-white dark:bg-gray-900 p-5 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px] ${
+                        isOneWay 
+                          ? "hover:bg-blue-50/10 dark:hover:bg-blue-950/5" 
+                          : "hover:bg-blue-50/20 dark:hover:bg-blue-950/10"
+                      }`}
+                    >
+                      <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("return")}</span>
+                      {isOneWay ? (
+                        <>
+                          <span className="text-xl font-extrabold text-[#008cff] mt-1">+ {t("add")} {t("return")}</span>
+                          <span className="block text-xs text-gray-450 dark:text-gray-500 mt-1 font-semibold">
+                            {t("tap_roundtrip")}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex items-baseline gap-1 mt-1">
+                            <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayReturn.day}</span>
+                            <span className="text-sm font-bold text-gray-800 dark:text-white">{displayReturn.monthYear}</span>
+                          </div>
+                          <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayReturn.weekday}</span>
+                          <input
+                            type="date"
+                            value={returnDate}
+                            min={date || today}
+                            onChange={(e) => setReturnDate(e.target.value)}
+                            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                            required={tripType === "roundtrip"}
+                          />
+                        </>
+                      )}
                     </div>
-                  ) : (
-                    <input
-                      type="date"
-                      value={returnDate}
-                      min={date || today}
-                      onChange={(e) => setReturnDate(e.target.value)}
-                      className="w-full bg-transparent font-extrabold text-lg text-gray-800 dark:text-white outline-none mt-1"
-                      required={tripType === "roundtrip"}
-                    />
-                  )}
-                  <span className="block text-xs text-gray-400 dark:text-gray-500 mt-1.5 font-medium">
-                    {tripType === "roundtrip" && returnDate 
-                      ? new Date(returnDate).toLocaleDateString("en-US", { weekday: 'short', month: 'short', day: 'numeric' }) 
-                      : t("tap_roundtrip")}
-                  </span>
-                </div>
+                  );
+                })()}
 
                 {/* Travelers Info */}
-                <div className="bg-white dark:bg-gray-850 p-4 hover:bg-booking-lightblue/5 dark:hover:bg-booking-lightblue/5 transition-colors cursor-pointer">
-                  <span className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-1">{t("travelers")}</span>
-                  <input
-                    type="number"
-                    value={travelers}
-                    min={1}
-                    max={9}
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      if (val === "") {
-                        setTravelers("");
-                      } else {
-                        const parsed = parseInt(val, 10);
-                        if (!isNaN(parsed)) {
-                          setTravelers(Math.max(1, Math.min(9, parsed)));
+                <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-950/10 transition-colors cursor-pointer flex flex-col justify-center min-h-[110px]">
+                  <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("travelers")}</span>
+                  <div className="flex items-baseline gap-1 mt-1">
+                    <input
+                      type="number"
+                      value={travelers}
+                      min={1}
+                      max={9}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        if (val === "") {
+                          setTravelers("");
+                        } else {
+                          const parsed = parseInt(val, 10);
+                          if (!isNaN(parsed)) {
+                            setTravelers(Math.max(1, Math.min(9, parsed)));
+                          }
                         }
-                      }
-                    }}
-                    className="w-full bg-transparent font-extrabold text-2xl text-gray-800 dark:text-white outline-none"
-                    placeholder="1"
-                    required
-                  />
-                  <span className="block text-xs text-gray-400 dark:text-gray-505 mt-1 font-medium">
+                      }}
+                      className="w-12 bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none"
+                      placeholder="1"
+                      required
+                    />
+                    <span className="text-sm font-bold text-gray-800 dark:text-white">Traveler(s)</span>
+                  </div>
+                  <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">
                     {t("economy_class")}
                   </span>
                 </div>
               </div>
 
-              {/* SEARCH BUTTON (Centered absolute at bottom border) */}
-              <div className="flex justify-center -mb-12 mt-6 lg:mt-0">
+              {/* Special Fares Selector Row */}
+              <div className="mt-5 flex flex-col md:flex-row md:items-center gap-3">
+                <span className="text-xs font-extrabold text-gray-400 dark:text-gray-505 uppercase tracking-wider shrink-0">
+                  {t("special_fares")}:
+                </span>
+                <div className="flex flex-wrap gap-2.5">
+                  {specialFaresOptions.map((option) => {
+                    const isSelected = selectedSpecialFare === option.id;
+                    return (
+                      <button
+                        key={option.id}
+                        type="button"
+                        onClick={() => setSelectedSpecialFare(option.id)}
+                        className={`flex flex-col items-start px-4 py-2 border rounded-xl transition-all text-left relative ${
+                          isSelected
+                            ? "border-[#008cff] bg-blue-50/40 dark:bg-blue-950/20 text-[#008cff]"
+                            : "border-gray-250 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 bg-white dark:bg-gray-900 text-gray-755 dark:text-gray-300"
+                        }`}
+                      >
+                        {option.badge && (
+                          <span className="absolute -top-2 right-2 bg-gradient-to-r from-purple-500 to-[#008cff] text-white text-[7px] font-extrabold px-1.5 py-0.2 rounded-full uppercase tracking-wider scale-90">
+                            {option.badge}
+                          </span>
+                        )}
+                        <span className="text-xs font-extrabold">{option.title}</span>
+                        <span className="text-[9px] text-gray-450 dark:text-gray-500 font-semibold">{option.desc}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* SEARCH BUTTON (Centered absolute at bottom border, hanging off the card) */}
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-30">
                 <button
                   type="submit"
                   data-tooltip={t("find_flights_now")}
-                  className="btn-primary px-12 py-4 text-lg bg-gradient-to-r from-[#ff6636] to-[#ff3600] text-white font-extrabold rounded-full transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100 flex items-center justify-center gap-2 group"
+                  className="px-16 py-4 text-lg bg-gradient-to-r from-[#008cff] to-[#007cdb] hover:from-[#007cdb] hover:to-[#006cc7] text-white font-extrabold rounded-full transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100 flex items-center justify-center gap-2 group tracking-wider uppercase min-w-[240px]"
                 >
                   <span>{t("search_flights")}</span>
                   <span className="group-hover:translate-x-1.5 transition-transform duration-200">➔</span>
@@ -380,61 +528,140 @@ export default function Home() {
                 <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1 font-medium">
                   {t("places_to_visit_desc")}
                 </p>
-              </div>
-            </div>
-
-            {/* Places Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {(() => {
-                const highlights = destinationHighlights[activeTab as keyof typeof destinationHighlights] || destinationHighlights.flights;
-                return highlights.map((place: any, index: number) => (
-                  <div 
-                    key={index} 
-                    onClick={() => setSelectedExplorePlace(place)}
-                    className="group bg-white dark:bg-gray-850 dark:border-gray-750/60 border border-gray-150 shadow-md overflow-hidden hover:shadow-xl hover:border-booking-lightblue/25 transition-all duration-300 flex flex-col h-full cursor-pointer"
-                  >
-                    {/* Place Image */}
-                    <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-900">
-                      <img 
-                        src={place.img} 
-                        alt={t(place.titleKey)}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                        loading="lazy"
-                      />
-                      {place.price && (
-                        <div className="absolute bottom-3 left-3 bg-gray-900/80 backdrop-blur-sm text-white text-[10px] font-extrabold px-2.5 py-1 uppercase tracking-wider">
-                          {t("starting_from")} {place.price}
-                        </div>
-                      )}
-                      {place.rating && (
-                        <div className="absolute bottom-3 left-3 bg-amber-500 text-gray-950 text-[10px] font-extrabold px-2.5 py-1 tracking-wider uppercase">
-                          {place.rating}
-                        </div>
-                      )}
-                      {place.durationKey && (
-                        <div className="absolute bottom-3 left-3 bg-booking-lightblue text-white text-[10px] font-extrabold px-2.5 py-1 tracking-wider uppercase">
-                          {t(place.durationKey)}
-                        </div>
-                      )}
-                    </div>
-                    {/* Content */}
-                    <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
-                      <div>
-                        <h4 className="text-sm font-extrabold text-gray-800 dark:text-white uppercase tracking-wider">{t(place.titleKey)}</h4>
-                        <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-semibold mt-1">
-                          {t(place.descKey)}
-                        </p>
-                      </div>
-                      <button 
-                        onClick={() => setSelectedExplorePlace(place)}
-                        className="w-full text-center py-2 bg-gray-50 dark:bg-gray-750 hover:bg-booking-lightblue hover:text-white text-[10px] font-extrabold text-booking-lightblue uppercase tracking-wider transition-colors duration-250 border-t border-gray-100 dark:border-gray-700/60"
-                      >
-                        {t("explore_now")}
-                      </button>
-                    </div>
+                {/* Search and Filters Area */}
+                <div className="flex flex-col sm:flex-row gap-4 mb-8 bg-[#faf8f5]/60 dark:bg-gray-900/60 p-4 border border-gray-200/50 dark:border-gray-800/50 items-center justify-between">
+                  {/* Text Search */}
+                  <div className="relative w-full sm:w-72">
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder={t("label_search_placeholder")}
+                      className="w-full pl-9 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-sm outline-none text-gray-855 dark:text-white"
+                    />
+                    <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
                   </div>
-                ));
-              })()}
+
+                  {/* State Dropdown */}
+                  <div className="flex items-center gap-3 w-full sm:w-auto">
+                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">
+                      {t("label_filter_state")}:
+                    </span>
+                    <select
+                      value={selectedState}
+                      onChange={(e) => setSelectedState(e.target.value)}
+                      className="px-3 py-2 bg-white dark:bg-gray-855 border border-gray-300 dark:border-gray-700 text-sm outline-none text-gray-855 dark:text-white w-full sm:w-56"
+                    >
+                      <option value="all">{t("state_all")}</option>
+                      <option value="Tamil Nadu">{t("state_tamilnadu")}</option>
+                      <option value="Goa">{t("state_goa")}</option>
+                      <option value="Kerala">{t("state_kerala")}</option>
+                      <option value="Rajasthan">{t("state_rajasthan")}</option>
+                      <option value="Delhi">{t("state_delhi")}</option>
+                      <option value="Karnataka">{t("state_karnataka")}</option>
+                      <option value="Uttar Pradesh">{t("state_uttarpradesh")}</option>
+                      <option value="Lakshadweep">{t("state_lakshadweep")}</option>
+                      <option value="Maharashtra">{t("state_maharashtra")}</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Places Grid with w-80 sized cards */}
+                {(() => {
+                  const filteredPlaces = allPlaces.filter((place) => {
+                    const matchesCategory = place.type === activeTab;
+                    const matchesState = selectedState === "all" || place.state === selectedState;
+
+                    const titleText = t(place.titleKey).toLowerCase();
+                    const descText = t(place.descKey).toLowerCase();
+                    const stateText = place.state.toLowerCase();
+                    const query = searchQuery.toLowerCase();
+                    const matchesQuery =
+                      titleText.includes(query) ||
+                      descText.includes(query) ||
+                      stateText.includes(query);
+
+                    return matchesCategory && matchesState && matchesQuery;
+                  });
+
+                  if (filteredPlaces.length === 0) {
+                    return (
+                      <div className="text-center py-12 bg-white dark:bg-gray-850 border border-gray-200/50 dark:border-gray-800/50 w-full">
+                        <p className="text-sm font-bold text-gray-500">{t("no_matching_flights")}</p>
+                        <button
+                          onClick={() => {
+                            setSelectedState("all");
+                            setSearchQuery("");
+                          }}
+                          className="mt-3 text-xs font-bold text-booking-lightblue underline hover:text-booking-lightblue/80"
+                        >
+                          {t("reset_search_filters")}
+                        </button>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="flex flex-wrap gap-6 justify-center md:justify-start">
+                      {filteredPlaces.map((place: any, index: number) => (
+                        <div 
+                          key={index} 
+                          onClick={() => setSelectedExplorePlace(place)}
+                          className="shrink-0 w-80 h-[390px] bg-white dark:bg-gray-855 dark:border-gray-750/60 border border-gray-150 shadow-md overflow-hidden hover:shadow-xl hover:border-booking-lightblue/25 transition-all duration-300 flex flex-col cursor-pointer group"
+                        >
+                          {/* Place Image */}
+                          <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-900">
+                            <img
+                              src={place.img}
+                              alt={t(place.titleKey)}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                              loading="lazy"
+                            />
+                            {place.price && (
+                              <div className="absolute bottom-3 left-3 bg-gray-900/80 backdrop-blur-sm text-white text-[10px] font-extrabold px-2.5 py-1 uppercase tracking-wider">
+                                {t("starting_from")} {place.price}
+                              </div>
+                            )}
+                            {place.rating && (
+                              <div className="absolute bottom-3 left-3 bg-amber-500 text-gray-950 text-[10px] font-extrabold px-2.5 py-1 tracking-wider uppercase">
+                                {place.rating}
+                              </div>
+                            )}
+                            {place.durationKey && (
+                              <div className="absolute bottom-3 left-3 bg-booking-lightblue text-white text-[10px] font-extrabold px-2.5 py-1 tracking-wider uppercase">
+                                {t(place.durationKey)}
+                              </div>
+                            )}
+                          </div>
+                          {/* Content */}
+                          <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
+                            <div>
+                              <div className="flex justify-between items-start gap-2">
+                                <h4 className="text-sm font-extrabold text-gray-855 dark:text-white uppercase tracking-wider">{t(place.titleKey)}</h4>
+                                <span className="text-[9px] font-extrabold px-2 py-0.5 bg-gray-100 dark:bg-gray-750 text-gray-500 dark:text-gray-400 uppercase tracking-wide shrink-0">
+                                  {place.state}
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-semibold mt-1">
+                                {t(place.descKey)}
+                              </p>
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedExplorePlace(place);
+                              }}
+                              className="w-full text-center py-2 bg-gray-50 dark:bg-gray-750 hover:bg-booking-lightblue hover:text-white text-[10px] font-extrabold text-booking-lightblue uppercase tracking-wider transition-colors duration-250 border-t border-gray-100 dark:border-gray-700/60"
+                            >
+                              {t("explore_now")}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
           </div>
 
@@ -545,16 +772,16 @@ export default function Home() {
           {selectedExplorePlace && (
             <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in backdrop-blur-sm">
               <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 w-full max-w-lg shadow-2xl animate-scale-in overflow-hidden flex flex-col max-h-[90vh]">
-                
+
                 {/* Image Header Block with Carousel */}
                 <div className="relative h-56 bg-gray-100 dark:bg-gray-955 overflow-hidden shrink-0">
                   {(() => {
                     const imgs = selectedExplorePlace.imgs || [selectedExplorePlace.img];
                     return (
                       <>
-                        <img 
-                          src={imgs[activeImageIndex]} 
-                          alt={t(selectedExplorePlace.titleKey)} 
+                        <img
+                          src={imgs[activeImageIndex]}
+                          alt={t(selectedExplorePlace.titleKey)}
                           className="w-full h-full object-cover transition-all duration-300"
                         />
                         {imgs.length > 1 && (
@@ -581,7 +808,7 @@ export default function Home() {
                             {/* Dot Indicators */}
                             <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
                               {imgs.map((_: any, idx: number) => (
-                                <span 
+                                <span
                                   key={idx}
                                   className={`w-1.5 h-1.5 rounded-full transition-all ${idx === activeImageIndex ? 'bg-white scale-125' : 'bg-white/50'}`}
                                 />
@@ -593,9 +820,9 @@ export default function Home() {
                     );
                   })()}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent"></div>
-                  
+
                   {/* Close floating button */}
-                  <button 
+                  <button
                     onClick={() => setSelectedExplorePlace(null)}
                     className="absolute top-4 right-4 w-9 h-9 bg-black/40 hover:bg-black/60 text-white flex items-center justify-center font-bold transition-all focus:outline-none z-10"
                     aria-label={t("places_close_details")}
@@ -616,7 +843,7 @@ export default function Home() {
 
                 {/* Body Details Container */}
                 <div className="p-6 overflow-y-auto flex-1 space-y-5 text-left text-sm scrollbar-thin">
-                  
+
                   {/* Description segment */}
                   <div className="space-y-1.5">
                     <h4 className="font-extrabold text-xs uppercase tracking-wider text-booking-lightblue">
@@ -677,15 +904,15 @@ export default function Home() {
 
                 {/* Footer buttons row */}
                 <div className="p-5 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 shrink-0 flex gap-3">
-                  <button 
+                  <button
                     onClick={() => setSelectedExplorePlace(null)}
                     className="flex-1 py-3 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-extrabold text-xs uppercase tracking-wider transition-colors hover:bg-gray-100 dark:hover:bg-gray-850"
                   >
                     {t("places_close_details")}
                   </button>
-                  
+
                   {activeTab === "flights" && selectedExplorePlace.code && (
-                    <button 
+                    <button
                       onClick={() => {
                         setDestination(selectedExplorePlace.code);
                         setSelectedExplorePlace(null);
@@ -698,7 +925,7 @@ export default function Home() {
                   )}
 
                   {activeTab !== "flights" && (
-                    <button 
+                    <button
                       onClick={() => {
                         setSelectedExplorePlace(null);
                         // Redirect user visually back to target category console
@@ -714,6 +941,30 @@ export default function Home() {
               </div>
             </div>
           )}
+
+          {/* Floating Cute Robot Chat Widget */}
+          <div className="fixed bottom-6 right-6 z-40 flex items-center gap-3 group select-none">
+            {/* Speech Bubble */}
+            <div 
+              onClick={() => setShowAiChat(true)}
+              className="relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-2.5 shadow-lg text-xs font-bold text-gray-755 dark:text-gray-200 cursor-pointer whitespace-nowrap hover:scale-105 transition-all duration-200 animate-bounce"
+            >
+              Ask FlyFast AI! 💬
+              {/* Small arrow for speech bubble */}
+              <div className="absolute right-4 bottom-[-6px] w-3 h-3 bg-white dark:bg-gray-800 border-r border-b border-gray-250 dark:border-gray-700 transform rotate-45"></div>
+            </div>
+            
+            {/* Robot Circular Trigger */}
+            <button
+              onClick={() => setShowAiChat(true)}
+              className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-[#008cff] flex items-center justify-center text-white shadow-xl hover:shadow-2xl hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer relative"
+              aria-label="Open AI Assistant"
+            >
+              <RobotIcon className="w-7 h-7 text-white animate-pulse" />
+              {/* Active dot indicator */}
+              <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full animate-pulse"></span>
+            </button>
+          </div>
         </div>
       </div>
       <Footer />

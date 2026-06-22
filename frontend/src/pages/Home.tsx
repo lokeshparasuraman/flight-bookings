@@ -162,9 +162,7 @@ export default function Home() {
     { id: "buses", label: "Buses" },
     { id: "cabs", label: "Cabs" },
     { id: "tours", label: "Tours & Attractions" },
-    { id: "visa", label: "Visa" },
     { id: "cruise", label: "Cruise", badge: "new" },
-    { id: "forex", label: "Forex Card & Currency" },
     { id: "insurance", label: "Travel Insurance" }
   ];
 
@@ -213,7 +211,7 @@ export default function Home() {
         <div className="container max-w-6xl mx-auto -mt-24 px-4 relative z-20">
 
           {/* Stylish Premium Category Navigation Bar (FlyFast-Style Floating White Rounded Container) */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800/80 shadow-xl rounded-3xl mb-6 overflow-x-auto w-full flex justify-start lg:justify-between items-center select-none scrollbar-none px-4 py-2 relative z-30">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800/80 shadow-xl rounded-3xl mb-6 w-full flex flex-wrap justify-center lg:justify-between items-center select-none px-4 py-3 relative z-30 gap-y-3 gap-x-2 md:gap-x-4">
             {tabs.map((tab: any) => {
               const isActive = activeTab === tab.id;
               return (
@@ -222,7 +220,7 @@ export default function Home() {
                   disabled={tab.disabled}
                   onClick={() => setActiveTab(tab.id)}
                   data-tooltip-bottom={tab.disabled ? `${t("coming_soon")}: ${t(tab.id)}` : `${t("search")} ${t(tab.id)}`}
-                  className={`relative flex flex-col items-center justify-center py-3 px-4 min-w-[100px] shrink-0 text-center transition-all duration-200 outline-none rounded-2xl group ${isActive
+                  className={`relative flex flex-col items-center justify-center py-2 px-3 text-center transition-all duration-200 outline-none rounded-2xl group ${isActive
                     ? "text-[#008cff] font-extrabold scale-105"
                     : "text-gray-500 dark:text-gray-400 hover:text-[#008cff] dark:hover:text-blue-400 disabled:opacity-40 disabled:cursor-not-allowed"
                     }`}
@@ -246,7 +244,7 @@ export default function Home() {
             })}
           </div>
 
-          <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-200/70 dark:border-gray-800/80 p-6 md:p-8 pb-16 animate-scale-in relative z-20">
+          <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl border border-gray-200/70 dark:border-gray-800/80 p-6 md:p-8 animate-scale-in relative z-20">
 
             {/* FlyFast AI Assistant Search Widget with colorful gradient border */}
             <div 
@@ -310,7 +308,7 @@ export default function Home() {
             </div>
 
             {/* Manual Flight Search Form */}
-            <form onSubmit={search} className="relative">
+            <form id="search-form" onSubmit={search} className="relative">
               {/* Search Form Fields Grid */}
               <div className="grid grid-cols-1 md:grid-cols-5 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800 mb-6">
                 
@@ -493,18 +491,22 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* SEARCH BUTTON (Centered absolute at bottom border, hanging off the card) */}
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 z-30">
-                <button
-                  type="submit"
-                  data-tooltip={t("find_flights_now")}
-                  className="px-16 py-4 text-lg bg-gradient-to-r from-[#008cff] to-[#007cdb] hover:from-[#007cdb] hover:to-[#006cc7] text-white font-extrabold rounded-full transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100 flex items-center justify-center gap-2 group tracking-wider uppercase min-w-[240px]"
-                >
-                  <span>{t("search_flights")}</span>
-                  <span className="group-hover:translate-x-1.5 transition-transform duration-200">➔</span>
-                </button>
-              </div>
             </form>
+          </div>
+
+          {/* SEARCH BUTTON (Centered below the ticket options box) */}
+          <div className="flex justify-center mt-6">
+            <button
+              onClick={() => {
+                const formEl = document.getElementById("search-form") as HTMLFormElement;
+                if (formEl) formEl.requestSubmit();
+              }}
+              data-tooltip={t("find_flights_now")}
+              className="px-16 py-4 text-lg bg-gradient-to-r from-[#008cff] to-[#007cdb] hover:from-[#007cdb] hover:to-[#006cc7] text-white font-extrabold rounded-full transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100 flex items-center justify-center gap-2 group tracking-wider uppercase min-w-[240px]"
+            >
+              <span>{t("search_flights")}</span>
+              <span className="group-hover:translate-x-1.5 transition-transform duration-200">➔</span>
+            </button>
           </div>
         </div>
 

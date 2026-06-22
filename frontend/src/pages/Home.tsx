@@ -42,6 +42,11 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedState, setSelectedState] = useState("all");
   const [selectedSpecialFare, setSelectedSpecialFare] = useState("regular");
+  const [hotelCity, setHotelCity] = useState("Delhi, NCR, India");
+  const [homestayCity, setHomestayCity] = useState("Coorg, Karnataka, India");
+  const [holidayDest, setHolidayDest] = useState("Goa, India");
+  const [pickupTime, setPickupTime] = useState("10:00 AM");
+  const [insuranceCountry, setInsuranceCountry] = useState("Thailand");
 
   const handleSwap = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -210,8 +215,7 @@ export default function Home() {
         {/* Main Search Panel Container (Floating Over Hero) */}
         <div className="container max-w-6xl mx-auto -mt-24 px-4 relative z-20">
 
-          {/* Stylish Premium Category Navigation Bar (FlyFast-Style Floating White Rounded Container) */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800/80 shadow-xl rounded-3xl mb-6 w-full flex flex-wrap justify-center lg:justify-between items-center select-none px-4 py-3 relative z-30 gap-y-3 gap-x-2 md:gap-x-4">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800/80 shadow-xl rounded-3xl mb-6 w-full grid grid-cols-5 md:grid-cols-10 select-none px-2 py-3 relative z-30 gap-y-2 gap-x-1 md:gap-x-2">
             {tabs.map((tab: any) => {
               const isActive = activeTab === tab.id;
               return (
@@ -220,24 +224,27 @@ export default function Home() {
                   disabled={tab.disabled}
                   onClick={() => setActiveTab(tab.id)}
                   data-tooltip-bottom={tab.disabled ? `${t("coming_soon")}: ${t(tab.id)}` : `${t("search")} ${t(tab.id)}`}
-                  className={`relative flex flex-col items-center justify-center py-2 px-3 text-center transition-all duration-200 outline-none rounded-2xl group ${isActive
+                  className={`relative flex flex-col items-center justify-center py-2 px-1 text-center transition-all duration-200 outline-none rounded-2xl group w-full ${isActive
                     ? "text-[#008cff] font-extrabold scale-105"
-                    : "text-gray-500 dark:text-gray-400 hover:text-[#008cff] dark:hover:text-blue-400 disabled:opacity-40 disabled:cursor-not-allowed"
+                    : "text-gray-555 dark:text-gray-400 hover:text-[#008cff] dark:hover:text-blue-400 disabled:opacity-40 disabled:cursor-not-allowed"
                     }`}
                 >
                   {tab.badge && (
-                    <span className="absolute top-0 right-2 bg-[#d946ef] text-white text-[8px] font-extrabold px-1.5 py-0.5 uppercase tracking-wide rounded-full shadow-sm scale-90 select-none animate-pulse">
+                    <span className="absolute top-0 right-0 md:right-2 bg-[#d946ef] text-white text-[7px] md:text-[8px] font-extrabold px-1 py-0.2 md:px-1.5 md:py-0.5 uppercase tracking-wide rounded-full shadow-sm scale-90 select-none animate-pulse">
                       {tab.badge}
                     </span>
                   )}
-                  <div className={`flex items-center justify-center mb-1.5 p-2 rounded-full transition-colors ${isActive ? "bg-blue-50 dark:bg-blue-950/40 text-[#008cff]" : "bg-gray-50 dark:bg-gray-800 text-gray-400 group-hover:bg-blue-50/50 dark:group-hover:bg-blue-950/20 group-hover:text-[#008cff]"}`}>
-                    {renderTabIcon(tab.id, "w-6 h-6")}
+                  <div className={`flex items-center justify-center mb-1 p-1.5 md:p-2 rounded-full transition-colors ${isActive ? "bg-blue-50 dark:bg-blue-955/40 text-[#008cff]" : "bg-gray-50 dark:bg-gray-800 text-gray-400 group-hover:bg-blue-50/50 dark:group-hover:bg-blue-955/20 group-hover:text-[#008cff]"}`}>
+                    {renderTabIcon(tab.id, "w-5 h-5 md:w-6 md:h-6")}
                   </div>
-                  <span className="text-[10px] uppercase font-bold tracking-wider leading-none whitespace-nowrap block">
-                    {t(tab.id)}
+                  <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-wider leading-tight block whitespace-nowrap">
+                    {t(`tab_${tab.id}_l1`)}
+                  </span>
+                  <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-wider leading-tight block whitespace-nowrap">
+                    {t(`tab_${tab.id}_l2`)}
                   </span>
                   {isActive && (
-                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-10 h-1 bg-[#008cff] rounded-full"></span>
+                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 md:w-10 h-0.5 md:h-1 bg-[#008cff] rounded-full"></span>
                   )}
                 </button>
               );
@@ -310,13 +317,351 @@ export default function Home() {
             {/* Manual Flight Search Form */}
             <form id="search-form" onSubmit={search} className="relative">
               {/* Search Form Fields Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-5 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800 mb-6">
-                
-                {/* From & To Combo with Floating Swap Button */}
-                <div className="md:col-span-2 relative flex flex-col md:grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800">
-                  {/* From Field */}
-                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-950/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
-                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("from")}</span>
+              {activeTab === "flights" && (
+                <div className="grid grid-cols-1 md:grid-cols-5 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800 mb-6">
+                  {/* From & To Combo with Floating Swap Button */}
+                  <div className="md:col-span-2 relative flex flex-col md:grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800">
+                    {/* From Field */}
+                    <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                      <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("from")}</span>
+                      <input
+                        type="text"
+                        value={origin}
+                        onChange={(e) => setOrigin(e.target.value.toUpperCase())}
+                        className="w-full bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
+                        placeholder="DEL"
+                        maxLength={3}
+                        required
+                      />
+                      <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 truncate max-w-full font-semibold" title={getAirportName(origin)}>
+                        {getAirportName(origin)}
+                      </span>
+                    </div>
+
+                    {/* To Field */}
+                    <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                      <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("to")}</span>
+                      <input
+                        type="text"
+                        value={destination}
+                        onChange={(e) => setDestination(e.target.value.toUpperCase())}
+                        className="w-full bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
+                        placeholder="BOM"
+                        maxLength={3}
+                        required
+                      />
+                      <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 truncate max-w-full font-semibold" title={getAirportName(destination)}>
+                        {getAirportName(destination)}
+                      </span>
+                    </div>
+
+                    {/* Absolute Swap Button */}
+                    <button
+                      type="button"
+                      onClick={handleSwap}
+                      className="absolute z-35 w-9 h-9 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg flex items-center justify-center text-[#008cff] dark:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-750 transition-all duration-200 cursor-pointer active:scale-90
+                        bottom-0 right-6 translate-y-1/2 md:bottom-auto md:right-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2"
+                      title="Swap airports"
+                    >
+                      <span className="text-lg font-bold">⇄</span>
+                    </button>
+                  </div>
+
+                  {/* Departure Date */}
+                  {(() => {
+                    const displayDate = formatDateDisplay(date);
+                    return (
+                      <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px]">
+                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("departure")}</span>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayDate.day}</span>
+                          <span className="text-sm font-bold text-gray-800 dark:text-white">{displayDate.monthYear}</span>
+                        </div>
+                        <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayDate.weekday}</span>
+                        <input
+                          type="date"
+                          value={date}
+                          min={today}
+                          onChange={(e) => setDate(e.target.value)}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                          required
+                        />
+                      </div>
+                    );
+                  })()}
+
+                  {/* Return Date */}
+                  {(() => {
+                    const displayReturn = formatDateDisplay(returnDate);
+                    const isOneWay = tripType === "oneway";
+                    return (
+                      <div 
+                        onClick={() => {
+                          if (isOneWay) setTripType("roundtrip");
+                        }}
+                        className={`bg-white dark:bg-gray-900 p-5 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px] ${
+                          isOneWay 
+                            ? "hover:bg-blue-50/10 dark:hover:bg-blue-955/5" 
+                            : "hover:bg-blue-50/20 dark:hover:bg-blue-955/10"
+                        }`}
+                      >
+                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("return")}</span>
+                        {isOneWay ? (
+                          <>
+                            <span className="text-xl font-extrabold text-[#008cff] mt-1">+ {t("add")} {t("return")}</span>
+                            <span className="block text-xs text-gray-450 dark:text-gray-555 mt-1 font-semibold">
+                              {t("tap_roundtrip")}
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <div className="flex items-baseline gap-1 mt-1">
+                              <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayReturn.day}</span>
+                              <span className="text-sm font-bold text-gray-800 dark:text-white">{displayReturn.monthYear}</span>
+                            </div>
+                            <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayReturn.weekday}</span>
+                            <input
+                              type="date"
+                              value={returnDate}
+                              min={date || today}
+                              onChange={(e) => setReturnDate(e.target.value)}
+                              className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                              required={tripType === "roundtrip"}
+                            />
+                          </>
+                        )}
+                      </div>
+                    );
+                  })()}
+
+                  {/* Travelers Info */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("travelers")}</span>
+                    <div className="flex items-baseline gap-1 mt-1">
+                      <input
+                        type="number"
+                        value={travelers}
+                        min={1}
+                        max={9}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === "") {
+                            setTravelers("");
+                          } else {
+                            const parsed = parseInt(val, 10);
+                            if (!isNaN(parsed)) {
+                              setTravelers(Math.max(1, Math.min(9, parsed)));
+                            }
+                          }
+                        }}
+                        className="w-12 bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none"
+                        placeholder="1"
+                        required
+                      />
+                      <span className="text-sm font-bold text-gray-800 dark:text-white">Traveler(s)</span>
+                    </div>
+                    <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">
+                      {t("economy_class")}
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "hotels" && (
+                <div className="grid grid-cols-1 md:grid-cols-4 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800 mb-6">
+                  {/* City/Location */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">City, Property or Location</span>
+                    <input
+                      type="text"
+                      value={hotelCity}
+                      onChange={(e) => setHotelCity(e.target.value)}
+                      className="w-full bg-transparent font-extrabold text-2xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
+                      placeholder="Delhi, India"
+                      required
+                    />
+                    <span className="block text-xs text-gray-550 dark:text-gray-400 mt-1 font-semibold">India</span>
+                  </div>
+
+                  {/* Check-In Date */}
+                  {(() => {
+                    const displayDate = formatDateDisplay(date);
+                    return (
+                      <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px]">
+                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Check-In Date</span>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayDate.day}</span>
+                          <span className="text-sm font-bold text-gray-800 dark:text-white">{displayDate.monthYear}</span>
+                        </div>
+                        <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayDate.weekday}</span>
+                        <input
+                          type="date"
+                          value={date}
+                          min={today}
+                          onChange={(e) => setDate(e.target.value)}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                          required
+                        />
+                      </div>
+                    );
+                  })()}
+
+                  {/* Check-Out Date */}
+                  {(() => {
+                    const displayReturn = formatDateDisplay(returnDate);
+                    return (
+                      <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px]">
+                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Check-Out Date</span>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayReturn.day}</span>
+                          <span className="text-sm font-bold text-gray-800 dark:text-white">{displayReturn.monthYear}</span>
+                        </div>
+                        <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayReturn.weekday}</span>
+                        <input
+                          type="date"
+                          value={returnDate}
+                          min={date || today}
+                          onChange={(e) => setReturnDate(e.target.value)}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                          required
+                        />
+                      </div>
+                    );
+                  })()}
+
+                  {/* Rooms & Guests */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Rooms & Guests</span>
+                    <div className="flex items-baseline gap-1 mt-1">
+                      <input
+                        type="number"
+                        value={travelers}
+                        min={1}
+                        max={9}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === "") {
+                            setTravelers("");
+                          } else {
+                            const parsed = parseInt(val, 10);
+                            if (!isNaN(parsed)) {
+                              setTravelers(Math.max(1, Math.min(9, parsed)));
+                            }
+                          }
+                        }}
+                        className="w-12 bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none"
+                        placeholder="1"
+                        required
+                      />
+                      <span className="text-sm font-bold text-gray-800 dark:text-white">Guest(s)</span>
+                    </div>
+                    <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">
+                      1 Room / Deluxe Class
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "homestays" && (
+                <div className="grid grid-cols-1 md:grid-cols-4 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800 mb-6">
+                  {/* City/Location */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">City, Locality or Villa Name</span>
+                    <input
+                      type="text"
+                      value={homestayCity}
+                      onChange={(e) => setHomestayCity(e.target.value)}
+                      className="w-full bg-transparent font-extrabold text-2xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
+                      placeholder="Coorg, Karnataka"
+                      required
+                    />
+                    <span className="block text-xs text-gray-550 dark:text-gray-400 mt-1 font-semibold">Karnataka</span>
+                  </div>
+
+                  {/* Check-In Date */}
+                  {(() => {
+                    const displayDate = formatDateDisplay(date);
+                    return (
+                      <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px]">
+                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Check-In Date</span>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayDate.day}</span>
+                          <span className="text-sm font-bold text-gray-800 dark:text-white">{displayDate.monthYear}</span>
+                        </div>
+                        <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayDate.weekday}</span>
+                        <input
+                          type="date"
+                          value={date}
+                          min={today}
+                          onChange={(e) => setDate(e.target.value)}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                          required
+                        />
+                      </div>
+                    );
+                  })()}
+
+                  {/* Check-Out Date */}
+                  {(() => {
+                    const displayReturn = formatDateDisplay(returnDate);
+                    return (
+                      <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px]">
+                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Check-Out Date</span>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayReturn.day}</span>
+                          <span className="text-sm font-bold text-gray-800 dark:text-white">{displayReturn.monthYear}</span>
+                        </div>
+                        <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayReturn.weekday}</span>
+                        <input
+                          type="date"
+                          value={returnDate}
+                          min={date || today}
+                          onChange={(e) => setReturnDate(e.target.value)}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                          required
+                        />
+                      </div>
+                    );
+                  })()}
+
+                  {/* Guests */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Guests</span>
+                    <div className="flex items-baseline gap-1 mt-1">
+                      <input
+                        type="number"
+                        value={travelers}
+                        min={1}
+                        max={9}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === "") {
+                            setTravelers("");
+                          } else {
+                            const parsed = parseInt(val, 10);
+                            if (!isNaN(parsed)) {
+                              setTravelers(Math.max(1, Math.min(9, parsed)));
+                            }
+                          }
+                        }}
+                        className="w-12 bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none"
+                        placeholder="2"
+                        required
+                      />
+                      <span className="text-sm font-bold text-gray-800 dark:text-white">Guest(s)</span>
+                    </div>
+                    <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">
+                      Entire Villa / Homestay
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "holidays" && (
+                <div className="grid grid-cols-1 md:grid-cols-4 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800 mb-6">
+                  {/* From City */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">From City</span>
                     <input
                       type="text"
                       value={origin}
@@ -326,14 +671,258 @@ export default function Home() {
                       maxLength={3}
                       required
                     />
-                    <span className="block text-xs text-gray-550 dark:text-gray-400 mt-1 truncate max-w-full font-semibold" title={getAirportName(origin)}>
-                      {getAirportName(origin)}
-                    </span>
+                    <span className="block text-xs text-gray-550 dark:text-gray-400 mt-1 font-semibold">New Delhi, India</span>
                   </div>
 
-                  {/* To Field */}
-                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-950/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
-                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("to")}</span>
+                  {/* To Destination */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">To Destination / Package</span>
+                    <input
+                      type="text"
+                      value={holidayDest}
+                      onChange={(e) => setHolidayDest(e.target.value)}
+                      className="w-full bg-transparent font-extrabold text-2xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
+                      placeholder="Goa, India"
+                      required
+                    />
+                    <span className="block text-xs text-gray-550 dark:text-gray-400 mt-1 font-semibold">India</span>
+                  </div>
+
+                  {/* Departure Date */}
+                  {(() => {
+                    const displayDate = formatDateDisplay(date);
+                    return (
+                      <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px]">
+                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Departure Date</span>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayDate.day}</span>
+                          <span className="text-sm font-bold text-gray-800 dark:text-white">{displayDate.monthYear}</span>
+                        </div>
+                        <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayDate.weekday}</span>
+                        <input
+                          type="date"
+                          value={date}
+                          min={today}
+                          onChange={(e) => setDate(e.target.value)}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                          required
+                        />
+                      </div>
+                    );
+                  })()}
+
+                  {/* Travelers */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Guests</span>
+                    <div className="flex items-baseline gap-1 mt-1">
+                      <input
+                        type="number"
+                        value={travelers}
+                        min={1}
+                        max={9}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === "") {
+                            setTravelers("");
+                          } else {
+                            const parsed = parseInt(val, 10);
+                            if (!isNaN(parsed)) {
+                              setTravelers(Math.max(1, Math.min(9, parsed)));
+                            }
+                          }
+                        }}
+                        className="w-12 bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none"
+                        placeholder="2"
+                        required
+                      />
+                      <span className="text-sm font-bold text-gray-800 dark:text-white">Traveler(s)</span>
+                    </div>
+                    <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">
+                      Flights + Hotel Package
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "trains" && (
+                <div className="grid grid-cols-1 md:grid-cols-4 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800 mb-6">
+                  {/* From & To Combo with Floating Swap Button */}
+                  <div className="md:col-span-2 relative flex flex-col md:grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800">
+                    {/* From Field */}
+                    <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                      <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">From Station</span>
+                      <input
+                        type="text"
+                        value={origin}
+                        onChange={(e) => setOrigin(e.target.value.toUpperCase())}
+                        className="w-full bg-transparent font-extrabold text-3xl text-gray-850 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
+                        placeholder="DEL"
+                        maxLength={3}
+                        required
+                      />
+                      <span className="block text-xs text-gray-550 dark:text-gray-400 mt-1 truncate max-w-full font-semibold">
+                        New Delhi Station
+                      </span>
+                    </div>
+
+                    {/* To Field */}
+                    <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                      <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">To Station</span>
+                      <input
+                        type="text"
+                        value={destination}
+                        onChange={(e) => setDestination(e.target.value.toUpperCase())}
+                        className="w-full bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
+                        placeholder="BOM"
+                        maxLength={3}
+                        required
+                      />
+                      <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 truncate max-w-full font-semibold">
+                        Mumbai Central
+                      </span>
+                    </div>
+
+                    {/* Absolute Swap Button */}
+                    <button
+                      type="button"
+                      onClick={handleSwap}
+                      className="absolute z-35 w-9 h-9 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg flex items-center justify-center text-[#008cff] dark:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-750 transition-all duration-200 cursor-pointer active:scale-90
+                        bottom-0 right-6 translate-y-1/2 md:bottom-auto md:right-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2"
+                      title="Swap Stations"
+                    >
+                      <span className="text-lg font-bold">⇄</span>
+                    </button>
+                  </div>
+
+                  {/* Travel Date */}
+                  {(() => {
+                    const displayDate = formatDateDisplay(date);
+                    return (
+                      <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px]">
+                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Travel Date</span>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayDate.day}</span>
+                          <span className="text-sm font-bold text-gray-800 dark:text-white">{displayDate.monthYear}</span>
+                        </div>
+                        <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayDate.weekday}</span>
+                        <input
+                          type="date"
+                          value={date}
+                          min={today}
+                          onChange={(e) => setDate(e.target.value)}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                          required
+                        />
+                      </div>
+                    );
+                  })()}
+
+                  {/* Class */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Class & Quota</span>
+                    <span className="block text-xl font-extrabold text-gray-855 dark:text-white mt-1">All Classes</span>
+                    <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">
+                      General Quota (GN)
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "buses" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800 mb-6">
+                  {/* From & To Combo with Floating Swap Button */}
+                  <div className="md:col-span-2 relative flex flex-col md:grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800">
+                    {/* From Field */}
+                    <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                      <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">From City</span>
+                      <input
+                        type="text"
+                        value={origin}
+                        onChange={(e) => setOrigin(e.target.value.toUpperCase())}
+                        className="w-full bg-transparent font-extrabold text-3xl text-gray-850 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
+                        placeholder="DEL"
+                        maxLength={3}
+                        required
+                      />
+                      <span className="block text-xs text-gray-550 dark:text-gray-400 mt-1 truncate max-w-full font-semibold">
+                        Delhi, India
+                      </span>
+                    </div>
+
+                    {/* To Field */}
+                    <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-55/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                      <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">To City</span>
+                      <input
+                        type="text"
+                        value={destination}
+                        onChange={(e) => setDestination(e.target.value.toUpperCase())}
+                        className="w-full bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
+                        placeholder="BOM"
+                        maxLength={3}
+                        required
+                      />
+                      <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 truncate max-w-full font-semibold">
+                        Mumbai, India
+                      </span>
+                    </div>
+
+                    {/* Absolute Swap Button */}
+                    <button
+                      type="button"
+                      onClick={handleSwap}
+                      className="absolute z-35 w-9 h-9 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg flex items-center justify-center text-[#008cff] dark:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-750 transition-all duration-200 cursor-pointer active:scale-90
+                        bottom-0 right-6 translate-y-1/2 md:bottom-auto md:right-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2"
+                      title="Swap Cities"
+                    >
+                      <span className="text-lg font-bold">⇄</span>
+                    </button>
+                  </div>
+
+                  {/* Travel Date */}
+                  {(() => {
+                    const displayDate = formatDateDisplay(date);
+                    return (
+                      <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px]">
+                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Travel Date</span>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayDate.day}</span>
+                          <span className="text-sm font-bold text-gray-800 dark:text-white">{displayDate.monthYear}</span>
+                        </div>
+                        <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayDate.weekday}</span>
+                        <input
+                          type="date"
+                          value={date}
+                          min={today}
+                          onChange={(e) => setDate(e.target.value)}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                          required
+                        />
+                      </div>
+                    );
+                  })()}
+                </div>
+              )}
+
+              {activeTab === "cabs" && (
+                <div className="grid grid-cols-1 md:grid-cols-4 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800 mb-6">
+                  {/* Pick-Up City */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Pick-Up City</span>
+                    <input
+                      type="text"
+                      value={origin}
+                      onChange={(e) => setOrigin(e.target.value.toUpperCase())}
+                      className="w-full bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
+                      placeholder="DEL"
+                      maxLength={3}
+                      required
+                    />
+                    <span className="block text-xs text-gray-550 dark:text-gray-400 mt-1 font-semibold">Delhi, India</span>
+                  </div>
+
+                  {/* Drop-Off City */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Drop-Off City</span>
                     <input
                       type="text"
                       value={destination}
@@ -343,153 +932,322 @@ export default function Home() {
                       maxLength={3}
                       required
                     />
-                    <span className="block text-xs text-gray-550 dark:text-gray-400 mt-1 truncate max-w-full font-semibold" title={getAirportName(destination)}>
-                      {getAirportName(destination)}
-                    </span>
+                    <span className="block text-xs text-gray-550 dark:text-gray-400 mt-1 font-semibold">Mumbai, India</span>
                   </div>
 
-                  {/* Absolute Swap Button */}
-                  <button
-                    type="button"
-                    onClick={handleSwap}
-                    className="absolute z-35 w-9 h-9 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg flex items-center justify-center text-[#008cff] dark:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-750 transition-all duration-200 cursor-pointer active:scale-90
-                      bottom-0 right-6 translate-y-1/2 md:bottom-auto md:right-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2"
-                    title="Swap airports"
-                  >
-                    <span className="text-lg font-bold">⇄</span>
-                  </button>
-                </div>
-
-                {/* Departure Date */}
-                {(() => {
-                  const displayDate = formatDateDisplay(date);
-                  return (
-                    <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px]">
-                      <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("departure")}</span>
-                      <div className="flex items-baseline gap-1 mt-1">
-                        <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayDate.day}</span>
-                        <span className="text-sm font-bold text-gray-800 dark:text-white">{displayDate.monthYear}</span>
+                  {/* Pickup Date */}
+                  {(() => {
+                    const displayDate = formatDateDisplay(date);
+                    return (
+                      <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px]">
+                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Pickup Date</span>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayDate.day}</span>
+                          <span className="text-sm font-bold text-gray-800 dark:text-white">{displayDate.monthYear}</span>
+                        </div>
+                        <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayDate.weekday}</span>
+                        <input
+                          type="date"
+                          value={date}
+                          min={today}
+                          onChange={(e) => setDate(e.target.value)}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                          required
+                        />
                       </div>
-                      <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayDate.weekday}</span>
-                      <input
-                        type="date"
-                        value={date}
-                        min={today}
-                        onChange={(e) => setDate(e.target.value)}
-                        className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
-                        required
-                      />
-                    </div>
-                  );
-                })()}
+                    );
+                  })()}
 
-                {/* Return Date */}
-                {(() => {
-                  const displayReturn = formatDateDisplay(returnDate);
-                  const isOneWay = tripType === "oneway";
-                  return (
-                    <div 
-                      onClick={() => {
-                        if (isOneWay) setTripType("roundtrip");
-                      }}
-                      className={`bg-white dark:bg-gray-900 p-5 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px] ${
-                        isOneWay 
-                          ? "hover:bg-blue-50/10 dark:hover:bg-blue-950/5" 
-                          : "hover:bg-blue-50/20 dark:hover:bg-blue-950/10"
-                      }`}
-                    >
-                      <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("return")}</span>
-                      {isOneWay ? (
-                        <>
-                          <span className="text-xl font-extrabold text-[#008cff] mt-1">+ {t("add")} {t("return")}</span>
-                          <span className="block text-xs text-gray-450 dark:text-gray-500 mt-1 font-semibold">
-                            {t("tap_roundtrip")}
-                          </span>
-                        </>
-                      ) : (
-                        <>
-                          <div className="flex items-baseline gap-1 mt-1">
-                            <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayReturn.day}</span>
-                            <span className="text-sm font-bold text-gray-800 dark:text-white">{displayReturn.monthYear}</span>
-                          </div>
-                          <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayReturn.weekday}</span>
-                          <input
-                            type="date"
-                            value={returnDate}
-                            min={date || today}
-                            onChange={(e) => setReturnDate(e.target.value)}
-                            className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
-                            required={tripType === "roundtrip"}
-                          />
-                        </>
-                      )}
-                    </div>
-                  );
-                })()}
-
-                {/* Travelers Info */}
-                <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-950/10 transition-colors cursor-pointer flex flex-col justify-center min-h-[110px]">
-                  <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("travelers")}</span>
-                  <div className="flex items-baseline gap-1 mt-1">
+                  {/* Pickup Time */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer flex flex-col justify-center min-h-[110px] relative">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Pickup Time</span>
                     <input
-                      type="number"
-                      value={travelers}
-                      min={1}
-                      max={9}
-                      onChange={(e) => {
-                        const val = e.target.value;
-                        if (val === "") {
-                          setTravelers("");
-                        } else {
-                          const parsed = parseInt(val, 10);
-                          if (!isNaN(parsed)) {
-                            setTravelers(Math.max(1, Math.min(9, parsed)));
-                          }
-                        }
-                      }}
-                      className="w-12 bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none"
-                      placeholder="1"
+                      type="text"
+                      value={pickupTime}
+                      onChange={(e) => setPickupTime(e.target.value)}
+                      className="w-full bg-transparent font-extrabold text-2xl text-gray-855 dark:text-white outline-none"
+                      placeholder="10:00 AM"
                       required
                     />
-                    <span className="text-sm font-bold text-gray-800 dark:text-white">Traveler(s)</span>
+                    <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">
+                      Outstation Oneway
+                    </span>
                   </div>
-                  <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">
-                    {t("economy_class")}
-                  </span>
                 </div>
-              </div>
+              )}
+
+              {activeTab === "tours" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800 mb-6">
+                  {/* Destination/Attraction */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Destination / Attraction</span>
+                    <input
+                      type="text"
+                      value={destination}
+                      onChange={(e) => setDestination(e.target.value)}
+                      className="w-full bg-transparent font-extrabold text-2xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
+                      placeholder="Agra, Taj Mahal"
+                      required
+                    />
+                    <span className="block text-xs text-gray-550 dark:text-gray-400 mt-1 font-semibold">Activities & Day Trips</span>
+                  </div>
+
+                  {/* Visit Date */}
+                  {(() => {
+                    const displayDate = formatDateDisplay(date);
+                    return (
+                      <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px]">
+                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Visit Date</span>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayDate.day}</span>
+                          <span className="text-sm font-bold text-gray-800 dark:text-white">{displayDate.monthYear}</span>
+                        </div>
+                        <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayDate.weekday}</span>
+                        <input
+                          type="date"
+                          value={date}
+                          min={today}
+                          onChange={(e) => setDate(e.target.value)}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                          required
+                        />
+                      </div>
+                    );
+                  })()}
+
+                  {/* Tickets */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Tickets / Guests</span>
+                    <div className="flex items-baseline gap-1 mt-1">
+                      <input
+                        type="number"
+                        value={travelers}
+                        min={1}
+                        max={9}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === "") {
+                            setTravelers("");
+                          } else {
+                            const parsed = parseInt(val, 10);
+                            if (!isNaN(parsed)) {
+                              setTravelers(Math.max(1, Math.min(9, parsed)));
+                            }
+                          }
+                        }}
+                        className="w-12 bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none"
+                        placeholder="1"
+                        required
+                      />
+                      <span className="text-sm font-bold text-gray-800 dark:text-white">Ticket(s)</span>
+                    </div>
+                    <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">
+                      Standard Entry Access
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "cruise" && (
+                <div className="grid grid-cols-1 md:grid-cols-3 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800 mb-6">
+                  {/* Destination */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Cruise Destination</span>
+                    <input
+                      type="text"
+                      value={destination}
+                      onChange={(e) => setDestination(e.target.value)}
+                      className="w-full bg-transparent font-extrabold text-2xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
+                      placeholder="Lakshadweep Islands"
+                      required
+                    />
+                    <span className="block text-xs text-gray-550 dark:text-gray-400 mt-1 font-semibold">India Cruising</span>
+                  </div>
+
+                  {/* Departure Month / Date */}
+                  {(() => {
+                    const displayDate = formatDateDisplay(date);
+                    return (
+                      <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px]">
+                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Departure Date</span>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayDate.day}</span>
+                          <span className="text-sm font-bold text-gray-800 dark:text-white">{displayDate.monthYear}</span>
+                        </div>
+                        <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayDate.weekday}</span>
+                        <input
+                          type="date"
+                          value={date}
+                          min={today}
+                          onChange={(e) => setDate(e.target.value)}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                          required
+                        />
+                      </div>
+                    );
+                  })()}
+
+                  {/* Guests & Cabins */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Guests & Cabins</span>
+                    <div className="flex items-baseline gap-1 mt-1">
+                      <input
+                        type="number"
+                        value={travelers}
+                        min={1}
+                        max={9}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === "") {
+                            setTravelers("");
+                          } else {
+                            const parsed = parseInt(val, 10);
+                            if (!isNaN(parsed)) {
+                              setTravelers(Math.max(1, Math.min(9, parsed)));
+                            }
+                          }
+                        }}
+                        className="w-12 bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none"
+                        placeholder="2"
+                        required
+                      />
+                      <span className="text-sm font-bold text-gray-800 dark:text-white">Guest(s)</span>
+                    </div>
+                    <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">
+                      1 Cabin / Oceanview
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === "insurance" && (
+                <div className="grid grid-cols-1 md:grid-cols-4 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800 mb-6">
+                  {/* Destination Country */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Destination Country</span>
+                    <input
+                      type="text"
+                      value={insuranceCountry}
+                      onChange={(e) => setInsuranceCountry(e.target.value)}
+                      className="w-full bg-transparent font-extrabold text-2xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
+                      placeholder="Thailand"
+                      required
+                    />
+                    <span className="block text-xs text-gray-550 dark:text-gray-400 mt-1 font-semibold">Global Coverage</span>
+                  </div>
+
+                  {/* Start Date */}
+                  {(() => {
+                    const displayDate = formatDateDisplay(date);
+                    return (
+                      <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px]">
+                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Trip Start Date</span>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayDate.day}</span>
+                          <span className="text-sm font-bold text-gray-800 dark:text-white">{displayDate.monthYear}</span>
+                        </div>
+                        <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayDate.weekday}</span>
+                        <input
+                          type="date"
+                          value={date}
+                          min={today}
+                          onChange={(e) => setDate(e.target.value)}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                          required
+                        />
+                      </div>
+                    );
+                  })()}
+
+                  {/* End Date */}
+                  {(() => {
+                    const displayReturn = formatDateDisplay(returnDate);
+                    return (
+                      <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px]">
+                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Trip End Date</span>
+                        <div className="flex items-baseline gap-1 mt-1">
+                          <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayReturn.day}</span>
+                          <span className="text-sm font-bold text-gray-800 dark:text-white">{displayReturn.monthYear}</span>
+                        </div>
+                        <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">{displayReturn.weekday}</span>
+                        <input
+                          type="date"
+                          value={returnDate}
+                          min={date || today}
+                          onChange={(e) => setReturnDate(e.target.value)}
+                          className="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10"
+                          required
+                        />
+                      </div>
+                    );
+                  })()}
+
+                  {/* Travelers Age */}
+                  <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer flex flex-col justify-center min-h-[110px]">
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">Traveler's Age</span>
+                    <div className="flex items-baseline gap-1 mt-1">
+                      <input
+                        type="number"
+                        value={travelers}
+                        min={1}
+                        max={9}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          if (val === "") {
+                            setTravelers("");
+                          } else {
+                            const parsed = parseInt(val, 10);
+                            if (!isNaN(parsed)) {
+                              setTravelers(Math.max(1, Math.min(9, parsed)));
+                            }
+                          }
+                        }}
+                        className="w-12 bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none"
+                        placeholder="25"
+                        required
+                      />
+                      <span className="text-sm font-bold text-gray-800 dark:text-white">Traveler(s)</span>
+                    </div>
+                    <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">
+                      Schengen & Worldwide Approved
+                    </span>
+                  </div>
+                </div>
+              )}
 
               {/* Special Fares Selector Row */}
-              <div className="mt-5 flex flex-col md:flex-row md:items-center gap-3">
-                <span className="text-xs font-extrabold text-gray-400 dark:text-gray-505 uppercase tracking-wider shrink-0">
-                  {t("special_fares")}:
-                </span>
-                <div className="flex flex-wrap gap-2.5">
-                  {specialFaresOptions.map((option) => {
-                    const isSelected = selectedSpecialFare === option.id;
-                    return (
-                      <button
-                        key={option.id}
-                        type="button"
-                        onClick={() => setSelectedSpecialFare(option.id)}
-                        className={`flex flex-col items-start px-4 py-2 border rounded-xl transition-all text-left relative ${
-                          isSelected
-                            ? "border-[#008cff] bg-blue-50/40 dark:bg-blue-950/20 text-[#008cff]"
-                            : "border-gray-250 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700 bg-white dark:bg-gray-900 text-gray-755 dark:text-gray-300"
-                        }`}
-                      >
-                        {option.badge && (
-                          <span className="absolute -top-2 right-2 bg-gradient-to-r from-purple-500 to-[#008cff] text-white text-[7px] font-extrabold px-1.5 py-0.2 rounded-full uppercase tracking-wider scale-90">
-                            {option.badge}
-                          </span>
-                        )}
-                        <span className="text-xs font-extrabold">{option.title}</span>
-                        <span className="text-[9px] text-gray-450 dark:text-gray-500 font-semibold">{option.desc}</span>
-                      </button>
-                    );
-                  })}
+              {activeTab === "flights" && (
+                <div className="mt-5 flex flex-col md:flex-row md:items-center gap-3">
+                  <span className="text-xs font-extrabold text-gray-400 dark:text-gray-505 uppercase tracking-wider shrink-0">
+                    {t("special_fares")}:
+                  </span>
+                  <div className="flex flex-wrap gap-2.5">
+                    {specialFaresOptions.map((option) => {
+                      const isSelected = selectedSpecialFare === option.id;
+                      return (
+                        <button
+                          key={option.id}
+                          type="button"
+                          onClick={() => setSelectedSpecialFare(option.id)}
+                          className={`flex flex-col items-start px-4 py-2 border rounded-xl transition-all text-left relative ${
+                            isSelected
+                              ? "border-[#008cff] bg-blue-50/40 dark:bg-blue-955/20 text-[#008cff]"
+                              : "border-gray-255 dark:border-gray-850 hover:border-gray-300 dark:hover:border-gray-700 bg-white dark:bg-gray-900 text-gray-755 dark:text-gray-300"
+                          }`}
+                        >
+                          {option.badge && (
+                            <span className="absolute -top-2 right-2 bg-gradient-to-r from-purple-500 to-[#008cff] text-white text-[7px] font-extrabold px-1.5 py-0.2 rounded-full uppercase tracking-wider scale-90">
+                              {option.badge}
+                            </span>
+                          )}
+                          <span className="text-xs font-extrabold">{option.title}</span>
+                          <span className="text-[9px] text-gray-450 dark:text-gray-500 font-semibold">{option.desc}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
 
             </form>
           </div>
@@ -501,10 +1259,10 @@ export default function Home() {
                 const formEl = document.getElementById("search-form") as HTMLFormElement;
                 if (formEl) formEl.requestSubmit();
               }}
-              data-tooltip={t("find_flights_now")}
+              data-tooltip={t(`search_${activeTab}`)}
               className="px-16 py-4 text-lg bg-gradient-to-r from-[#008cff] to-[#007cdb] hover:from-[#007cdb] hover:to-[#006cc7] text-white font-extrabold rounded-full transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100 flex items-center justify-center gap-2 group tracking-wider uppercase min-w-[240px]"
             >
-              <span>{t("search_flights")}</span>
+              <span>{t(`search_${activeTab}`)}</span>
               <span className="group-hover:translate-x-1.5 transition-transform duration-200">➔</span>
             </button>
           </div>

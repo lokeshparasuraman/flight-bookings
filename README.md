@@ -78,7 +78,7 @@ sequenceDiagram
    ```env
    DATABASE_URL="file:./dev.db"
    PORT=4000
-   JWT_SECRET="wWAewCqNlYWIoINEDonLvXFszMxUZWbC"
+   JWT_SECRET=USE_YOUR_OWN_STRING
    ```
 
 2. **Initialize Database & Seed Data:**

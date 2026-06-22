@@ -1253,18 +1253,32 @@ export default function Home() {
           </div>
 
           {/* SEARCH BUTTON (Centered below the ticket options box) */}
-          <div className="flex justify-center mt-6">
-            <button
-              onClick={() => {
-                const formEl = document.getElementById("search-form") as HTMLFormElement;
-                if (formEl) formEl.requestSubmit();
-              }}
-              data-tooltip={t(`search_${activeTab}`)}
-              className="px-16 py-4 text-lg bg-gradient-to-r from-[#008cff] to-[#007cdb] hover:from-[#007cdb] hover:to-[#006cc7] text-white font-extrabold rounded-full transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100 flex items-center justify-center gap-2 group tracking-wider uppercase min-w-[240px]"
+          <div className="flex flex-col md:flex-row items-center justify-center gap-4 mt-6 relative max-w-2xl mx-auto px-4">
+            <div className="relative">
+              <button
+                onClick={() => {
+                  const formEl = document.getElementById("search-form") as HTMLFormElement;
+                  if (formEl) formEl.requestSubmit();
+                }}
+                data-tooltip={t(`search_${activeTab}`)}
+                className="px-16 py-4 text-lg bg-gradient-to-r from-[#008cff] to-[#007cdb] hover:from-[#007cdb] hover:to-[#006cc7] text-white font-extrabold rounded-full transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100 flex items-center justify-center gap-2 group tracking-wider uppercase min-w-[240px]"
+              >
+                <span>{t(`search_${activeTab}`)}</span>
+                <span className="group-hover:translate-x-1.5 transition-transform duration-200">➔</span>
+              </button>
+            </div>
+
+            {/* The popup card (chatbot launcher hint) made visible just below-right of the search button */}
+            <div 
+              onClick={() => setShowAiChat(true)}
+              className="md:absolute md:left-[calc(50%+140px)] md:top-1/2 md:-translate-y-1/2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-2.5 shadow-lg text-xs font-bold text-gray-755 dark:text-gray-200 cursor-pointer whitespace-nowrap hover:scale-105 transition-all duration-200 animate-bounce flex items-center gap-1.5 z-30"
             >
-              <span>{t(`search_${activeTab}`)}</span>
-              <span className="group-hover:translate-x-1.5 transition-transform duration-200">➔</span>
-            </button>
+              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+              <span>Ask FlyFast AI! 💬</span>
+              {/* Left-pointing arrow for speech bubble on desktop, top-pointing on mobile */}
+              <div className="absolute left-[-6px] top-1/2 -translate-y-1/2 hidden md:block w-3 h-3 bg-white dark:bg-gray-800 border-l border-b border-gray-250 dark:border-gray-700 transform rotate-45"></div>
+              <div className="absolute top-[-6px] left-1/2 -translate-x-1/2 md:hidden w-3 h-3 bg-white dark:bg-gray-800 border-l border-t border-gray-250 dark:border-gray-700 transform rotate-45"></div>
+            </div>
           </div>
         </div>
 

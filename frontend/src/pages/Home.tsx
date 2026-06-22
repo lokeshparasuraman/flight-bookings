@@ -51,20 +51,20 @@ export default function Home() {
       { id: "kerala", code: "COK", titleKey: "places_kerala_title", descKey: "places_kerala_desc", detailsKey: "places_kerala_details", highlightsKey: "places_kerala_highlights", bestTimeKey: "places_kerala_best_time", img: "/places/kerala_houseboat.png", imgs: ["/places/kerala_houseboat.png"], price: "₹4,299" }
     ],
     hotels: [
-      { id: "udaipur", titleKey: "places_udaipur_title", descKey: "places_udaipur_desc", detailsKey: "places_udaipur_details", highlightsKey: "places_udaipur_highlights", bestTimeKey: "places_udaipur_best_time", img: "/places/lake_palace.png", imgs: ["/places/lake_palace.png"], rating: "4.9 ★" },
-      { id: "delhi", titleKey: "places_delhi_title", descKey: "places_delhi_desc", detailsKey: "places_delhi_details", highlightsKey: "places_delhi_highlights", bestTimeKey: "places_delhi_best_time", img: "/places/lake_palace.png", imgs: ["/places/lake_palace.png"], rating: "4.8 ★" }
+      { id: "udaipur", titleKey: "places_udaipur_title", descKey: "places_udaipur_desc", detailsKey: "places_udaipur_details", highlightsKey: "places_udaipur_highlights", bestTimeKey: "places_udaipur_best_time", img: "/places/lake_palace.png", imgs: ["/places/lake_palace.png", "/places/goa_sunset.png"], rating: "4.9 ★" },
+      { id: "delhi", titleKey: "places_delhi_title", descKey: "places_delhi_desc", detailsKey: "places_delhi_details", highlightsKey: "places_delhi_highlights", bestTimeKey: "places_delhi_best_time", img: "/places/delhi_imperial.png", imgs: ["/places/delhi_imperial.png", "/places/taj_mahal_detail.png"], rating: "4.8 ★" }
     ],
     homestays: [
-      { id: "coorg", titleKey: "places_coorg_title", descKey: "places_coorg_desc", detailsKey: "places_coorg_details", highlightsKey: "places_coorg_highlights", bestTimeKey: "places_coorg_best_time", img: "/places/goa_beach.png", imgs: ["/places/goa_beach.png"], rating: "4.7 ★" }
+      { id: "coorg", titleKey: "places_coorg_title", descKey: "places_coorg_desc", detailsKey: "places_coorg_details", highlightsKey: "places_coorg_highlights", bestTimeKey: "places_coorg_best_time", img: "/places/coorg_plantation.png", imgs: ["/places/coorg_plantation.png", "/places/lake_palace.png"], rating: "4.7 ★" }
     ],
     buses: [
-      { id: "ooty", titleKey: "places_ooty_title", descKey: "places_ooty_desc", detailsKey: "places_ooty_details", highlightsKey: "places_ooty_highlights", bestTimeKey: "places_ooty_best_time", img: "/places/kerala_houseboat.png", imgs: ["/places/kerala_houseboat.png"], price: "₹899" }
+      { id: "ooty", titleKey: "places_ooty_title", descKey: "places_ooty_desc", detailsKey: "places_ooty_details", highlightsKey: "places_ooty_highlights", bestTimeKey: "places_ooty_best_time", img: "/places/ooty_tea_gardens.png", imgs: ["/places/ooty_tea_gardens.png", "/places/kerala_houseboat.png"], price: "₹899" }
     ],
     cruise: [
-      { id: "lakshadweep", titleKey: "places_lakshadweep_title", descKey: "places_lakshadweep_desc", detailsKey: "places_lakshadweep_details", highlightsKey: "places_lakshadweep_highlights", bestTimeKey: "places_lakshadweep_best_time", img: "/places/lakshadweep_cruise.png", imgs: ["/places/lakshadweep_cruise.png"], price: "₹18,500" }
+      { id: "lakshadweep", titleKey: "places_lakshadweep_title", descKey: "places_lakshadweep_desc", detailsKey: "places_lakshadweep_details", highlightsKey: "places_lakshadweep_highlights", bestTimeKey: "places_lakshadweep_best_time", img: "/places/lakshadweep_cruise.png", imgs: ["/places/lakshadweep_cruise.png", "/places/lakshadweep_beach.png"], price: "₹18,500" }
     ],
     tours: [
-      { id: "ajanta", titleKey: "places_ajanta_title", descKey: "places_ajanta_desc", detailsKey: "places_ajanta_details", highlightsKey: "places_ajanta_highlights", bestTimeKey: "places_ajanta_best_time", img: "/places/taj_mahal.png", imgs: ["/places/taj_mahal.png"], durationKey: "places_ajanta_duration" }
+      { id: "ajanta", titleKey: "places_ajanta_title", descKey: "places_ajanta_desc", detailsKey: "places_ajanta_details", highlightsKey: "places_ajanta_highlights", bestTimeKey: "places_ajanta_best_time", img: "/places/ajanta_caves.png", imgs: ["/places/ajanta_caves.png", "/places/taj_mahal_detail.png"], durationKey: "places_ajanta_duration" }
     ]
   };
   const nav = useNavigate();
@@ -390,7 +390,8 @@ export default function Home() {
                 return highlights.map((place: any, index: number) => (
                   <div 
                     key={index} 
-                    className="group bg-white dark:bg-gray-850 dark:border-gray-750/60 border border-gray-150 shadow-md overflow-hidden hover:shadow-xl hover:border-booking-lightblue/25 transition-all duration-300 flex flex-col h-full"
+                    onClick={() => setSelectedExplorePlace(place)}
+                    className="group bg-white dark:bg-gray-850 dark:border-gray-750/60 border border-gray-150 shadow-md overflow-hidden hover:shadow-xl hover:border-booking-lightblue/25 transition-all duration-300 flex flex-col h-full cursor-pointer"
                   >
                     {/* Place Image */}
                     <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-900">

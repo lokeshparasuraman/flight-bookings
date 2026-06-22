@@ -130,7 +130,7 @@ export default function Bookings() {
         {/* Left Side: Main Boarding Pass */}
         <div className="flex-1 p-6 md:p-8 space-y-6">
           {/* Header bar */}
-          <div className="flex justify-between items-center">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <FlightIcon className={`w-6 h-6 transform -rotate-45 ${isCancelled ? "text-gray-400" : "text-booking-lightblue"}`} />
               <span className={`font-extrabold tracking-wider uppercase text-sm ${isCancelled ? "text-gray-400 dark:text-gray-500" : "text-gray-800 dark:text-gray-200"}`}>
@@ -138,7 +138,7 @@ export default function Bookings() {
               </span>
             </div>
             
-            <div className="flex items-center gap-3 print:hidden">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 print:hidden">
               {isConfirmed && !isCancelled && (
                 <label className="flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 select-none">
                   <input
@@ -174,7 +174,7 @@ export default function Bookings() {
           {/* Flight Path (Origin and Destination codes) */}
           <div className="flex justify-between items-center gap-4 py-4 border-y border-gray-100 dark:border-gray-700 print:border-black">
             <div>
-              <div className={`text-4xl md:text-5xl font-extrabold ${isCancelled ? "text-gray-400 dark:text-gray-500" : "text-booking-lightblue"}`}>
+              <div className={`text-3xl sm:text-4xl md:text-5xl font-extrabold ${isCancelled ? "text-gray-400 dark:text-gray-500" : "text-booking-lightblue"}`}>
                 {f.origin}
               </div>
               <div className="text-xs text-gray-500 font-semibold mt-1">
@@ -202,7 +202,7 @@ export default function Bookings() {
             </div>
 
             <div className="text-right">
-              <div className={`text-4xl md:text-5xl font-extrabold ${isCancelled ? "text-gray-400 dark:text-gray-500" : "text-booking-lightblue"}`}>
+              <div className={`text-3xl sm:text-4xl md:text-5xl font-extrabold ${isCancelled ? "text-gray-400 dark:text-gray-500" : "text-booking-lightblue"}`}>
                 {f.destination}
               </div>
               <div className="text-xs text-gray-500 font-semibold mt-1">

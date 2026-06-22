@@ -366,7 +366,7 @@ export default function Header() {
           <div className="md:hidden flex items-center space-x-1.5">
             <button
               onClick={toggleTheme}
-              className="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-750 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200/40 dark:border-gray-700/60 transition-all duration-200 focus:outline-none"
+              className="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-750 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200/40 dark:border-gray-700/60 transition-all duration-200 focus:outline-none flex items-center justify-center"
               aria-label="Toggle theme"
             >
               {theme === 'dark' ? (
@@ -376,58 +376,9 @@ export default function Header() {
               )}
             </button>
 
-            {/* Wishlist Trigger */}
-            <button
-              onClick={() => { loadWishlist(); setWishlistOpen(true); }}
-              className="relative p-2.5 rounded-xl bg-gray-50 dark:bg-gray-750 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200/40 dark:border-gray-700/60 transition-all duration-200 focus:outline-none flex items-center justify-center"
-              aria-label={t("my_wishlist")}
-            >
-              <HeartIcon className="w-5 h-5 text-red-500 fill-current animate-pulse" />
-              {wishlistItems.length > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-red-650 text-white text-[9px] font-extrabold w-5 h-5 rounded-full flex items-center justify-center border border-white dark:border-gray-800">
-                  {wishlistItems.length}
-                </span>
-              )}
-            </button>
-
-            {/* Language Selector */}
-            <div className="relative">
-              <button
-                onClick={(e) => { e.stopPropagation(); setActiveDropdown(activeDropdown === "lang" ? null : "lang"); }}
-                className="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-750 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200/40 dark:border-gray-700/60 transition-all duration-200 focus:outline-none flex items-center justify-center gap-1.5 text-xs font-extrabold"
-                aria-label="Change Language"
-              >
-                <GlobeIcon className="w-5 h-5 text-booking-lightblue" />
-                <span className="uppercase text-[9px]">{language}</span>
-              </button>
-              
-              {activeDropdown === "lang" && (
-                <div 
-                  onClick={(e) => e.stopPropagation()}
-                  className="absolute right-0 mt-2 w-36 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-855 shadow-xl z-50 p-1 space-y-0.5"
-                >
-                  {(["en", "ta"] as const).map((lang) => {
-                    const names = { en: "English", ta: "தமிழ்" };
-                    return (
-                      <button
-                        key={lang}
-                        onClick={() => { setLanguage(lang); setActiveDropdown(null); }}
-                        className={`w-full text-left px-3 py-2 text-xs font-semibold hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center justify-between ${
-                          language === lang ? "text-booking-lightblue bg-booking-lightblue/5" : "text-gray-700 dark:text-gray-300"
-                        }`}
-                      >
-                        <span>{names[lang]}</span>
-                        {language === lang && <span className="text-booking-lightblue">✓</span>}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-
             <button
               onClick={() => setMenuOpen(v => !v)}
-              className="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-750 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200/40 dark:border-gray-700/60 transition-all duration-200 focus:outline-none"
+              className="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-750 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200/40 dark:border-gray-700/60 transition-all duration-200 focus:outline-none flex items-center justify-center"
               aria-label="Open menu"
             >
               <svg className="w-5 h-5 text-gray-700 dark:text-gray-300" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -482,6 +433,45 @@ export default function Header() {
                   })()}</span>
                 </Link>
               )}
+
+              {/* Mobile Wishlist Option */}
+              <button
+                onClick={() => { setMenuOpen(false); loadWishlist(); setWishlistOpen(true); }}
+                className="px-4 py-2.5 rounded-lg bg-gray-150/40 dark:bg-gray-700/60 text-gray-800 dark:text-gray-200 flex items-center justify-between font-semibold text-sm w-full text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <HeartIcon className="w-5 h-5 text-red-500 fill-current" />
+                  <span>{t("my_wishlist")}</span>
+                </div>
+                {wishlistItems.length > 0 && (
+                  <span className="bg-red-650 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full">
+                    {wishlistItems.length}
+                  </span>
+                )}
+              </button>
+
+              {/* Mobile Language Selection */}
+              <div className="px-4 py-2 rounded-lg bg-gray-150/40 dark:bg-gray-700/60 text-gray-800 dark:text-gray-200 flex items-center justify-between font-semibold text-sm">
+                <div className="flex items-center gap-3">
+                  <GlobeIcon className="w-5 h-5 text-booking-lightblue" />
+                  <span>{t("select_language")}</span>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => { setLanguage("en"); setMenuOpen(false); }}
+                    className={`px-2 py-1 text-xs font-bold ${language === 'en' ? 'text-booking-lightblue underline font-extrabold' : 'text-gray-500'}`}
+                  >
+                    English
+                  </button>
+                  <button
+                    onClick={() => { setLanguage("ta"); setMenuOpen(false); }}
+                    className={`px-2 py-1 text-xs font-bold ${language === 'ta' ? 'text-booking-lightblue underline font-extrabold' : 'text-gray-500'}`}
+                  >
+                    தமிழ்
+                  </button>
+                </div>
+              </div>
+
               {!token && (
                 <Link
                   to="/login"

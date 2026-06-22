@@ -295,7 +295,7 @@ export default function FlightDetail() {
     const cols = ["A", "B", "C", "D", "E", "F"];
 
     return (
-      <div className="space-y-4 max-w-sm mx-auto p-5 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-255/40 dark:border-gray-700/60 shadow-inner">
+      <div className="space-y-4 max-w-sm mx-auto p-3 sm:p-5 bg-gray-50 dark:bg-gray-800 rounded-2xl border border-gray-255/40 dark:border-gray-700/60 shadow-inner">
         <div className="text-center font-extrabold text-xs uppercase tracking-wider text-booking-lightblue">
           {label}
         </div>
@@ -314,16 +314,16 @@ export default function FlightDetail() {
               </div>
 
               {/* Seat Columns */}
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1 sm:gap-1.5">
                 {cols.map((col, idx) => {
                   const seatId = `${row}${col}`;
                   const isOccupied = occupiedSeats.includes(seatId);
                   const isSelected = selected.includes(seatId);
 
                   // Split seats with aisle between C and D
-                  const aisleMargin = idx === 3 ? "ml-5" : "";
+                  const aisleMargin = idx === 3 ? "ml-2.5 sm:ml-5" : "";
 
-                  let seatStyle = "w-8.5 h-8.5 rounded-lg flex items-center justify-center font-bold text-[11px] border transition-all ";
+                  let seatStyle = "w-[28px] h-[28px] sm:w-[34px] sm:h-[34px] rounded-lg flex items-center justify-center font-bold text-[10px] sm:text-[11px] border transition-all ";
                   if (isOccupied) {
                     seatStyle += "bg-gray-200 dark:bg-gray-700 text-gray-400 cursor-not-allowed border-transparent";
                   } else if (isSelected) {

@@ -37,28 +37,29 @@ export default function Home() {
   const [travelers, setTravelers] = useState<number | "">(1);
   const [showAiChat, setShowAiChat] = useState(false);
   const [activeTab, setActiveTab] = useState("flights");
+  const [selectedExplorePlace, setSelectedExplorePlace] = useState<any | null>(null);
 
   const destinationHighlights = {
     flights: [
-      { title: "Agra (Taj Mahal)", desc: "Witness the monumental symbol of eternal love.", img: "/places/taj_mahal.png", price: "₹2,499" },
-      { title: "Goa Beaches", desc: "Soak in the sun at India's favorite beach paradise.", img: "/places/goa_beach.png", price: "₹3,199" },
-      { title: "Kerala Backwaters", desc: "Unwind on a peaceful houseboat cruise through nature.", img: "/places/kerala_houseboat.png", price: "₹4,299" }
+      { id: "agra", code: "DEL", titleKey: "places_agra_title", descKey: "places_agra_desc", detailsKey: "places_agra_details", highlightsKey: "places_agra_highlights", bestTimeKey: "places_agra_best_time", img: "/places/taj_mahal.png", price: "₹2,499" },
+      { id: "goa", code: "GOI", titleKey: "places_goa_title", descKey: "places_goa_desc", detailsKey: "places_goa_details", highlightsKey: "places_goa_highlights", bestTimeKey: "places_goa_best_time", img: "/places/goa_beach.png", price: "₹3,199" },
+      { id: "kerala", code: "COK", titleKey: "places_kerala_title", descKey: "places_kerala_desc", detailsKey: "places_kerala_details", highlightsKey: "places_kerala_highlights", bestTimeKey: "places_kerala_best_time", img: "/places/kerala_houseboat.png", price: "₹4,299" }
     ],
     hotels: [
-      { title: "Taj Lake Palace, Udaipur", desc: "Experience royal luxury floating on serene waters.", img: "/places/lake_palace.png", rating: "4.9 ★" },
-      { title: "The Imperial, New Delhi", desc: "Colonial-style heritage hotel in the heart of Delhi.", img: "/places/lake_palace.png", rating: "4.8 ★" }
+      { id: "udaipur", titleKey: "places_udaipur_title", descKey: "places_udaipur_desc", detailsKey: "places_udaipur_details", highlightsKey: "places_udaipur_highlights", bestTimeKey: "places_udaipur_best_time", img: "/places/lake_palace.png", rating: "4.9 ★" },
+      { id: "delhi", titleKey: "places_delhi_title", descKey: "places_delhi_desc", detailsKey: "places_delhi_details", highlightsKey: "places_delhi_highlights", bestTimeKey: "places_delhi_best_time", img: "/places/lake_palace.png", rating: "4.8 ★" }
     ],
     homestays: [
-      { title: "Cloud-Mist Villa, Coorg", desc: "Cozy estate cottage overlooking coffee valleys.", img: "/places/goa_beach.png", rating: "4.7 ★" }
+      { id: "coorg", titleKey: "places_coorg_title", descKey: "places_coorg_desc", detailsKey: "places_coorg_details", highlightsKey: "places_coorg_highlights", bestTimeKey: "places_coorg_best_time", img: "/places/goa_beach.png", rating: "4.7 ★" }
     ],
     buses: [
-      { title: "Bangalore to Ooty", desc: "Scenic overnight luxury sleeper bus routes.", img: "/places/kerala_houseboat.png", price: "₹899" }
+      { id: "ooty", titleKey: "places_ooty_title", descKey: "places_ooty_desc", detailsKey: "places_ooty_details", highlightsKey: "places_ooty_highlights", bestTimeKey: "places_ooty_best_time", img: "/places/kerala_houseboat.png", price: "₹899" }
     ],
     cruise: [
-      { title: "Lakshadweep Explorer", desc: "Cruise through pristine lagoons and coral reefs.", img: "/places/lakshadweep_cruise.png", price: "₹18,500" }
+      { id: "lakshadweep", titleKey: "places_lakshadweep_title", descKey: "places_lakshadweep_desc", detailsKey: "places_lakshadweep_details", highlightsKey: "places_lakshadweep_highlights", bestTimeKey: "places_lakshadweep_best_time", img: "/places/lakshadweep_cruise.png", price: "₹18,500" }
     ],
     tours: [
-      { title: "Ajanta & Ellora Caves", desc: "Explore ancient rock-cut Buddhist and Hindu monuments.", img: "/places/taj_mahal.png", duration: "2 Days" }
+      { id: "ajanta", titleKey: "places_ajanta_title", descKey: "places_ajanta_desc", detailsKey: "places_ajanta_details", highlightsKey: "places_ajanta_highlights", bestTimeKey: "places_ajanta_best_time", img: "/places/taj_mahal.png", duration: "2 Days" }
     ]
   };
   const nav = useNavigate();
@@ -384,13 +385,13 @@ export default function Home() {
                 return highlights.map((place: any, index: number) => (
                   <div 
                     key={index} 
-                    className="group bg-white dark:bg-gray-800 border border-gray-150 dark:border-gray-700/80 shadow-md overflow-hidden hover:shadow-xl hover:border-booking-lightblue/25 transition-all duration-300 flex flex-col h-full"
+                    className="group bg-white dark:bg-gray-850 dark:border-gray-750/60 border border-gray-150 shadow-md overflow-hidden hover:shadow-xl hover:border-booking-lightblue/25 transition-all duration-300 flex flex-col h-full"
                   >
                     {/* Place Image */}
                     <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-900">
                       <img 
                         src={place.img} 
-                        alt={place.title}
+                        alt={t(place.titleKey)}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                         loading="lazy"
                       />
@@ -413,21 +414,13 @@ export default function Home() {
                     {/* Content */}
                     <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                       <div>
-                        <h4 className="text-sm font-extrabold text-gray-855 dark:text-white uppercase tracking-wider">{place.title}</h4>
-                        <p className="text-[11px] text-gray-455 dark:text-gray-450 leading-relaxed font-semibold mt-1">
-                          {place.desc}
+                        <h4 className="text-sm font-extrabold text-gray-800 dark:text-white uppercase tracking-wider">{t(place.titleKey)}</h4>
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-semibold mt-1">
+                          {t(place.descKey)}
                         </p>
                       </div>
                       <button 
-                        onClick={() => {
-                          if (activeTab === "flights") {
-                            const codeMatch = place.title.match(/\((.*?)\)/);
-                            if (codeMatch) {
-                              setDestination(codeMatch[1]);
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                            }
-                          }
-                        }}
+                        onClick={() => setSelectedExplorePlace(place)}
                         className="w-full text-center py-2 bg-gray-50 dark:bg-gray-750 hover:bg-booking-lightblue hover:text-white text-[10px] font-extrabold text-booking-lightblue uppercase tracking-wider transition-colors duration-250 border-t border-gray-100 dark:border-gray-700/60"
                       >
                         {t("explore_now")}
@@ -538,6 +531,141 @@ export default function Home() {
                   onClose={() => setShowAiChat(false)}
                   sessionId="home-session"
                 />
+              </div>
+            </div>
+          )}
+
+          {/* Rich Destination Exploration Modal */}
+          {selectedExplorePlace && (
+            <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in backdrop-blur-sm">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 w-full max-w-lg shadow-2xl animate-scale-in overflow-hidden flex flex-col max-h-[90vh]">
+                
+                {/* Image Header Block */}
+                <div className="relative h-56 bg-gray-100 dark:bg-gray-955 overflow-hidden shrink-0">
+                  <img 
+                    src={selectedExplorePlace.img} 
+                    alt={t(selectedExplorePlace.titleKey)} 
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent"></div>
+                  
+                  {/* Close floating button */}
+                  <button 
+                    onClick={() => setSelectedExplorePlace(null)}
+                    className="absolute top-4 right-4 w-9 h-9 bg-black/40 hover:bg-black/60 text-white flex items-center justify-center font-bold transition-all focus:outline-none"
+                    aria-label={t("places_close_details")}
+                  >
+                    ✕
+                  </button>
+
+                  {/* Title labels overlay */}
+                  <div className="absolute bottom-4 left-5 right-5 text-white">
+                    <h3 className="text-xl md:text-2xl font-extrabold uppercase tracking-wide leading-tight">
+                      {t(selectedExplorePlace.titleKey)}
+                    </h3>
+                    <p className="text-xs text-gray-300 font-semibold mt-1">
+                      {t(selectedExplorePlace.descKey)}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Body Details Container */}
+                <div className="p-6 overflow-y-auto flex-1 space-y-5 text-left text-sm scrollbar-thin">
+                  
+                  {/* Description segment */}
+                  <div className="space-y-1.5">
+                    <h4 className="font-extrabold text-xs uppercase tracking-wider text-booking-lightblue">
+                      {t("places_overview_label")}
+                    </h4>
+                    <p className="text-gray-600 dark:text-gray-300 leading-relaxed font-semibold">
+                      {t(selectedExplorePlace.detailsKey)}
+                    </p>
+                  </div>
+
+                  {/* Bulleted attractions */}
+                  <div className="space-y-2">
+                    <h4 className="font-extrabold text-xs uppercase tracking-wider text-booking-lightblue">
+                      {t("places_highlights_label")}
+                    </h4>
+                    <ul className="space-y-1.5 text-gray-500 dark:text-gray-400">
+                      {t(selectedExplorePlace.highlightsKey).split(", ").map((hl: string, i: number) => (
+                        <li key={i} className="flex items-start gap-2">
+                          <span className="text-[#ff6636] font-bold">✓</span>
+                          <span className="font-semibold text-xs sm:text-sm">{hl}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* Seasonal advice */}
+                  <div className="space-y-1">
+                    <h4 className="font-extrabold text-xs uppercase tracking-wider text-booking-lightblue">
+                      {t("places_best_time_label")}
+                    </h4>
+                    <p className="text-gray-800 dark:text-gray-200 font-extrabold">
+                      {t(selectedExplorePlace.bestTimeKey)}
+                    </p>
+                  </div>
+
+                  {/* Dynamic metric (Price/Rating/Duration) footer bar */}
+                  {selectedExplorePlace.price && (
+                    <div className="pt-3 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-xs">
+                      <span className="text-gray-400 font-bold uppercase tracking-wider">{t("starting_from")}</span>
+                      <span className="text-xl font-extrabold text-[#ff6636]">{selectedExplorePlace.price}</span>
+                    </div>
+                  )}
+
+                  {selectedExplorePlace.rating && (
+                    <div className="pt-3 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-xs">
+                      <span className="text-gray-400 font-bold uppercase tracking-wider">User Rating</span>
+                      <span className="text-xs font-extrabold bg-amber-500 text-gray-950 px-2 py-0.5 font-mono">{selectedExplorePlace.rating}</span>
+                    </div>
+                  )}
+
+                  {selectedExplorePlace.duration && (
+                    <div className="pt-3 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-xs">
+                      <span className="text-gray-400 font-bold uppercase tracking-wider">Duration</span>
+                      <span className="text-xs font-extrabold text-[#ff6636] bg-[#ff6636]/10 px-2 py-0.5">{selectedExplorePlace.duration}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Footer buttons row */}
+                <div className="p-5 bg-gray-50 dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800 shrink-0 flex gap-3">
+                  <button 
+                    onClick={() => setSelectedExplorePlace(null)}
+                    className="flex-1 py-3 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-extrabold text-xs uppercase tracking-wider transition-colors hover:bg-gray-100 dark:hover:bg-gray-850"
+                  >
+                    {t("places_close_details")}
+                  </button>
+                  
+                  {activeTab === "flights" && selectedExplorePlace.code && (
+                    <button 
+                      onClick={() => {
+                        setDestination(selectedExplorePlace.code);
+                        setSelectedExplorePlace(null);
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className="flex-1 py-3 bg-gradient-to-r from-[#ff6636] to-[#ff3600] text-white font-extrabold text-xs uppercase tracking-wider transition-all hover:brightness-105 shadow-md"
+                    >
+                      {t("places_action_select")}
+                    </button>
+                  )}
+
+                  {activeTab !== "flights" && (
+                    <button 
+                      onClick={() => {
+                        setSelectedExplorePlace(null);
+                        // Redirect user visually back to target category console
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                      }}
+                      className="flex-1 py-3 bg-booking-lightblue text-white font-extrabold text-xs uppercase tracking-wider transition-all hover:brightness-105 shadow-md"
+                    >
+                      {t("places_action_book")}
+                    </button>
+                  )}
+                </div>
+
               </div>
             </div>
           )}

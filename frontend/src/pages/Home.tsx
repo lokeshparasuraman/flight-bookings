@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import EnhancedAiChat from "../components/EnhancedAiChat";
@@ -25,6 +25,80 @@ import {
 } from "../components/Icons";
 import Footer from "../components/Footer";
 
+
+// ─── Draggable Floating AI Button ─────────────────────────────────────────────
+function DraggableAiButton({ onClick }: { onClick: () => void }) {
+  const btnRef = useRef<HTMLDivElement>(null);
+  const dragging = useRef(false);
+  const startPos = useRef({ x: 0, y: 0 });
+  const startBtn = useRef({ x: 0, y: 0 });
+  const moved = useRef(false);
+
+  // Default position: bottom-right corner
+  const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
+
+  useEffect(() => {
+    // Set initial position relative to viewport
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    setPos({ x: vw - 84, y: vh - 84 });
+  }, []);
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    if (!btnRef.current) return;
+    dragging.current = true;
+    moved.current = false;
+    const rect = btnRef.current.getBoundingClientRect();
+    startPos.current = { x: e.clientX, y: e.clientY };
+    startBtn.current = { x: rect.left, y: rect.top };
+    btnRef.current.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragging.current) return;
+    const dx = e.clientX - startPos.current.x;
+    const dy = e.clientY - startPos.current.y;
+    if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved.current = true;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const newX = Math.min(vw - 68, Math.max(0, startBtn.current.x + dx));
+    const newY = Math.min(vh - 68, Math.max(0, startBtn.current.y + dy));
+    setPos({ x: newX, y: newY });
+  };
+
+  const onPointerUp = (e: React.PointerEvent) => {
+    dragging.current = false;
+    if (!moved.current) onClick();
+  };
+
+  if (!pos) return null;
+
+  return (
+    <div
+      ref={btnRef}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      style={{ left: pos.x, top: pos.y }}
+      className="fixed z-50 select-none cursor-grab active:cursor-grabbing"
+      title="Ask FlyFast AI"
+    >
+      {/* Animated pulsing rings */}
+      <span className="absolute inset-0 rounded-full bg-violet-500/30 animate-ping" />
+      <span className="absolute inset-[-6px] rounded-full border-2 border-violet-400/40 animate-pulse" />
+
+      {/* Main circle button */}
+      <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-violet-600 via-fuchsia-500 to-[#008cff] flex items-center justify-center shadow-[0_0_24px_6px_rgba(139,92,246,0.45)] hover:shadow-[0_0_32px_10px_rgba(139,92,246,0.6)] transition-shadow duration-300">
+        <RobotIcon className="w-8 h-8 text-white drop-shadow" />
+        {/* Online dot */}
+        <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-emerald-400 border-2 border-white rounded-full shadow animate-pulse" />
+      </div>
+    </div>
+  );
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
 export default function Home() {
   const { t } = useLanguage();
   const [tripType, setTripType] = useState<"oneway" | "roundtrip">("oneway");
@@ -308,11 +382,11 @@ export default function Home() {
             <form id="search-form" onSubmit={search} className="relative">
               {/* Search Form Fields Grid */}
               {activeTab === "flights" && (
-                <div className="grid grid-cols-1 md:grid-cols-5 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden bg-white dark:bg-gray-900 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800 mb-6">
-                  {/* From & To Combo with Floating Swap Button */}
-                  <div className="md:col-span-2 relative flex flex-col md:grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800">
+                <div className="grid grid-cols-1 md:grid-cols-5 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-visible md:overflow-hidden bg-white dark:bg-gray-900 divide-y md:divide-y-0 md:divide-x divide-gray-200 dark:divide-gray-800 mb-6">
+                  {/* From & To Combo with Swap Button */}
+                  <div className="md:col-span-2 relative flex flex-col md:grid md:grid-cols-2 divide-gray-200 dark:divide-gray-800 border border-gray-200 dark:border-gray-800 md:border-0 rounded-2xl md:rounded-none overflow-visible">
                     {/* From Field */}
-                    <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                    <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[100px] border-b border-gray-200 dark:border-gray-800 md:border-b-0 md:border-r">
                       <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("from")}</span>
                       <input
                         type="text"
@@ -328,8 +402,20 @@ export default function Home() {
                       </span>
                     </div>
 
+                    {/* Mobile Swap Row — shown only on mobile between FROM and TO */}
+                    <div className="flex md:hidden items-center justify-center py-2 bg-gray-50 dark:bg-gray-850 border-b border-gray-200 dark:border-gray-800">
+                      <button
+                        type="button"
+                        onClick={handleSwap}
+                        className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 border-2 border-[#008cff] shadow-md flex items-center justify-center text-[#008cff] active:scale-90 transition-all duration-200"
+                        title="Swap airports"
+                      >
+                        <span className="text-xl font-bold leading-none">⇄</span>
+                      </button>
+                    </div>
+
                     {/* To Field */}
-                    <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[110px]">
+                    <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[100px]">
                       <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("to")}</span>
                       <input
                         type="text"
@@ -345,12 +431,11 @@ export default function Home() {
                       </span>
                     </div>
 
-                    {/* Absolute Swap Button */}
+                    {/* Desktop Swap Button — absolute centre between FROM and TO */}
                     <button
                       type="button"
                       onClick={handleSwap}
-                      className="absolute z-35 w-9 h-9 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg flex items-center justify-center text-[#008cff] dark:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-750 transition-all duration-200 cursor-pointer active:scale-90
-                        bottom-0 right-6 translate-y-1/2 md:bottom-auto md:right-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2"
+                      className="hidden md:flex absolute z-30 w-9 h-9 rounded-full bg-white dark:bg-gray-800 border-2 border-[#008cff] shadow-md hover:shadow-lg items-center justify-center text-[#008cff] hover:bg-blue-50 dark:hover:bg-gray-750 transition-all duration-200 cursor-pointer active:scale-90 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
                       title="Swap airports"
                     >
                       <span className="text-lg font-bold">⇄</span>
@@ -772,12 +857,22 @@ export default function Home() {
                       </span>
                     </div>
 
-                    {/* Absolute Swap Button */}
+                    {/* Mobile Swap Row for Trains */}
+                    <div className="flex md:hidden items-center justify-center py-2 bg-gray-50 dark:bg-gray-850 border-b border-gray-200 dark:border-gray-800">
+                      <button
+                        type="button"
+                        onClick={handleSwap}
+                        className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 border-2 border-[#008cff] shadow-md flex items-center justify-center text-[#008cff] active:scale-90 transition-all duration-200"
+                        title="Swap Stations"
+                      >
+                        <span className="text-xl font-bold leading-none">⇄</span>
+                      </button>
+                    </div>
+                    {/* Desktop Swap Button for Trains */}
                     <button
                       type="button"
                       onClick={handleSwap}
-                      className="absolute z-35 w-9 h-9 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg flex items-center justify-center text-[#008cff] dark:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-750 transition-all duration-200 cursor-pointer active:scale-90
-                        bottom-0 right-6 translate-y-1/2 md:bottom-auto md:right-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2"
+                      className="hidden md:flex absolute z-30 w-9 h-9 rounded-full bg-white dark:bg-gray-800 border-2 border-[#008cff] shadow-md hover:shadow-lg items-center justify-center text-[#008cff] hover:bg-blue-50 dark:hover:bg-gray-750 transition-all duration-200 cursor-pointer active:scale-90 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
                       title="Swap Stations"
                     >
                       <span className="text-lg font-bold">⇄</span>
@@ -856,12 +951,22 @@ export default function Home() {
                       </span>
                     </div>
 
-                    {/* Absolute Swap Button */}
+                    {/* Mobile Swap Row for Buses */}
+                    <div className="flex md:hidden items-center justify-center py-2 bg-gray-50 dark:bg-gray-850 border-b border-gray-200 dark:border-gray-800">
+                      <button
+                        type="button"
+                        onClick={handleSwap}
+                        className="w-10 h-10 rounded-full bg-white dark:bg-gray-800 border-2 border-[#008cff] shadow-md flex items-center justify-center text-[#008cff] active:scale-90 transition-all duration-200"
+                        title="Swap Cities"
+                      >
+                        <span className="text-xl font-bold leading-none">⇄</span>
+                      </button>
+                    </div>
+                    {/* Desktop Swap Button for Buses */}
                     <button
                       type="button"
                       onClick={handleSwap}
-                      className="absolute z-35 w-9 h-9 rounded-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-md hover:shadow-lg flex items-center justify-center text-[#008cff] dark:text-blue-400 hover:bg-gray-50 dark:hover:bg-gray-750 transition-all duration-200 cursor-pointer active:scale-90
-                        bottom-0 right-6 translate-y-1/2 md:bottom-auto md:right-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2"
+                      className="hidden md:flex absolute z-30 w-9 h-9 rounded-full bg-white dark:bg-gray-800 border-2 border-[#008cff] shadow-md hover:shadow-lg items-center justify-center text-[#008cff] hover:bg-blue-50 dark:hover:bg-gray-750 transition-all duration-200 cursor-pointer active:scale-90 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
                       title="Swap Cities"
                     >
                       <span className="text-lg font-bold">⇄</span>
@@ -1691,29 +1796,8 @@ export default function Home() {
             </div>
           )}
 
-          {/* Floating Cute Robot Chat Widget */}
-          <div className="fixed bottom-6 right-6 z-40 flex items-center gap-3 group select-none">
-            {/* Speech Bubble */}
-            <div 
-              onClick={() => setShowAiChat(true)}
-              className="relative bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl px-4 py-2.5 shadow-lg text-xs font-bold text-gray-755 dark:text-gray-200 cursor-pointer whitespace-nowrap hover:scale-105 transition-all duration-200 animate-bounce"
-            >
-              Ask FlyFast AI! 💬
-              {/* Small arrow for speech bubble */}
-              <div className="absolute right-4 bottom-[-6px] w-3 h-3 bg-white dark:bg-gray-800 border-r border-b border-gray-250 dark:border-gray-700 transform rotate-45"></div>
-            </div>
-            
-            {/* Robot Circular Trigger */}
-            <button
-              onClick={() => setShowAiChat(true)}
-              className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-[#008cff] flex items-center justify-center text-white shadow-xl hover:shadow-2xl hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer relative"
-              aria-label="Open AI Assistant"
-            >
-              <RobotIcon className="w-7 h-7 text-white animate-pulse" />
-              {/* Active dot indicator */}
-              <span className="absolute top-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-gray-900 rounded-full animate-pulse"></span>
-            </button>
-          </div>
+          {/* Draggable Floating AI Chat Button */}
+          <DraggableAiButton onClick={() => setShowAiChat(true)} />
         </div>
       </div>
       <Footer />

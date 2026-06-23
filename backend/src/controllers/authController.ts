@@ -110,6 +110,7 @@ router.post(
   }
 );
 
+export default router;
 router.post(
   "/login-otp/send",
   body("identifier").isString(),
@@ -142,25 +143,3 @@ router.post(
     }
   }
 );
-
-router.post(
-  "/dev/otp/latest",
-  body("identifier").isString(),
-  body("type").optional().isIn(["PHONE", "LOGIN", "RESET"]),
-  async (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) return res.status(400).json({ error: "Invalid input", details: errors.array() });
-    try {
-      const expose = String(process.env.DEV_OTP_EXPOSE || "").toLowerCase() === "true";
-      const env = String(process.env.NODE_ENV || "").toLowerCase();
-      if (!expose || env === "production") return res.status(403).json({ error: "Not allowed" });
-      const { identifier, type } = req.body as { identifier: string; type?: "PHONE" | "LOGIN" | "RESET" };
-      const r = await authService.getLatestOtp(identifier, type);
-      res.json(r);
-    } catch (e) {
-      next(e);
-    }
-  }
-);
-
-export default router;

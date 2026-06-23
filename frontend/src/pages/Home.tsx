@@ -84,15 +84,11 @@ function DraggableAiButton({ onClick }: { onClick: () => void }) {
       className="fixed z-50 select-none cursor-grab active:cursor-grabbing"
       title="Ask FlyFast AI"
     >
-      {/* Animated pulsing rings */}
-      <span className="absolute inset-0 rounded-full bg-violet-500/30 animate-ping" />
-      <span className="absolute inset-[-6px] rounded-full border-2 border-violet-400/40 animate-pulse" />
-
       {/* Main circle button */}
-      <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-violet-600 via-fuchsia-500 to-[#008cff] flex items-center justify-center shadow-[0_0_24px_6px_rgba(139,92,246,0.45)] hover:shadow-[0_0_32px_10px_rgba(139,92,246,0.6)] transition-shadow duration-300">
-        <RobotIcon className="w-8 h-8 text-white drop-shadow" />
+      <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-violet-600 via-fuchsia-500 to-[#008cff] flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-300">
+        <RobotIcon className="w-8 h-8 text-white" />
         {/* Online dot */}
-        <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-emerald-400 border-2 border-white rounded-full shadow animate-pulse" />
+        <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-emerald-400 border-2 border-white rounded-full shadow" />
       </div>
     </div>
   );

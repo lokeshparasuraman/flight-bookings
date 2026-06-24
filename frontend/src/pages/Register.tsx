@@ -1,3 +1,24 @@
+/**
+ * Register.tsx — New Passenger Account Registration
+ *
+ * Two-step registration flow:
+ *
+ * STEP 1 — Account Details Form (otpStep = false)
+ *   User fills in: full name, email, phone, password
+ *   On submit, the backend sends an OTP to the phone number
+ *   (or immediately returns a token in some environments)
+ *
+ * STEP 2 — OTP Verification (otpStep = true)
+ *   User enters the 6-digit code sent to their phone
+ *   On success, we get a JWT token and log the user in
+ *
+ * DEV HELPER:
+ *   In development mode (IS_DEV = true), a "Show OTP" button appears.
+ *   This fetches the latest OTP from the backend's dev endpoint so
+ *   developers can test registration without needing a real phone.
+ *   This endpoint is disabled in production.
+ */
+
 import React, { useState} from "react";
 import api, { setAuthToken } from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
@@ -8,17 +29,28 @@ import { useLanguage } from "../contexts/LanguageContext";
 
 export default function Register() {
   const { t } = useLanguage();
+
+  // Only true during local development — enables the OTP reveal helper button
   const IS_DEV = (import.meta as any).env?.DEV === true;
+
+  // Step 1 form fields
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
+
+  // Password visibility toggle
   const [showPassword, setShowPassword] = useState(false);
+
+  // Flips to true after step 1 succeeds and OTP has been sent
   const [otpStep, setOtpStep] = useState(false);
   const [otpCode, setOtpCode] = useState("");
+
+  // Dev-only: holds the OTP value fetched from the backend dev endpoint
   const [devOtp, setDevOtp] = useState("");
 
  
@@ -93,13 +125,15 @@ export default function Register() {
       className="min-h-screen relative bg-cover bg-center flex flex-col text-gray-900 dark:text-gray-100"
       style={{ backgroundImage: "url('/travel_hero_bg.png')" }}
     >
-      {/* Background overlay */}
+      {/* Dark overlay for text contrast on the hero background image */}
       <div className="absolute inset-0 bg-[#18181b]/50 dark:bg-[#09090b]/80 z-0"></div>
       
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header />
         <div className="flex-1 flex items-center justify-center py-12 px-4">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-800 rounded-3xl shadow-2xl w-full max-w-md p-8 md:p-10 animate-scale-in">
+          {/* Card: p-6 on tiny phones, p-8 on small, p-10 on medium+
+              Matches the Login page padding so both feel consistent.         */}
+          <div className="bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-800 rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-8 md:p-10 animate-scale-in">
             <div>
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">

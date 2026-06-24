@@ -1,3 +1,24 @@
+/**
+ * Login.tsx — Passenger Login Page
+ *
+ * This page handles three different modes via state, all on the same URL:
+ *
+ * 1. DEFAULT (forgotMode = false): Standard email/phone + password login form
+ * 2. FORGOT MODE (forgotMode = true, step 1): User enters their identifier
+ *    and we send a reset code (OTP) to them
+ * 3. FORGOT MODE (step 2): User enters the code + new password to complete reset
+ *
+ * IDENTIFIER VALIDATION:
+ * We accept both email addresses and phone numbers as login identifiers.
+ * The `identifierValid` computed value runs a regex check in real-time so
+ * we can disable the "Send OTP" button until the input looks valid.
+ * Phone regex: international format starting with + or digits, 10-15 chars.
+ *
+ * AUTH REDIRECT:
+ * If the user already has a valid token in localStorage when they land here,
+ * we redirect them home immediately via useEffect.
+ */
+
 import { useEffect, useState } from "react";
 import api, { setAuthToken } from "../services/api";
 import { useNavigate, Link } from "react-router-dom";
@@ -14,10 +35,17 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const nav = useNavigate();
 
+  // Toggle for the password visibility eye icon
   const [showPassword, setShowPassword] = useState(false);
+
+  // Flips to true when user clicks "Forgot password?"
+  // In forgot mode, the login form is replaced by the OTP request form
   const [forgotMode, setForgotMode] = useState(false);
   const [resetCode, setResetCode] = useState("");
   const [newPassword, setNewPassword] = useState("");
+
+  // Real-time identifier validation — accepts both email and phone number
+  // This is used to disable the "Send OTP" button until the input looks valid
   const identifierValid = (() => {
     const id = String(identifier).trim();
     const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(id);
@@ -26,11 +54,15 @@ export default function Login() {
   })();
   
   useEffect(() => {
-      const token = localStorage.getItem("token");
-      if (token) {
-        nav("/"); // redirect to home
-      }
-    }, []);
+    // If the user is already logged in, no reason to show the login page—
+    // bounce them straight to home
+    const token = localStorage.getItem("token");
+    if (token) {
+      nav("/");
+    }
+  }, []);
+
+  // Standard login form submission
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
@@ -39,7 +71,7 @@ export default function Login() {
     try {
       const r = await api.post("/auth/login", { identifier, password });
       const token = r.data.token;
-      setAuthToken(token);
+      setAuthToken(token); // Also sets the auth header on the axios instance
       localStorage.setItem("token", token);
       nav("/");
     } catch (err: any) {
@@ -83,13 +115,16 @@ export default function Login() {
       className="min-h-screen relative bg-cover bg-center flex flex-col text-gray-900 dark:text-gray-100"
       style={{ backgroundImage: "url('/travel_hero_bg.png')" }}
     >
-      {/* Background overlay */}
+      {/* Dark overlay on the hero background image for text contrast.
+          Darker in dark mode since the image itself is already colourful.    */}
       <div className="absolute inset-0 bg-[#18181b]/50 dark:bg-[#09090b]/80 z-0"></div>
       
       <div className="relative z-10 flex flex-col min-h-screen">
         <Header />
         <div className="flex-1 flex items-center justify-center py-12 px-4">
-          <div className="bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-800 rounded-3xl shadow-2xl w-full max-w-md p-8 md:p-10 animate-scale-in">
+          {/* Card: p-6 on tiny phones, p-8 on small, p-10 on medium+
+              This prevents the form from running edge-to-edge on 360px phones */}
+          <div className="bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-800 rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-8 md:p-10 animate-scale-in">
             <div>
               <div className="text-center mb-8">
                 <FlightIcon className="w-16 h-16 text-booking-lightblue mx-auto mb-4" />

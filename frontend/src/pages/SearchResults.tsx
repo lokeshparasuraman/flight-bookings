@@ -1,3 +1,33 @@
+/**
+ * SearchResults.tsx — Flight Search Results Page
+ *
+ * This page is navigated to from Home with query params like:
+ *   /search?origin=DEL&destination=BOM&date=2025-06-28&tripType=oneway
+ *   /search?origin=DEL&destination=BOM&date=2025-06-28&tripType=roundtrip&returnDate=2025-07-01
+ *
+ * DATA FLOW:
+ * On mount, we fetch outbound flights and (if round trip) return flights in parallel.
+ * Flights are then run through processFlights() which applies client-side filters
+ * and sorting before rendering. This keeps filtering instant with no server round trips.
+ *
+ * ROUND TRIP MODE:
+ * When tripType=roundtrip, we show two columns side by side (stacks on mobile).
+ * The user selects one outbound flight and one return flight.
+ * A sticky bottom bar shows the combined total and a "Book Round Trip" CTA.
+ * Clicking it navigates to /flight/:outboundId?returnFlightId=:returnId
+ *
+ * FILTERS:
+ * - Sort by: cheapest / most expensive / earliest departure / shortest flight
+ * - Airline: filter to specific airline(s) — toggleable pill buttons
+ * - Time slot: morning (6-12), afternoon (12-18), evening (18-6)
+ * All filters are client-side and update instantly.
+ *
+ * AI CHAT:
+ * After results load, an embedded AI chat panel appears at the bottom.
+ * Users can ask natural language questions like "which flight has extra legroom"
+ * or "is IndiGo or Air India better for this route".
+ */
+
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import api from "../services/api";
@@ -8,6 +38,7 @@ import { FlightIcon } from "../components/Icons";
 import Footer from "../components/Footer";
 import { useLanguage } from "../contexts/LanguageContext";
 
+// Simple helper to read query params from the URL
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
@@ -16,22 +47,26 @@ export default function SearchResults() {
   const { t } = useLanguage();
   const q = useQuery();
   const navigate = useNavigate();
+
+  // Pull search parameters straight from the URL
   const origin = q.get("origin") || "DEL";
   const destination = q.get("destination") || "BOM";
   const date = q.get("date") || "";
   const tripType = q.get("tripType") || "oneway";
   const returnDate = q.get("returnDate") || "";
 
+  // outboundFlights: DEL → BOM flights on the departure date
+  // returnFlights: BOM → DEL flights on the return date (round trip only)
   const [outboundFlights, setOutboundFlights] = useState<any[]>([]);
   const [returnFlights, setReturnFlights] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Filters & Sorting state
+  // Filter & sort state — all filtering happens client-side for speed
   const [selectedAirlines, setSelectedAirlines] = useState<string[]>([]);
   const [selectedTimes, setSelectedTimes] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState<string>("cheapest");
 
-  // Round-trip selections
+  // Round-trip: tracks which outbound and return flights the user has selected
   const [selectedOutbound, setSelectedOutbound] = useState<any | null>(null);
   const [selectedReturn, setSelectedReturn] = useState<any | null>(null);
 
@@ -39,6 +74,8 @@ export default function SearchResults() {
     window.scrollTo(0, 0);
     setLoading(true);
 
+    // Fetch both directions in parallel using Promise.all
+    // If it's a one-way trip, fetchReturn resolves immediately
     const fetchOutbound = api.get("/flights/search", { params: { origin, destination, date } })
       .then((r) => setOutboundFlights(r.data))
       .catch(() => setOutboundFlights([]));
@@ -105,16 +142,27 @@ export default function SearchResults() {
     ...returnFlights.map(f => f.airline)
   ]));
 
-  // Low latency client-side filter and sorting processor
+  /**
+   * processFlights — Client-side filter + sort pipeline
+   *
+   * 1. Remove flights that have already departed (past departure time)
+   * 2. Filter by selected airlines (if any airline filters are active)
+   * 3. Filter by time slot (morning/afternoon/evening)
+   * 4. Sort by the selected sort option
+   *
+   * This runs synchronously on every render — fast because flight lists
+   * are typically small (< 100 items for a single route/date).
+   */
   const processFlights = (flightsList: any[]) => {
+    // Step 1: Remove already-departed flights
     let result = flightsList.filter((f) => new Date(f.departure).getTime() > Date.now());
 
-    // 1. Filter by Airline Brand
+    // Step 2: Filter by Airline Brand
     if (selectedAirlines.length > 0) {
       result = result.filter(f => selectedAirlines.includes(f.airline));
     }
 
-    // 2. Filter by Departure Time Windows
+    // Step 3: Filter by Departure Time Windows
     if (selectedTimes.length > 0) {
       result = result.filter(f => {
         const hour = new Date(f.departure).getHours();
@@ -125,7 +173,7 @@ export default function SearchResults() {
       });
     }
 
-    // 3. Sort Flights
+    // Step 4: Sort Flights
     return [...result].sort((a, b) => {
       if (sortBy === "cheapest") return a.basePriceCents - b.basePriceCents;
       if (sortBy === "expensive") return b.basePriceCents - a.basePriceCents;

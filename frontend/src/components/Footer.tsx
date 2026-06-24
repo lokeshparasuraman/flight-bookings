@@ -1,3 +1,19 @@
+/**
+ * Footer.tsx — Site-wide Footer
+ *
+ * Four-column layout on desktop, stacked on mobile.
+ * Contains: brand blurb, services links, partner links, support info.
+ *
+ * Also houses two inline modals (not separate pages because they're
+ * short policy snippets that don't warrant a full route):
+ * - Cancellations & Refunds policy modal
+ * - Terms of Service modal
+ *
+ * Both modals are triggered by clicking links in the support column.
+ * They use the same animate-fade-in / animate-scale-in transitions as
+ * the rest of the app for visual consistency.
+ */
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "../contexts/LanguageContext";
@@ -11,14 +27,20 @@ import {
 
 export default function Footer() {
   const { t } = useLanguage();
+
+  // Controls whether the policy modals are visible
   const [showTerms, setShowTerms] = useState(false);
   const [showRefunds, setShowRefunds] = useState(false);
   return (
     <footer className="bg-booking-blue text-gray-300 dark:bg-gray-955 dark:text-gray-400 border-t border-gray-200/10 transition-colors duration-300">
       <div className="container max-w-7xl mx-auto px-4 py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
-          {/* Column 1: Brand Info */}
-          <div className="space-y-4">
+        {/* ── Main Four-Column Grid ──────────────────────────────────────────────
+            Stacks to single column on mobile, 2 cols on tablet, 4 on desktop.
+            gap-8 on mobile grows to gap-12 on desktop for breathing room.   */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+          {/* ── Column 1: Brand Info ─────────────────────────────────────────
+              Logo + one-liner description of what FlyFast is about.         */}
+          <div className="space-y-4 sm:col-span-2 md:col-span-1">
             <Link to="/" className="flex items-center space-x-1 select-none group">
               <span className="text-white lowercase font-medium text-lg">fly</span>
               <span className="text-booking-lightblue lowercase font-extrabold text-lg">fast</span>
@@ -29,7 +51,8 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Column 2: Explore services */}
+          {/* ── Column 2: Service Links ──────────────────────────────────────
+              Quick links to the main passenger-facing features.              */}
           <div>
             <h4 className="text-xs font-extrabold uppercase text-white dark:text-gray-200 tracking-wider mb-4 font-display">
               {t("services")}
@@ -53,7 +76,8 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 3: Corporate Partners */}
+          {/* ── Column 3: Partner / Corporate Links ────────────────────────
+              Links for airlines and operators who want to join the platform. */}
           <div>
             <h4 className="text-xs font-extrabold uppercase text-white dark:text-gray-200 tracking-wider mb-4 font-display">
               {t("join_business")}
@@ -92,7 +116,8 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 4: Legals & Support */}
+          {/* ── Column 4: Support & Legal ──────────────────────────────────
+              Phone number + clickable links that open inline policy modals.  */}
           <div>
             <h4 className="text-xs font-extrabold uppercase text-white dark:text-gray-200 tracking-wider mb-4 font-display">
               {t("customer_support")}
@@ -123,7 +148,8 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom footer credit bar */}
+        {/* ── Bottom Bar ────────────────────────────────────────────────────
+            Copyright line. Centered on mobile, space-between on desktop.    */}
         <div className="mt-12 pt-8 border-t border-gray-200/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-semibold text-gray-500">
           <div>
             © {new Date().getFullYear()} FlyFast Inc. {t("all_rights_reserved")}

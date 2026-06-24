@@ -1,3 +1,30 @@
+/**
+ * Home.tsx — Landing Page / Main Search Hub
+ *
+ * This is the biggest page in the app. It handles:
+ * - The hero banner with the main search panel
+ * - A 10-tab search form (Flights, Hotels, Homestays, Holidays, Trains,
+ *   Buses, Cabs, Tours, Cruise, Insurance)
+ * - The "Explore India" section with filterable destination cards
+ * - The draggable floating AI assistant button
+ *
+ * SEARCH FLOW:
+ * The flight search form collects origin/destination airport codes (3-letter IATA),
+ * departure date, optional return date (for round trips), and traveler count.
+ * On submit, it navigates to /search?origin=DEL&destination=BOM&date=...
+ * SearchResults page handles the actual API call.
+ *
+ * OTHER TABS:
+ * Hotels, Homestays, Trains etc. are UI mockups — they render form fields
+ * but currently don't route to separate search pages. Flights is the only
+ * tab with a live backend.
+ *
+ * EXPLORE SECTION:
+ * Destination cards come from the `allPlaces` array below. Filtered by
+ * the activeTab to show relevant places for each travel category.
+ * Clicking a card opens a detail sheet with images, description, highlights.
+ */
+
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
@@ -26,19 +53,48 @@ import {
 import Footer from "../components/Footer";
 
 
-// ─── Draggable Floating AI Button ─────────────────────────────────────────────
+/**
+ * DraggableAiButton — Floating Draggable AI Chat Launcher
+ *
+ * This button floats over the page content and can be dragged anywhere on screen.
+ * It starts in the bottom-right corner (near the classic FAB position).
+ *
+ * DRAG vs CLICK detection:
+ * We use a `moved` ref to track whether the pointer moved more than 3px during
+ * a press. If it moved, we treat it as a drag (don't fire the onClick).
+ * If it didn't move, we treat it as a tap/click (opens the AI chat).
+ *
+ * BOUNDARY CLAMPING:
+ * The position is clamped to the viewport edges so the button can never
+ * be dragged off-screen. We subtract the button size (68px) from the
+ * viewport width/height for the max values.
+ *
+ * POINTER CAPTURE:
+ * setPointerCapture means the element continues to receive pointer events
+ * even if the cursor moves outside it — essential for smooth drag behaviour.
+ */
 function DraggableAiButton({ onClick }: { onClick: () => void }) {
   const btnRef = useRef<HTMLDivElement>(null);
+
+  // Tracks whether we're currently in a drag gesture
   const dragging = useRef(false);
+
+  // Stores the pointer position at drag start
   const startPos = useRef({ x: 0, y: 0 });
+
+  // Stores the button position at drag start
   const startBtn = useRef({ x: 0, y: 0 });
+
+  // true if the pointer moved enough to count as a drag (not a click)
   const moved = useRef(false);
 
-  // Default position: bottom-right corner
+  // Current position of the button — null until the viewport size is known
   const [pos, setPos] = useState<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
-    // Set initial position relative to viewport
+    // Set initial position to bottom-right, 84px from each edge
+    // We do this in useEffect (not useState initial value) because we need
+    // window.innerWidth/Height which aren't available during SSR
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     setPos({ x: vw - 84, y: vh - 84 });
@@ -51,6 +107,7 @@ function DraggableAiButton({ onClick }: { onClick: () => void }) {
     const rect = btnRef.current.getBoundingClientRect();
     startPos.current = { x: e.clientX, y: e.clientY };
     startBtn.current = { x: rect.left, y: rect.top };
+    // Capture pointer so we keep getting events even if cursor leaves the element
     btnRef.current.setPointerCapture(e.pointerId);
     e.preventDefault();
   };
@@ -59,9 +116,11 @@ function DraggableAiButton({ onClick }: { onClick: () => void }) {
     if (!dragging.current) return;
     const dx = e.clientX - startPos.current.x;
     const dy = e.clientY - startPos.current.y;
+    // Mark as moved if the pointer went more than 3px in any direction
     if (Math.abs(dx) > 3 || Math.abs(dy) > 3) moved.current = true;
     const vw = window.innerWidth;
     const vh = window.innerHeight;
+    // Clamp position so the button stays fully on screen
     const newX = Math.min(vw - 68, Math.max(0, startBtn.current.x + dx));
     const newY = Math.min(vh - 68, Math.max(0, startBtn.current.y + dy));
     setPos({ x: newX, y: newY });
@@ -69,9 +128,11 @@ function DraggableAiButton({ onClick }: { onClick: () => void }) {
 
   const onPointerUp = (e: React.PointerEvent) => {
     dragging.current = false;
+    // Only fire onClick if the user didn't drag — otherwise it was just a move
     if (!moved.current) onClick();
   };
 
+  // Don't render until we know the viewport size (avoids flash at wrong position)
   if (!pos) return null;
 
   return (
@@ -84,10 +145,10 @@ function DraggableAiButton({ onClick }: { onClick: () => void }) {
       className="fixed z-50 select-none cursor-grab active:cursor-grabbing"
       title="Ask FlyFast AI"
     >
-      {/* Main circle button */}
+      {/* The circular gradient button — violet/fuchsia/blue gradient */}
       <div className="relative w-16 h-16 rounded-full bg-gradient-to-br from-violet-600 via-fuchsia-500 to-[#008cff] flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow duration-300">
         <RobotIcon className="w-8 h-8 text-white" />
-        {/* Online dot */}
+        {/* Green dot in top-right corner to indicate the AI is online/active */}
         <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-emerald-400 border-2 border-white rounded-full shadow" />
       </div>
     </div>
@@ -288,16 +349,19 @@ export default function Home() {
       <div className="relative z-10">
         <Header />
 
-        {/* Hero Banner Area */}
+        {/* ── Hero Banner ───────────────────────────────────────────────────
+            Full-width background image with an overlay for text readability.
+            pb-36 gives space for the floating search panel to overlap below. */}
         <div
           className="relative bg-cover bg-center text-white pt-10 pb-36 px-4"
           style={{ backgroundImage: "url('/travel_hero_bg.png')" }}
         >
-          {/* Overlay to ensure readability and dark mode contrast */}
+          {/* Overlay: lighter in light mode, very dark in dark mode */}
           <div className="absolute inset-0 bg-[#18181b]/40 dark:bg-[#09090b]/80 z-0"></div>
 
           <div className="container max-w-6xl mx-auto text-center relative z-10">
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-3 tracking-tight">
+            {/* text-3xl on phones, scales up to 5xl on desktop */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-3 tracking-tight">
               {t("compare_book")}
             </h1>
             <p className="text-sm md:text-base text-gray-300 max-w-xl mx-auto font-medium">
@@ -306,10 +370,15 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Main Search Panel Container (Floating Over Hero) */}
+        {/* ── Main Search Panel ─────────────────────────────────────────────
+            Floats up over the hero banner with -mt-24.
+            Contains the tab nav and the active tab's search form.           */}
         <div className="container max-w-6xl mx-auto -mt-24 px-4 relative z-20">
 
-          {/* Spacing-Optimized Adaptive Grid Layout for Navigation Tabs */}
+          {/* ── Category Tab Navigation ───────────────────────────────────
+              Responsive grid: 2 cols on tiny phones, 3 on 400px+, 5 on sm,
+              10 cols on lg. Each tab shows a tiny icon + two lines of text.
+              Active tab gets a blue bottom indicator bar.                   */}
           <div className="bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800/80 shadow-xl rounded-3xl mb-6 w-full grid grid-cols-2 min-[400px]:grid-cols-3 sm:grid-cols-5 lg:grid-cols-10 select-none px-2 py-3.5 relative z-30 gap-y-3.5 gap-x-2 sm:gap-x-3">
             {tabs.map((tab: any) => {
               const isActive = activeTab === tab.id;

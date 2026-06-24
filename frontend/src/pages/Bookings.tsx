@@ -1,3 +1,34 @@
+/**
+ * Bookings.tsx — My Flight Tickets Page
+ *
+ * Displays all of the logged-in user's bookings as boarding-pass-style cards.
+ *
+ * BOARDING PASS DESIGN:
+ * Each booking renders as a horizontal card (stacks on mobile) that mimics
+ * a real airline boarding pass. It has a main section and a detachable stub
+ * separated by a dotted perforation line.
+ *
+ * SEAT CLASS DETECTION:
+ * The API returns seat numbers as a comma-separated string (e.g. "1A, 2B, 14C").
+ * We determine seat class by checking if the seat number starts with 1 or 2
+ * (rows 1-2 = Business on our fake airline). Mixed rows = mixed class.
+ *
+ * PRINT FUNCTIONALITY:
+ * Each booking card has a checkbox. When the user checks it, that card gets
+ * included in window.print(). Cards without the checkbox selection use
+ * Tailwind's print:hidden class to hide them from the printed output.
+ *
+ * BARCODE GRAPHIC:
+ * The barcode is purely decorative — it's generated from a hardcoded array
+ * of bar widths. In a real app this would encode a QR or Code128 barcode.
+ * The booking ID is shown in monospace below it for manual verification.
+ *
+ * AUTH:
+ * The page redirects to /login if no token is found in localStorage.
+ * The API call uses the token via setAuthToken() which sets the Authorization
+ * header on the shared axios instance.
+ */
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
@@ -13,6 +44,9 @@ export default function Bookings() {
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState("");
+
+  // IDs of booking cards the user wants included in the print output
+  // By default, all CONFIRMED bookings are pre-selected on load
   const [selectedBookingIds, setSelectedBookingIds] = useState<string[]>([]);
 
   const handleToggleAll = () => {
@@ -108,13 +142,17 @@ export default function Bookings() {
     const isConfirmed = b.status === "CONFIRMED";
     const isCancelled = b.status === "CANCELLED";
     
+    // Seat numbers come back as "1A, 2B, 14C" — split and clean
     const seats = (b.seatNumber || "").split(", ").filter((s: string) => s.trim().length > 0);
+
+    // Business class seats are rows 1 and 2 on our fake airline's configuration
     const hasBusiness = seats.some((s: string) => s.startsWith("1") || s.startsWith("2"));
     const hasEconomy = seats.some((s: string) => !s.startsWith("1") && !s.startsWith("2") && s.trim().length > 0);
     
+    // Determine the displayed class label
     let classText = "Economy Class";
     if (hasBusiness && hasEconomy) {
-      classText = "Business & Economy";
+      classText = "Business & Economy"; // passenger booked both types
     } else if (hasBusiness) {
       classText = "Business Class";
     }
@@ -367,7 +405,10 @@ export default function Bookings() {
         </div>
       
       <div className="container py-8">
-        <div className="flex items-center justify-between mb-8 print:hidden">
+        {/* ── Page Header: Title + Action Buttons ───────────────────────────────
+            flex-wrap ensures the Print/Refresh buttons wrap to a new line
+            on small phones instead of overflowing the container.            */}
+        <div className="flex flex-wrap items-start justify-between mb-8 gap-4 print:hidden">
           <div>
             <h1 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100">
               Your Flight Tickets
@@ -377,7 +418,7 @@ export default function Bookings() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-shrink-0">
             <button
               onClick={handlePrint}
               disabled={selectedBookingIds.length === 0}

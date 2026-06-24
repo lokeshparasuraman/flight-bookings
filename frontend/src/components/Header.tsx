@@ -1,3 +1,29 @@
+/**
+ * Header.tsx — Global Navigation Bar
+ *
+ * The header is sticky (stays at top while scrolling) and handles:
+ * - Brand logo with link back to home
+ * - Desktop nav: routes, theme toggle, wishlist, language switcher, login/profile dropdown
+ * - Mobile nav: hamburger menu that expands below the header bar
+ * - Wishlist slide-out drawer panel
+ *
+ * WISHLIST SYSTEM:
+ * Wishlist items are stored in localStorage as a JSON array under the key "wishlist".
+ * We listen to both the native "storage" event (for cross-tab sync) and our custom
+ * "wishlistUpdated" event (for same-tab updates from FlightCard). This way the count
+ * badge in the header always stays up to date without needing a global state manager.
+ *
+ * DROPDOWN BEHAVIOUR:
+ * Only one dropdown can be open at a time (tracked by activeDropdown state).
+ * We close all dropdowns when the user clicks anywhere outside by listening to
+ * window click. Dropdowns themselves stop propagation with e.stopPropagation()
+ * so clicking inside them doesn't trigger the outside-click close.
+ *
+ * ENVIRONMENT CHECK:
+ * In production with a missing VITE_API_URL, we show a warning banner at the top.
+ * This helps developers notice misconfigured deployments immediately.
+ */
+
 import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 import { useState, useEffect } from "react";
@@ -13,6 +39,8 @@ import {
   GlobeIcon
 } from "./Icons";
 
+// These environment checks let us show a helpful warning banner in production
+// if someone deployed without setting up VITE_API_URL correctly
 const IS_DEV = (import.meta as any).env?.DEV === true;
 const VITE_API_URL = (import.meta as any).env?.VITE_API_URL || "";
 
@@ -20,25 +48,43 @@ export default function Header() {
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
+
+  // Read auth tokens on every render — if the user logs in/out in another tab
+  // the header will reflect it correctly on their next interaction
   const token = localStorage.getItem("token");
   const airlineName = localStorage.getItem("airlineName");
+
+  // Controls whether the mobile hamburger menu is expanded
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // Tracks which desktop dropdown is currently open — null means all closed
   const [activeDropdown, setActiveDropdown] = useState<"login" | "profile" | "lang" | null>(null);
 
+  // Wishlist drawer open/close state
   const [wishlistOpen, setWishlistOpen] = useState(false);
+
+  // The actual wishlist items loaded from localStorage
   const [wishlistItems, setWishlistItems] = useState<any[]>([]);
 
+  // Pull wishlist from localStorage and update state
+  // Wrapped in try/catch because JSON.parse can blow up on corrupted data
   const loadWishlist = () => {
     try {
       const items = JSON.parse(localStorage.getItem("wishlist") || "[]");
       setWishlistItems(items);
     } catch (e) {
+      // Corrupted wishlist data — reset to empty rather than crashing
       setWishlistItems([]);
     }
   };
 
   useEffect(() => {
+    // Load wishlist on mount
     loadWishlist();
+
+    // "storage" fires when localStorage changes in ANOTHER browser tab
+    // "wishlistUpdated" is our custom event for changes in the SAME tab
+    // (dispatched from FlightCard when user adds/removes from wishlist)
     const handleStorage = () => loadWishlist();
     window.addEventListener("storage", handleStorage);
     window.addEventListener("wishlistUpdated", handleStorage);
@@ -49,11 +95,16 @@ export default function Header() {
   }, []);
 
   useEffect(() => {
+    // Close any open dropdown when the user clicks anywhere outside
+    // Dropdown buttons use e.stopPropagation() to prevent this from firing
+    // when they themselves are clicked
     const handleOutsideClick = () => setActiveDropdown(null);
     window.addEventListener("click", handleOutsideClick);
     return () => window.removeEventListener("click", handleOutsideClick);
   }, []);
 
+  // Clear both the user token and the airline token on logout
+  // then redirect home — the Header will re-render with the logged-out state
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("airlineName");
@@ -62,19 +113,28 @@ export default function Header() {
 
   return (
     <>
+      {/* ── Missing API URL warning banner ─────────────────────────────────
+          This only shows in production when VITE_API_URL wasn't set.
+          It's a common deployment gotcha, so the banner helps devs spot it
+          immediately without digging through the network tab.               */}
       {!IS_DEV && !VITE_API_URL && (
         <div className="bg-gradient-to-r from-amber-500 to-orange-600 text-white text-center py-2 px-4 text-xs font-semibold shadow-inner animate-fade-in relative z-50">
           ⚠️ Environment Variable <code className="bg-black/20 px-1 py-0.5 rounded font-mono">VITE_API_URL</code> is missing! 
           Please configure it in Vercel settings pointing to your Render backend API (e.g. <code className="bg-black/20 px-1.5 py-0.5 rounded font-mono">https://your-backend.onrender.com/api</code>) to make the live application work.
         </div>
       )}
+
+      {/* ── Main Header Bar ──────────────────────────────────────────────── */}
       <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50 transition-all duration-300">
       <div className="container">
-        <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Logo */}
+        {/* min-w-0 prevents flex children from overflowing on very small phones */}
+        <div className="flex items-center justify-between h-16 md:h-20 min-w-0">
+          {/* ── Brand Logo ────────────────────────────────────────────────
+              The dot after "flyfast" is our brand punctuation — it signals
+              precision. shrink-0 prevents it from getting squished on mobile. */}
           <Link
             to="/"
-            className="flex items-center space-x-1 select-none group"
+            className="flex items-center space-x-1 select-none group shrink-0"
           >
             <div className="flex items-center space-x-1 font-display text-xl md:text-2xl tracking-tight">
               <span className="text-gray-900 dark:text-white lowercase font-medium transition-colors">fly</span>
@@ -83,6 +143,7 @@ export default function Header() {
             </div>
           </Link>
 
+          {/* ── Desktop Navigation (hidden on mobile, shown md+) ─────────── */}
           <nav className="hidden md:flex items-center space-x-4 md:space-x-6">
             <Link
               to="/routes"
@@ -363,7 +424,11 @@ export default function Header() {
             )}
           </nav>
 
-          <div className="md:hidden flex items-center space-x-1.5">
+          {/* ── Mobile Controls (visible only on < md screens) ────────────
+              Kept minimal: just the theme toggle and the hamburger button.
+              Everything else goes into the expanded mobile menu below.     */}
+          <div className="md:hidden flex items-center space-x-1.5 shrink-0">
+            {/* Theme toggle — same as desktop, just smaller on mobile */}
             <button
               onClick={toggleTheme}
               className="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-750 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200/40 dark:border-gray-700/60 transition-all duration-200 focus:outline-none flex items-center justify-center"
@@ -376,6 +441,7 @@ export default function Header() {
               )}
             </button>
 
+            {/* Hamburger toggle — opens/closes the mobile nav panel */}
             <button
               onClick={() => setMenuOpen(v => !v)}
               className="p-2.5 rounded-xl bg-gray-50 dark:bg-gray-750 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200/40 dark:border-gray-700/60 transition-all duration-200 focus:outline-none flex items-center justify-center"
@@ -387,6 +453,9 @@ export default function Header() {
             </button>
           </div>
         </div>
+        {/* ── Mobile Expanded Menu ──────────────────────────────────────────
+            Slides in below the header bar when hamburger is tapped.
+            Contains all the nav items that live in the desktop nav.        */}
         {menuOpen && (
           <div className="md:hidden py-3">
             <div className="flex flex-col space-y-2">
@@ -506,10 +575,13 @@ export default function Header() {
       </div>
     </header>
 
-    {/* Slide-out Wishlist Drawer */}
+    {/* ── Wishlist Slide-out Drawer ───────────────────────────────────────────
+        Full-screen overlay with a semi-transparent backdrop.
+        The actual panel slides in from the right (animate-slide-left in CSS).
+        max-w-md keeps it from being too wide on large desktop screens.       */}
     {wishlistOpen && (
       <div className="fixed inset-0 z-50 overflow-hidden font-sans">
-        {/* Backdrop */}
+        {/* Semi-transparent backdrop — clicking it closes the drawer */}
         <div 
           className="absolute inset-0 bg-black/50 transition-opacity animate-fade-in"
           onClick={() => setWishlistOpen(false)}

@@ -51,6 +51,7 @@ import {
   TagIcon
 } from "../components/Icons";
 import Footer from "../components/Footer";
+import Tooltip from "../components/Tooltip";
 
 
 /**
@@ -126,7 +127,7 @@ function DraggableAiButton({ onClick }: { onClick: () => void }) {
     setPos({ x: newX, y: newY });
   };
 
-  const onPointerUp = (e: React.PointerEvent) => {
+  const onPointerUp = (_e: React.PointerEvent) => {
     dragging.current = false;
     // Only fire onClick if the user didn't drag — otherwise it was just a move
     if (!moved.current) onClick();
@@ -379,38 +380,46 @@ export default function Home() {
               Responsive grid: 2 cols on tiny phones, 3 on 400px+, 5 on sm,
               10 cols on lg. Each tab shows a tiny icon + two lines of text.
               Active tab gets a blue bottom indicator bar.                   */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800/80 shadow-xl rounded-3xl mb-6 w-full grid grid-cols-2 min-[400px]:grid-cols-3 sm:grid-cols-5 lg:grid-cols-10 select-none px-2 py-3.5 relative z-30 gap-y-3.5 gap-x-2 sm:gap-x-3">
+          {/* overflow-visible is critical here — combined with the portal Tooltip
+              this ensures tooltip bubbles are never clipped by the grid container
+              on any screen size, including small 6-inch mobile phones.          */}
+          <div className="bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800/80 shadow-xl rounded-3xl mb-6 w-full grid grid-cols-2 min-[400px]:grid-cols-3 sm:grid-cols-5 lg:grid-cols-10 select-none px-2 py-3.5 relative z-30 gap-y-3.5 gap-x-2 sm:gap-x-3 overflow-visible">
             {tabs.map((tab: any) => {
               const isActive = activeTab === tab.id;
+              const tooltipLabel = tab.disabled
+                ? `${t("coming_soon")}: ${t(tab.id)}`
+                : `${t("search")} ${t(tab.id)}`;
               return (
-                <button
-                  key={tab.id}
-                  disabled={tab.disabled}
-                  onClick={() => setActiveTab(tab.id)}
-                  data-tooltip-bottom={tab.disabled ? `${t("coming_soon")}: ${t(tab.id)}` : `${t("search")} ${t(tab.id)}`}
-                  className={`relative flex flex-col items-center justify-center py-2 px-1 text-center transition-all duration-200 outline-none rounded-2xl group w-full ${isActive
-                    ? "text-[#008cff] font-extrabold scale-105"
-                    : "text-gray-500 dark:text-gray-400 hover:text-[#008cff] dark:hover:text-blue-400 disabled:opacity-40 disabled:cursor-not-allowed"
-                    }`}
-                >
-                  {tab.badge && (
-                    <span className="absolute top-0 right-0 md:right-2 bg-[#d946ef] text-white text-[7px] md:text-[8px] font-extrabold px-1 py-0.2 md:px-1.5 md:py-0.5 uppercase tracking-wide rounded-full shadow-sm scale-90 select-none animate-pulse">
-                      {tab.badge}
+                // Tooltip wraps the button and renders its bubble via ReactDOM.createPortal
+                // so the label is always on top of every nav key on all screen sizes.
+                <Tooltip key={tab.id} label={tooltipLabel} direction="below">
+                  <button
+                    disabled={tab.disabled}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`relative flex flex-col items-center justify-center py-2 px-1 text-center transition-all duration-200 outline-none rounded-2xl group w-full ${isActive
+                      ? "text-[#008cff] font-extrabold scale-105"
+                      : "text-gray-500 dark:text-gray-400 hover:text-[#008cff] dark:hover:text-blue-400 disabled:opacity-40 disabled:cursor-not-allowed"
+                      }`}
+                  >
+                    {tab.badge && (
+                      <span className="absolute top-0 right-0 md:right-2 bg-[#d946ef] text-white text-[7px] md:text-[8px] font-extrabold px-1 py-0.2 md:px-1.5 md:py-0.5 uppercase tracking-wide rounded-full shadow-sm scale-90 select-none animate-pulse">
+                        {tab.badge}
+                      </span>
+                    )}
+                    <div className={`flex items-center justify-center mb-1 p-1.5 md:p-2 rounded-full transition-colors ${isActive ? "bg-blue-50 dark:bg-blue-955/40 text-[#008cff]" : "bg-gray-50 dark:bg-gray-800 text-gray-400 group-hover:bg-blue-50/50 dark:group-hover:bg-blue-955/20 group-hover:text-[#008cff]"}`}>
+                      {renderTabIcon(tab.id, "w-5 h-5 md:w-6 md:h-6")}
+                    </div>
+                    <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-wider leading-tight block whitespace-normal w-full px-0.5">
+                      {t(`tab_${tab.id}_l1`)}
                     </span>
-                  )}
-                  <div className={`flex items-center justify-center mb-1 p-1.5 md:p-2 rounded-full transition-colors ${isActive ? "bg-blue-50 dark:bg-blue-955/40 text-[#008cff]" : "bg-gray-50 dark:bg-gray-800 text-gray-400 group-hover:bg-blue-50/50 dark:group-hover:bg-blue-955/20 group-hover:text-[#008cff]"}`}>
-                    {renderTabIcon(tab.id, "w-5 h-5 md:w-6 md:h-6")}
-                  </div>
-                  <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-wider leading-tight block whitespace-normal w-full px-0.5">
-                    {t(`tab_${tab.id}_l1`)}
-                  </span>
-                  <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-wider leading-tight block whitespace-normal w-full px-0.5">
-                    {t(`tab_${tab.id}_l2`)}
-                  </span>
-                  {isActive && (
-                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 md:w-10 h-0.5 md:h-1 bg-[#008cff] rounded-full"></span>
-                  )}
-                </button>
+                    <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-wider leading-tight block whitespace-normal w-full px-0.5">
+                      {t(`tab_${tab.id}_l2`)}
+                    </span>
+                    {isActive && (
+                      <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 md:w-10 h-0.5 md:h-1 bg-[#008cff] rounded-full"></span>
+                    )}
+                  </button>
+                </Tooltip>
               );
             })}
           </div>

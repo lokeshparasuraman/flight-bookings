@@ -249,7 +249,8 @@ input[type=number] {
   opacity: 0;
   pointer-events: none;
   transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 100;
+  /* Raised to 9999 so it clears sticky header (z-50) and all panels */
+  z-index: 9999;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   border-radius: 0px !important;
@@ -282,12 +283,27 @@ input[type=number] {
   opacity: 0;
   pointer-events: none;
   transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
-  z-index: 100;
+  /* Raised to 9999 so it clears sticky header (z-50) and all panels */
+  z-index: 9999;
   letter-spacing: 0.05em;
   text-transform: uppercase;
   border-radius: 0px !important;
   border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* ─── Portal Tooltip animation ───────────────────────────────────────────────
+   Used by src/components/Tooltip.tsx — the bubble is rendered via
+   ReactDOM.createPortal so it escapes every overflow/stacking context.       */
+@keyframes tooltip-fade-in {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }
 
 [data-tooltip-bottom]:hover::after {

@@ -243,41 +243,44 @@ export default function SearchResults() {
           </div>
 
           {/* Search Summary Header Bar */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200/60 dark:border-gray-800 rounded-2xl p-6 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 shadow-soft">
-            <div>
-              <h1 className="text-xl md:text-2xl font-extrabold tracking-tight flex items-center gap-2">
-                <span>🛫</span>
-                <span>{origin}</span>
-                <span className="text-booking-lightblue">⇌</span>
-                <span>{destination}</span>
-                <span className="text-xs uppercase font-extrabold px-2.5 py-1 bg-booking-lightblue/10 text-booking-lightblue rounded-full border border-booking-lightblue/20">
-                  {isRoundTrip ? t("round_trip") : t("one_way")}
-                </span>
-              </h1>
-              <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1 flex flex-wrap gap-x-4">
-                <span>{t("departure")}: {formatDate(date)}</span>
-                {isRoundTrip && <span>{t("return")}: {formatDate(returnDate)}</span>}
-              </p>
+          <div className="bg-white dark:bg-gray-900 border border-gray-200/60 dark:border-gray-800 rounded-2xl p-6 mb-6 flex flex-col gap-3 shadow-soft">
+            {/* Top row: route info + flights count pill */}
+            <div className="flex flex-wrap justify-between items-start gap-3">
+              <div className="min-w-0">
+                <h1 className="text-xl md:text-2xl font-extrabold tracking-tight flex flex-wrap items-center gap-2">
+                  <span>🛫</span>
+                  <span>{origin}</span>
+                  <span className="text-booking-lightblue">⇌</span>
+                  <span>{destination}</span>
+                  <span className="text-xs uppercase font-extrabold px-2.5 py-1 bg-booking-lightblue/10 text-booking-lightblue rounded-full border border-booking-lightblue/20">
+                    {isRoundTrip ? t("round_trip") : t("one_way")}
+                  </span>
+                </h1>
+                <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1 flex flex-wrap gap-x-4">
+                  <span>{t("departure")}: {formatDate(date)}</span>
+                  {isRoundTrip && <span>{t("return")}: {formatDate(returnDate)}</span>}
+                </p>
+              </div>
+
+              <div className="text-xs font-bold text-green-600 dark:text-green-400 px-3.5 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full flex items-center gap-1.5 shadow-sm shrink-0">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                {isRoundTrip 
+                  ? `${processedOutbound.length} / ${processedReturn.length} ${t("outbound_return_available")}`
+                  : `${processedOutbound.length} ${t("flights_list")}`
+                }
+              </div>
             </div>
 
-            {/* Special Fare Badge — shown whenever a concession fare is active */}
+            {/* Special Fare Badge — only shows when a concession fare is active */}
             {specialFare !== "regular" && (
-              <div className="flex items-center gap-2 bg-green-50 dark:bg-green-950/30 border border-green-300/50 dark:border-green-800/40 rounded-xl px-3.5 py-2 shadow-sm animate-fade-in">
-                <span className="text-lg">{fareInfo.icon}</span>
-                <div>
-                  <div className="text-[10px] font-extrabold text-green-700 dark:text-green-400 uppercase tracking-wide">{fareInfo.label}</div>
-                  <div className="text-[11px] font-bold text-green-600 dark:text-green-500">-{fareInfo.discountPct}% on all fares</div>
+              <div className="flex items-center gap-2 bg-green-50 dark:bg-green-950/30 border border-green-300/50 dark:border-green-800/40 rounded-xl px-3.5 py-2 shadow-sm animate-fade-in self-start">
+                <span className="text-base shrink-0">{fareInfo.icon}</span>
+                <div className="min-w-0">
+                  <div className="text-[10px] font-extrabold text-green-700 dark:text-green-400 uppercase tracking-wide truncate">{fareInfo.label}</div>
+                  <div className="text-[11px] font-bold text-green-600 dark:text-green-500">-{fareInfo.discountPct}% off all base fares</div>
                 </div>
               </div>
             )}
-            
-            <div className="text-xs font-bold text-green-600 dark:text-green-400 px-3.5 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full flex items-center gap-1.5 shadow-sm">
-              <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              {isRoundTrip 
-                ? `${processedOutbound.length} / ${processedReturn.length} ${t("outbound_return_available")}`
-                : `${processedOutbound.length} ${t("flights_list")}`
-              }
-            </div>
           </div>
 
           {/* SDE-2 High-Complexity Filter & Sorting Console */}
@@ -617,14 +620,14 @@ export default function SearchResults() {
           <div className="container max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
             
             {/* Selections Overview */}
-            <div className="flex flex-wrap items-center gap-6 text-xs font-semibold text-gray-600 dark:text-gray-300">
+            <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-gray-600 dark:text-gray-300">
               {selectedOutbound ? (
-                <div className="flex items-center gap-2.5 bg-gray-50 dark:bg-gray-850 p-2.5 rounded-xl border border-gray-200/50 dark:border-gray-700/50">
-                  <span className="text-booking-lightblue font-bold">{t("outbound")}</span>
-                  <span className="font-extrabold text-gray-850 dark:text-white">{selectedOutbound.airline}</span>
-                  <span>({selectedOutbound.flightNumber})</span>
-                  <span>{formatTime(selectedOutbound.departure)}</span>
-                  <span className="text-booking-lightblue font-bold">₹{(selectedOutbound.basePriceCents / 100).toLocaleString('en-IN')}</span>
+                <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-850 p-2 rounded-xl border border-gray-200/50 dark:border-gray-700/50 min-w-0">
+                  <span className="text-booking-lightblue font-bold shrink-0">{t("outbound")}</span>
+                  <span className="font-extrabold text-gray-850 dark:text-white truncate">{selectedOutbound.airline}</span>
+                  <span className="shrink-0">({selectedOutbound.flightNumber})</span>
+                  <span className="shrink-0">{formatTime(selectedOutbound.departure)}</span>
+                  <span className="text-booking-lightblue font-bold shrink-0">₹{(applyFareDiscount(selectedOutbound.basePriceCents) / 100).toLocaleString('en-IN')}</span>
                 </div>
               ) : (
                 <div className="text-red-550 font-bold uppercase tracking-wider py-2">
@@ -633,12 +636,12 @@ export default function SearchResults() {
               )}
 
               {selectedReturn ? (
-                <div className="flex items-center gap-2.5 bg-gray-50 dark:bg-gray-855 p-2.5 rounded-xl border border-gray-205/50 dark:border-gray-700/50">
-                  <span className="text-booking-lightblue font-bold">{t("return_capital")}</span>
-                  <span className="font-extrabold text-gray-855 dark:text-white">{selectedReturn.airline}</span>
-                  <span>({selectedReturn.flightNumber})</span>
-                  <span>{formatTime(selectedReturn.departure)}</span>
-                  <span className="text-booking-lightblue font-bold">₹{(selectedReturn.basePriceCents / 100).toLocaleString('en-IN')}</span>
+                <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-855 p-2 rounded-xl border border-gray-205/50 dark:border-gray-700/50 min-w-0">
+                  <span className="text-booking-lightblue font-bold shrink-0">{t("return_capital")}</span>
+                  <span className="font-extrabold text-gray-855 dark:text-white truncate">{selectedReturn.airline}</span>
+                  <span className="shrink-0">({selectedReturn.flightNumber})</span>
+                  <span className="shrink-0">{formatTime(selectedReturn.departure)}</span>
+                  <span className="text-booking-lightblue font-bold shrink-0">₹{(applyFareDiscount(selectedReturn.basePriceCents) / 100).toLocaleString('en-IN')}</span>
                 </div>
               ) : (
                 <div className="text-red-550 font-bold uppercase tracking-wider py-2">

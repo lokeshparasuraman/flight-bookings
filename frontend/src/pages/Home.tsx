@@ -693,16 +693,16 @@ export default function Home() {
               {activeTab === "flights" && (
                 <div className="mt-4 mb-2 animate-fade-in">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Special Fares</span>
+                    <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest shrink-0">Special Fares</span>
                     {selectedSpecialFare !== "regular" && (
-                      <span className="text-[9px] bg-green-500/15 text-green-600 dark:text-green-400 font-extrabold px-2 py-0.5 rounded-full border border-green-500/20 animate-pulse">
+                      <span className="text-[9px] bg-green-500/15 text-green-600 dark:text-green-400 font-extrabold px-2 py-0.5 rounded-full border border-green-500/20 animate-pulse shrink-0">
                         Discount Applied ✓
                       </span>
                     )}
                   </div>
 
-                  {/* Fare type chips */}
-                  <div className="flex flex-wrap gap-2 mb-3">
+                  {/* Fare type chips — horizontal scroll on tiny phones, wraps on larger screens */}
+                  <div className="flex flex-wrap gap-2 mb-3 overflow-x-auto pb-0.5" style={{ WebkitOverflowScrolling: 'touch' }}>
                     {specialFaresOptions.map((fare) => {
                       const isActive = selectedSpecialFare === fare.id;
                       return (
@@ -734,19 +734,19 @@ export default function Home() {
                   {selectedSpecialFare !== "regular" && (() => {
                     const fare = specialFaresOptions.find(f => f.id === selectedSpecialFare)!;
                     return (
-                      <div className="flex items-start gap-3 bg-green-50 dark:bg-green-950/30 border border-green-200/60 dark:border-green-800/40 rounded-2xl px-4 py-3 animate-fade-in">
-                        <span className="text-xl mt-0.5">{fare.icon}</span>
+                      <div className="flex items-start gap-3 bg-green-50 dark:bg-green-950/30 border border-green-200/60 dark:border-green-800/40 rounded-2xl px-4 py-3 animate-fade-in overflow-hidden">
+                        <span className="text-xl mt-0.5 shrink-0">{fare.icon}</span>
                         <div className="flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center gap-2 mb-0.5">
+                          <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
                             <span className="text-xs font-extrabold text-green-700 dark:text-green-400 uppercase tracking-wide">{fare.title} Fare</span>
-                            <span className="text-[9px] font-extrabold bg-green-500 text-white px-2 py-0.5 rounded-full">{fare.subtitle}</span>
+                            <span className="text-[9px] font-extrabold bg-green-500 text-white px-2 py-0.5 rounded-full shrink-0">{fare.subtitle}</span>
                             {fare.extraBaggage > 0 && (
-                              <span className="text-[9px] font-extrabold bg-blue-500/15 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-full border border-blue-400/20">
+                              <span className="text-[9px] font-extrabold bg-blue-500/15 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-full border border-blue-400/20 shrink-0">
                                 +{fare.extraBaggage}kg Free Baggage
                               </span>
                             )}
                           </div>
-                          <p className="text-[10px] text-green-700/80 dark:text-green-400/70 font-semibold leading-relaxed">{fare.perks}</p>
+                          <p className="text-[10px] text-green-700/80 dark:text-green-400/70 font-semibold leading-relaxed break-words">{fare.perks}</p>
                         </div>
                       </div>
                     );

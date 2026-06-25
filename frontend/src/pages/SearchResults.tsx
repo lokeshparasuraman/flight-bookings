@@ -54,6 +54,27 @@ export default function SearchResults() {
   const date = q.get("date") || "";
   const tripType = q.get("tripType") || "oneway";
   const returnDate = q.get("returnDate") || "";
+  const specialFare = q.get("specialFare") || "regular";
+
+  /**
+   * SPECIAL_FARE_DISCOUNTS — mirrors the same data defined in Home.tsx.
+   * We define it here too (rather than sharing a module) to keep this page
+   * self-contained and avoid a circular dependency.
+   * discountPct: % reduction applied to basePriceCents for display.
+   */
+  const SPECIAL_FARE_DISCOUNTS: Record<string, { discountPct: number; label: string; icon: string; color: string }> = {
+    regular:  { discountPct: 0,  label: "Regular Fare",       icon: "✈️",  color: "gray" },
+    student:  { discountPct: 10, label: "Student Fare",        icon: "🎓", color: "blue" },
+    armed:    { discountPct: 50, label: "Armed Forces Fare",   icon: "🎖️", color: "amber" },
+    senior:   { discountPct: 10, label: "Senior Citizen Fare", icon: "🧓", color: "purple" },
+    gst:      { discountPct: 5,  label: "GST Business Fare",   icon: "🏢", color: "green" },
+  };
+
+  const fareInfo = SPECIAL_FARE_DISCOUNTS[specialFare] ?? SPECIAL_FARE_DISCOUNTS["regular"];
+
+  /** Apply special fare discount to a basePriceCents value */
+  const applyFareDiscount = (cents: number): number =>
+    Math.round(cents * (1 - fareInfo.discountPct / 100));
 
   // outboundFlights: DEL → BOM flights on the departure date
   // returnFlights: BOM → DEL flights on the return date (round trip only)
@@ -192,7 +213,8 @@ export default function SearchResults() {
 
   const handleBookRoundtrip = () => {
     if (!selectedOutbound || !selectedReturn) return;
-    navigate(`/flight/${selectedOutbound.id}?returnFlightId=${selectedReturn.id}`);
+    // Pass the specialFare through so FlightDetail can apply the same discount
+    navigate(`/flight/${selectedOutbound.id}?returnFlightId=${selectedReturn.id}&specialFare=${specialFare}`);
   };
 
   const isRoundTrip = tripType === "roundtrip" && returnDate;
@@ -237,6 +259,17 @@ export default function SearchResults() {
                 {isRoundTrip && <span>{t("return")}: {formatDate(returnDate)}</span>}
               </p>
             </div>
+
+            {/* Special Fare Badge — shown whenever a concession fare is active */}
+            {specialFare !== "regular" && (
+              <div className="flex items-center gap-2 bg-green-50 dark:bg-green-950/30 border border-green-300/50 dark:border-green-800/40 rounded-xl px-3.5 py-2 shadow-sm animate-fade-in">
+                <span className="text-lg">{fareInfo.icon}</span>
+                <div>
+                  <div className="text-[10px] font-extrabold text-green-700 dark:text-green-400 uppercase tracking-wide">{fareInfo.label}</div>
+                  <div className="text-[11px] font-bold text-green-600 dark:text-green-500">-{fareInfo.discountPct}% on all fares</div>
+                </div>
+              </div>
+            )}
             
             <div className="text-xs font-bold text-green-600 dark:text-green-400 px-3.5 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full flex items-center gap-1.5 shadow-sm">
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
@@ -377,7 +410,17 @@ export default function SearchResults() {
                             </div>
                             <div className="text-right">
                               <span className="text-[10px] text-gray-405 font-medium block">{t("starting_fare")}</span>
-                              <span className="text-lg font-extrabold text-booking-lightblue">₹{(f.basePriceCents / 100).toLocaleString('en-IN')}</span>
+                              {fareInfo.discountPct > 0 && (
+                                <span className="text-[10px] text-gray-400 line-through block">
+                                  ₹{(f.basePriceCents / 100).toLocaleString('en-IN')}
+                                </span>
+                              )}
+                              <span className="text-lg font-extrabold text-booking-lightblue">
+                                ₹{(applyFareDiscount(f.basePriceCents) / 100).toLocaleString('en-IN')}
+                              </span>
+                              {fareInfo.discountPct > 0 && (
+                                <span className="text-[9px] font-extrabold text-green-500 block">-{fareInfo.discountPct}% applied</span>
+                              )}
                             </div>
                           </div>
 
@@ -457,7 +500,17 @@ export default function SearchResults() {
                             </div>
                             <div className="text-right">
                               <span className="text-[10px] text-gray-405 font-medium block">{t("starting_fare")}</span>
-                              <span className="text-lg font-extrabold text-booking-lightblue">₹{(f.basePriceCents / 100).toLocaleString('en-IN')}</span>
+                              {fareInfo.discountPct > 0 && (
+                                <span className="text-[10px] text-gray-400 line-through block">
+                                  ₹{(f.basePriceCents / 100).toLocaleString('en-IN')}
+                                </span>
+                              )}
+                              <span className="text-lg font-extrabold text-booking-lightblue">
+                                ₹{(applyFareDiscount(f.basePriceCents) / 100).toLocaleString('en-IN')}
+                              </span>
+                              {fareInfo.discountPct > 0 && (
+                                <span className="text-[9px] font-extrabold text-green-500 block">-{fareInfo.discountPct}% applied</span>
+                              )}
                             </div>
                           </div>
 
@@ -528,7 +581,8 @@ export default function SearchResults() {
                       style={{ animationDelay: `${index * 0.08}s` }}
                       className="animate-slide-up"
                     >
-                      <FlightCard f={f} origin={origin} destination={destination} />
+                      {/* Pass specialFare to FlightCard so the detail page URL carries it */}
+                      <FlightCard f={f} origin={origin} destination={destination} specialFare={specialFare} fareDiscountPct={fareInfo.discountPct} />
                     </div>
                   ))}
                 </div>
@@ -598,9 +652,17 @@ export default function SearchResults() {
               {selectedOutbound && selectedReturn && (
                 <div className="text-right">
                   <span className="text-[10px] text-gray-400 block font-medium uppercase tracking-wider">{t("combined_total_fares")}</span>
+                  {fareInfo.discountPct > 0 && (
+                    <div className="text-sm text-gray-400 line-through">
+                      ₹{((selectedOutbound.basePriceCents + selectedReturn.basePriceCents) / 100).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </div>
+                  )}
                   <div className="text-2xl font-extrabold text-booking-lightblue font-display tracking-tight leading-none">
-                    ₹{((selectedOutbound.basePriceCents + selectedReturn.basePriceCents) / 100).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    ₹{((applyFareDiscount(selectedOutbound.basePriceCents) + applyFareDiscount(selectedReturn.basePriceCents)) / 100).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                   </div>
+                  {fareInfo.discountPct > 0 && (
+                    <div className="text-[10px] text-green-500 font-extrabold mt-0.5">{fareInfo.icon} {fareInfo.discountPct}% {fareInfo.label} discount</div>
+                  )}
                 </div>
               )}
 

@@ -4,7 +4,7 @@ import { FlightIcon, HeartIcon } from "./Icons";
 import { useToast } from "../contexts/ToastContext";
 import { useLanguage } from "../contexts/LanguageContext";
 
-export default function FlightCard({ f, origin, destination }: any) {
+export default function FlightCard({ f, origin, destination, specialFare = "regular", fareDiscountPct = 0 }: any) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const { showToast } = useToast();
   const { t } = useLanguage();
@@ -93,7 +93,13 @@ export default function FlightCard({ f, origin, destination }: any) {
     }
   };
 
-  const price = (f.basePriceCents / 100).toLocaleString('en-IN', {
+  // Discounted price in cents (rounded), or original if no fare concession
+  const discountedCents = Math.round(f.basePriceCents * (1 - fareDiscountPct / 100));
+  const price = (discountedCents / 100).toLocaleString('en-IN', {
+    maximumFractionDigits: 2,
+    minimumFractionDigits: 2
+  });
+  const originalPrice = (f.basePriceCents / 100).toLocaleString('en-IN', {
     maximumFractionDigits: 2,
     minimumFractionDigits: 2
   });
@@ -195,16 +201,28 @@ export default function FlightCard({ f, origin, destination }: any) {
             <span className="text-xs text-gray-400 dark:text-gray-500 font-medium block">
               {t("fare_starting")}
             </span>
+            {/* Show original price struck-through when a fare discount is active */}
+            {fareDiscountPct > 0 && (
+              <div className="text-sm text-gray-400 dark:text-gray-500 line-through font-semibold">
+                ₹{originalPrice}
+              </div>
+            )}
             <div className="text-3xl font-extrabold text-booking-lightblue dark:text-booking-lightblue font-display tracking-tight">
               ₹{price}
             </div>
+            {fareDiscountPct > 0 && (
+              <span className="text-[10px] font-extrabold text-green-500 block">
+                -{fareDiscountPct}% {specialFare === 'armed' ? '🎖️' : specialFare === 'student' ? '🎓' : specialFare === 'senior' ? '🧓' : specialFare === 'gst' ? '🏢' : ''} concession
+              </span>
+            )}
             <span className="text-[10px] text-gray-400 dark:text-gray-500 block">
               {t("taxes_fees")}
             </span>
           </div>
           
+          {/* Carry the specialFare forward so FlightDetail applies the same discount */}
           <Link
-            to={`/flight/${f.id}`}
+            to={`/flight/${f.id}${specialFare && specialFare !== 'regular' ? `?specialFare=${specialFare}` : ''}`}
             className="btn-primary py-2.5 px-6 rounded-xl text-sm font-bold shadow-soft hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-center w-auto min-w-[110px]"
           >
             {t("select_flight")}

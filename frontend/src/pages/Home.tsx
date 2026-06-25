@@ -264,7 +264,8 @@ export default function Home() {
     const m = d.match(/^(\d{2})-(\d{2})-(\d{4})$/);
     const iso = m ? `${m[3]}-${m[2]}-${m[1]}` : d;
 
-    let queryParams = `origin=${origin}&destination=${destination}&date=${iso}&tripType=${tripType}`;
+    // Include specialFare so SearchResults and FlightDetail can apply the right discount
+    let queryParams = `origin=${origin}&destination=${destination}&date=${iso}&tripType=${tripType}&specialFare=${selectedSpecialFare}`;
     if (tripType === "roundtrip") {
       const rd = String(returnDate || "");
       const rm = rd.match(/^(\d{2})-(\d{2})-(\d{4})$/);
@@ -306,12 +307,73 @@ export default function Home() {
     return { day, monthYear, weekday };
   };
 
+  /**
+   * SPECIAL FARES — Actual airline concession structure used in India
+   *
+   * Discount percentages are based on real airline concession programmes:
+   * - Student: IndiGo/Air India offer 5-10% off + extra 10 kg baggage
+   * - Armed Forces (CSD quota): 50% discount on base fare across major carriers
+   * - Senior Citizen (60+ years): 50% off on Air India; IndiGo/SpiceJet 7-10%
+   *   — we use a conservative 10% to be cross-carrier realistic
+   * - GST Business: No fare discount but full ITC on GST component;
+   *   modelled here as 5% effective reduction + corporate invoice
+   * - Regular: No concession (baseline)
+   *
+   * discountPct: percentage taken off basePriceCents before display
+   * extraBaggage: extra free checked-in baggage (kg)
+   * perks: UI description of what the traveller gets
+   */
   const specialFaresOptions = [
-    { id: "regular", title: "Regular", desc: "Regular Fares", badge: null },
-    { id: "student", title: "Student", desc: "Extra Baggage", badge: "Student" },
-    { id: "armed", title: "Armed Forces", desc: "Special Discounts", badge: "Defense" },
-    { id: "senior", title: "Senior Citizen", desc: "Up to 10% off", badge: "Senior" },
-    { id: "gst", title: "GST Business", desc: "Claim Tax Credit", badge: "Corporate" }
+    {
+      id: "regular",
+      icon: "✈️",
+      title: "Regular",
+      subtitle: "Standard fares",
+      badge: null,
+      discountPct: 0,
+      extraBaggage: 0,
+      perks: "Standard fare — no special concession applied."
+    },
+    {
+      id: "student",
+      icon: "🎓",
+      title: "Student",
+      subtitle: "Up to 10% off",
+      badge: "Student",
+      discountPct: 10,
+      extraBaggage: 10,
+      perks: "10% off base fare + extra 10 kg free checked-in baggage. Valid ID required at airport."
+    },
+    {
+      id: "armed",
+      icon: "🎖️",
+      title: "Armed Forces",
+      subtitle: "Up to 50% off",
+      badge: "Defence",
+      discountPct: 50,
+      extraBaggage: 15,
+      perks: "50% off base fare + extra 15 kg baggage. CSD quota — valid Defence ID mandatory."
+    },
+    {
+      id: "senior",
+      icon: "🧓",
+      title: "Senior Citizen",
+      subtitle: "Up to 10% off",
+      badge: "60+ Yrs",
+      discountPct: 10,
+      extraBaggage: 0,
+      perks: "10% off base fare for passengers aged 60 years and above. Govt-issued age proof required."
+    },
+    {
+      id: "gst",
+      icon: "🏢",
+      title: "GST Business",
+      subtitle: "Save 5% + ITC",
+      badge: "Corporate",
+      discountPct: 5,
+      extraBaggage: 0,
+      perks: "5% effective saving via full GST Input Tax Credit. Tax invoice issued. Valid GSTIN required."
+    }
   ];
 
   const tabs = [
@@ -622,6 +684,73 @@ export default function Home() {
                       {t("economy_class")}
                     </span>
                   </div>
+                </div>
+              )}
+
+              {/* ── Special Fares Row — only shown on the Flights tab ─────────────
+                  Chip-style selector: clicking a chip sets selectedSpecialFare.
+                  The discount info card slides in below to educate the user.    */}
+              {activeTab === "flights" && (
+                <div className="mt-4 mb-2 animate-fade-in">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Special Fares</span>
+                    {selectedSpecialFare !== "regular" && (
+                      <span className="text-[9px] bg-green-500/15 text-green-600 dark:text-green-400 font-extrabold px-2 py-0.5 rounded-full border border-green-500/20 animate-pulse">
+                        Discount Applied ✓
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Fare type chips */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {specialFaresOptions.map((fare) => {
+                      const isActive = selectedSpecialFare === fare.id;
+                      return (
+                        <button
+                          key={fare.id}
+                          type="button"
+                          onClick={() => setSelectedSpecialFare(fare.id)}
+                          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-[11px] font-bold transition-all duration-200 select-none ${
+                            isActive
+                              ? "bg-[#008cff] text-white border-[#008cff] shadow-md scale-105"
+                              : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-[#008cff] hover:text-[#008cff]"
+                          }`}
+                        >
+                          <span className="text-base leading-none">{fare.icon}</span>
+                          <span>{fare.title}</span>
+                          {fare.discountPct > 0 && (
+                            <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full ml-0.5 ${
+                              isActive ? "bg-white/25 text-white" : "bg-green-500/15 text-green-600 dark:text-green-400"
+                            }`}>
+                              -{fare.discountPct}%
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Perks info card — shows when a non-regular fare is active */}
+                  {selectedSpecialFare !== "regular" && (() => {
+                    const fare = specialFaresOptions.find(f => f.id === selectedSpecialFare)!;
+                    return (
+                      <div className="flex items-start gap-3 bg-green-50 dark:bg-green-950/30 border border-green-200/60 dark:border-green-800/40 rounded-2xl px-4 py-3 animate-fade-in">
+                        <span className="text-xl mt-0.5">{fare.icon}</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-wrap items-center gap-2 mb-0.5">
+                            <span className="text-xs font-extrabold text-green-700 dark:text-green-400 uppercase tracking-wide">{fare.title} Fare</span>
+                            <span className="text-[9px] font-extrabold bg-green-500 text-white px-2 py-0.5 rounded-full">{fare.subtitle}</span>
+                            {fare.extraBaggage > 0 && (
+                              <span className="text-[9px] font-extrabold bg-blue-500/15 text-blue-600 dark:text-blue-400 px-2 py-0.5 rounded-full border border-blue-400/20">
+                                +{fare.extraBaggage}kg Free Baggage
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-green-700/80 dark:text-green-400/70 font-semibold leading-relaxed">{fare.perks}</p>
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
 
@@ -1418,7 +1547,7 @@ export default function Home() {
                             </span>
                           )}
                           <span className="text-xs font-extrabold">{option.title}</span>
-                          <span className="text-[9px] text-gray-450 dark:text-gray-500 font-semibold">{option.desc}</span>
+                          <span className="text-[9px] text-gray-450 dark:text-gray-500 font-semibold">{option.subtitle}</span>
                         </button>
                       );
                     })}

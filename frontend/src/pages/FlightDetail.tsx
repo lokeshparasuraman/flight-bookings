@@ -20,6 +20,22 @@ export default function FlightDetail() {
 
   const queryParams = new URLSearchParams(location.search);
   const returnFlightId = queryParams.get("returnFlightId");
+  const specialFare = queryParams.get("specialFare") || "regular";
+
+  /**
+   * SPECIAL_FARE_DISCOUNTS — mirrors Home.tsx concession data.
+   * Applied to basePriceCents before all totals are computed.
+   */
+  const SPECIAL_FARE_DISCOUNTS: Record<string, { discountPct: number; label: string; icon: string }> = {
+    regular: { discountPct: 0,  label: "Regular Fare",       icon: "✈️" },
+    student: { discountPct: 10, label: "Student Fare (-10%)",        icon: "🎓" },
+    armed:   { discountPct: 50, label: "Armed Forces Fare (-50%)",   icon: "🎖️" },
+    senior:  { discountPct: 10, label: "Senior Citizen Fare (-10%)", icon: "🧓" },
+    gst:     { discountPct: 5,  label: "GST Business Fare (-5%)",    icon: "🏢" },
+  };
+  const fareInfo = SPECIAL_FARE_DISCOUNTS[specialFare] ?? SPECIAL_FARE_DISCOUNTS["regular"];
+  const applyFareDiscount = (cents: number) =>
+    Math.round(cents * (1 - fareInfo.discountPct / 100));
 
   const [flight, setFlight] = useState<any | null>(null);
   const [returnFlight, setReturnFlight] = useState<any | null>(null);
@@ -137,15 +153,15 @@ export default function FlightDetail() {
     return 0;
   };
 
-  // Outbound costs
+  // Outbound costs — base price has fare concession applied first
   const seatCost = selectedSeats.reduce((sum, seat) => sum + getSeatCost(seat), 0);
-  const outboundBasePrice = flight ? flight.basePriceCents : 0;
+  const outboundBasePrice = flight ? applyFareDiscount(flight.basePriceCents) : 0;
   const numOutboundSeats = selectedSeats.length || 1;
   const outboundTotalCents = (outboundBasePrice * numOutboundSeats) + seatCost;
 
-  // Return costs (if return flight selected)
+  // Return costs (if return flight selected) — same concession applied
   const returnSeatCost = selectedReturnSeats.reduce((sum, seat) => sum + getSeatCost(seat), 0);
-  const returnBasePrice = returnFlight ? returnFlight.basePriceCents : 0;
+  const returnBasePrice = returnFlight ? applyFareDiscount(returnFlight.basePriceCents) : 0;
   const numReturnSeats = selectedReturnSeats.length || 1;
   const returnTotalCents = returnFlight ? ((returnBasePrice * numReturnSeats) + returnSeatCost) : 0;
 
@@ -642,10 +658,31 @@ export default function FlightDetail() {
 
               <div className="space-y-3.5 text-xs text-gray-500 font-semibold">
                 
+                {/* Fare concession badge */}
+                {fareInfo.discountPct > 0 && (
+                  <div className="flex items-center gap-2 bg-green-50 dark:bg-green-950/30 border border-green-200/60 dark:border-green-800/40 rounded-xl px-3 py-2 mb-1">
+                    <span className="text-base">{fareInfo.icon}</span>
+                    <div>
+                      <div className="text-[10px] font-extrabold text-green-700 dark:text-green-400 uppercase tracking-wide">{fareInfo.label}</div>
+                      <div className="text-[9px] font-bold text-green-600 dark:text-green-500">Concession applied to base fare</div>
+                    </div>
+                  </div>
+                )}
+
                 {/* Outbound Details */}
                 <div className="flex justify-between items-center text-gray-650 dark:text-gray-300">
                   <span>Outbound Fare {selectedSeats.length > 1 ? `(x${selectedSeats.length})` : ""}</span>
-                  <span>₹{((outboundBasePrice * numOutboundSeats) / 100).toFixed(2)}</span>
+                  <div className="text-right">
+                    {fareInfo.discountPct > 0 && (
+                      <div className="text-[10px] text-gray-400 line-through">
+                        ₹{((flight.basePriceCents * numOutboundSeats) / 100).toFixed(2)}
+                      </div>
+                    )}
+                    <span>₹{((outboundBasePrice * numOutboundSeats) / 100).toFixed(2)}</span>
+                    {fareInfo.discountPct > 0 && (
+                      <div className="text-[9px] text-green-500 font-extrabold">-{fareInfo.discountPct}% off</div>
+                    )}
+                  </div>
                 </div>
                 {selectedSeats.length > 0 && (
                   <div className="flex justify-between items-center text-[10px] text-gray-450 font-medium pl-2.5">
@@ -659,7 +696,17 @@ export default function FlightDetail() {
                   <>
                     <div className="flex justify-between items-center text-gray-650 dark:text-gray-300 pt-2.5 border-t border-gray-100 dark:border-gray-800">
                       <span>Return Fare {selectedReturnSeats.length > 1 ? `(x${selectedReturnSeats.length})` : ""}</span>
-                      <span>₹{((returnBasePrice * numReturnSeats) / 100).toFixed(2)}</span>
+                      <div className="text-right">
+                        {fareInfo.discountPct > 0 && (
+                          <div className="text-[10px] text-gray-400 line-through">
+                            ₹{((returnFlight.basePriceCents * numReturnSeats) / 100).toFixed(2)}
+                          </div>
+                        )}
+                        <span>₹{((returnBasePrice * numReturnSeats) / 100).toFixed(2)}</span>
+                        {fareInfo.discountPct > 0 && (
+                          <div className="text-[9px] text-green-500 font-extrabold">-{fareInfo.discountPct}% off</div>
+                        )}
+                      </div>
                     </div>
                     {selectedReturnSeats.length > 0 && (
                       <div className="flex justify-between items-center text-[10px] text-gray-455 font-medium pl-2.5">

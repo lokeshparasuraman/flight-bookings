@@ -1,113 +1,175 @@
-# FlyFast — Production-Grade AI Flight Booking Engine
+# FlyFast — Flight Booking Platform
 
-FlyFast is a senior-developer portfolio application demonstrating an advanced, end-to-end flight booking platform. The project is designed with production-ready patterns, secure authentication models, resilient fallback architectures, and high-fidelity user experiences.
-
----
-
-## System Architecture & Flow
-
-FlyFast separates operations into a decoupled **React SPA frontend** (bundled via Vite) and an **Express.js backend** driven by **Prisma ORM** with **SQLite** for zero-setup database portability.
-
-```mermaid
-sequenceDiagram
-    autonumber
-    actor User as Passenger
-    participant FE as React Frontend (Vite)
-    participant BE as Express Backend
-    participant LLM as AI LLM Client
-    participant DB as SQLite (Prisma)
-
-    User->>FE: Input Natural Language Query<br/>("Fly to Mumbai tomorrow")
-    FE->>BE: POST /api/flights/ai-search
-    alt OpenAI Key Available
-        BE->>LLM: callLLM(prompt, query)
-        LLM-->>BE: Return JSON parsed tokens
-    else OpenAI Key Depleted (Fallback)
-        BE->>BE: Run local heuristic regex parser
-    end
-    BE-->>FE: Return structured JSON<br/>(origin, destination, date, class)
-    FE->>FE: Autocomplete search fields & navigate
-    FE->>BE: GET /api/flights/search?params
-    BE->>DB: Query flights
-    DB-->>BE: Return available flights
-    BE-->>FE: Render flights grid
-```
+A full-stack flight booking web app built with React, Express, Prisma, and SQLite. Supports AI-assisted natural language search, seat selection, add-ons, and printable boarding passes.
 
 ---
 
-## Key Technical Highlights
+## What This App Does
 
-### 1. Resilient AI Natural Language Super Search
-- **Feature:** A Spotlight-style smart search box that interprets queries like *"Delhi to Mumbai tomorrow"* or *"Fly to Mysore next Monday"* and autocompletes coordinates immediately.
-- **Fail-Safe Fallback:** Built-in catch handlers detect third-party service depletion (e.g., OpenAI `429 Insufficient Quota`). Upon failure, the system falls back to a **local regex-based heuristic parser**, ensuring the AI search is resilient and never returns errors to the user.
-
-### 2. Interactive Seating Topology
-- A visual, responsive seating grid representing the aircraft cabin map (Business Class vs Economy Class, Aisle splits, Window/Middle alignments).
-- Dynamic pricing logic immediately factors selected seats (e.g. Business +₹5,000.00, Economy +₹800.00) and calculates booking checkout fees instantly.
-
-### 3. Custom Experience Add-ons
-- Seamlessly handles typical airline options: baggage limits (15kg, 25kg, 35kg), meals (Veg, Non-Veg, Vegan), Wi-Fi packages, and comprehensive travel insurance.
-- Centralized price summary engine updates totals instantly and passes selection configurations during booking creation.
-
-### 4. High-Fidelity E-Tickets & Boarding Passes
-- Reservations are rendered as visual flight boarding passes (featuring flight details, custom CSS-drawn barcodes, passenger stubs, and dotted perforation separators).
-- Fully printer-friendly CSS formats the passes cleanly when triggering `window.print()`.
-
-### 5. Developer Sandbox (Dummy OTP Bypasses)
-- To simplify automated QA testing and recruiter review, the OTP verification endpoints automatically accept `123456` or `000000` as valid verification codes in development.
+- Search flights using plain English (e.g. *"Delhi to Mumbai tomorrow morning"*)
+- Browse available flights with filters for date, class, and price
+- Pick seats from an interactive cabin map
+- Add baggage, meals, Wi-Fi, or travel insurance
+- Book and get a printable boarding pass
+- Airline admin panel to manage routes, flights, and view bookings
 
 ---
 
 ## Tech Stack
 
-- **Frontend:** React 18, Vite, TypeScript, TailwindCSS, Axios, React Router v6.
-- **Backend:** Node.js (Express), Prisma ORM, JWT, bcrypt, express-rate-limit, helmet, compression.
-- **Database:** SQLite (local dev portability) / easily switchable to PostgreSQL by updating the `provider` in `schema.prisma`.
+| Layer      | Technology                                              |
+|------------|---------------------------------------------------------|
+| Frontend   | React 18, TypeScript, Vite, TailwindCSS, React Router v6 |
+| Backend    | Node.js, Express, TypeScript                            |
+| ORM        | Prisma 5                                                |
+| Database   | SQLite (local) — swappable to PostgreSQL                |
+| Auth       | JWT + bcrypt                                            |
+| AI Search  | OpenAI API (with local regex fallback)                  |
+| Security   | Helmet, CORS, express-rate-limit                        |
 
 ---
 
-## Quick Start Guide
+## Project Structure
+
+```
+flight-bookings/
+├── backend/
+│   ├── src/
+│   │   ├── controllers/     # Route handlers
+│   │   ├── middlewares/     # Auth, rate limiting, validation
+│   │   ├── routes.ts        # API route definitions
+│   │   ├── services/        # Business logic
+│   │   ├── utils/           # Helpers (OTP, mailer, etc.)
+│   │   └── server.ts        # App entry point
+│   └── prisma/
+│       └── schema.prisma    # DB schema + seed
+└── frontend/
+    └── src/
+        ├── pages/           # Home, Search, Booking, Dashboard, etc.
+        ├── components/      # Reusable UI components
+        ├── contexts/        # Auth context
+        └── services/        # Axios API calls
+```
+
+---
+
+## Getting Started
 
 ### Prerequisites
+
 - Node.js 18+
+- Git
 
-### Setup and Running
+### 1. Clone the repo
 
-1. **Clone and Configure Env:**
-   Create `backend/.env`:
-   ```env
-   DATABASE_URL="file:./dev.db"
-   PORT=4000
-   JWT_SECRET=USE_YOUR_OWN_STRING
-   ```
+```bash
+git clone https://github.com/your-username/flight-bookings.git
+cd flight-bookings
+```
 
-2. **Initialize Database & Seed Data:**
-   ```bash
-   cd backend
-   npm install
-   npx prisma db push
-   npx ts-node prisma/seed.ts
-   ```
+### 2. Set up the backend
 
-3. **Start the Backend Server:**
-   ```bash
-   npm run dev
-   ```
+```bash
+cd backend
+npm install
+```
 
-4. **Start the Frontend Client:**
-   ```bash
-   cd ../frontend
-   npm install
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000).
+Create a `.env` file inside `backend/`:
+
+```env
+DATABASE_URL="file:./dev.db"
+PORT=4000
+JWT_SECRET=your_secret_key_here
+OPENAI_API_KEY=your_openai_key_here   # optional — fallback works without it
+```
+
+Push the schema and seed the database:
+
+```bash
+npx prisma db push
+npx ts-node prisma/seed.ts
+```
+
+Start the backend:
+
+```bash
+npm run dev
+```
+
+### 3. Set up the frontend
+
+```bash
+cd ../frontend
+npm install
+npm run dev
+```
+
+Frontend runs at `http://localhost:3000`, backend at `http://localhost:4000`.
 
 ---
 
-## 🛡 System Security & Production Checklist
+## Key Features
 
-- [x] **Strict CORS Controls:** Configured allowed origins dynamically via environment variable arrays to block unauthorized scripting.
-- [x] **Helmet Security Headers:** Applied secure HTTP headers (XSS Filter, Content-Security-Policy limits) to restrict response injections.
-- [x] **Rate Limiters:** Auth endpoints (`/api/auth`) and chatbot queries are rate-limited using `express-rate-limit` to prevent brute force.
-- [x] **Graceful Shutdowns:** Listens for SIGINT/SIGTERM to cleanly close Prisma database clients and pending server connections.
-- [x] **Global Error Boundaries:** Re-route unexpected runtime crashes inside Express or React to formatted error UI portals to protect database integrity.
+### AI Natural Language Search
+Users can type queries like *"Fly to Mysore next Monday"* and the app parses origin, destination, date, and class automatically. Backed by OpenAI. If the API quota is exceeded, it falls back to a local regex parser — so search always works.
+
+### Seat Selection
+Visual cabin map showing Business and Economy sections. Selecting a seat updates the price in real time (Business +₹5,000 / Economy +₹800).
+
+### Add-ons
+Choose from baggage options (15kg / 25kg / 35kg), meal preferences (Veg / Non-Veg / Vegan), Wi-Fi, and travel insurance. Total is recalculated on every change.
+
+### Boarding Pass
+After booking, a styled boarding pass is generated with flight info, passenger details, and a barcode. Fully printer-friendly.
+
+### Airline Admin Panel
+Separate login for airline staff to manage routes, flights, and view bookings for their airline.
+
+---
+
+## OTP Bypass (Dev Mode)
+
+For local testing, the OTP verification step accepts `123456` or `000000` as valid codes. No email or SMS setup needed during development.
+
+---
+
+## Switching to PostgreSQL
+
+In `backend/prisma/schema.prisma`, change:
+
+```prisma
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+```
+
+to:
+
+```prisma
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
+
+Update `DATABASE_URL` in `.env` with your Postgres connection string and run `npx prisma db push`.
+
+---
+
+## Deployment
+
+The backend is configured for [Railway](https://railway.app) via `nixpacks.toml`. The frontend can be deployed to Vercel — a `vercel.json` is already included.
+
+**Backend env vars needed in production:**
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `PORT`
+- `OPENAI_API_KEY` (optional)
+- `FRONTEND_URL` (for CORS)
+
+---
+
+## License
+
+MIT

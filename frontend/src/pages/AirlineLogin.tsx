@@ -6,11 +6,9 @@ import { useToast } from "../contexts/ToastContext";
 import LoadingSpinner from "../components/LoadingSpinner";
 import Footer from "../components/Footer";
 import { OfficeBuildingIcon, UserIcon } from "../components/Icons";
-import { useLanguage } from "../contexts/LanguageContext";
 
 export default function AirlineLogin() {
-  const { t } = useLanguage();
-  const [email, setEmail] = useState("");
+    const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -53,17 +51,17 @@ export default function AirlineLogin() {
             <div className="text-center mb-8">
               <OfficeBuildingIcon className="w-16 h-16 text-booking-lightblue mx-auto mb-2" />
             <h1 className="text-2xl font-extrabold text-gray-855 dark:text-white">
-              {t("partner_console_title")}
+              Partner Console
             </h1>
             <p className="text-xs text-gray-400 dark:text-gray-505 mt-1 font-semibold uppercase tracking-wider">
-              {t("partner_console_sub")}
+              Manage business listings & bookings
             </p>
           </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
               <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
-                {t("corporate_email")}
+                Corporate Email Address
               </label>
               <input
                 type="email"
@@ -77,7 +75,7 @@ export default function AirlineLogin() {
 
             <div>
               <label className="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1.5">
-                {t("security_password_label")}
+                Security Password
               </label>
               <input
                 type="password"
@@ -97,10 +95,10 @@ export default function AirlineLogin() {
               {loading ? (
                 <>
                   <LoadingSpinner size="sm" />
-                  <span>{t("logging_in")}</span>
+                  <span>Logging in...</span>
                 </>
               ) : (
-                t("log_in_partner_btn")
+                "LOG IN AS PARTNER ➔"
               )}
             </button>
           </form>
@@ -108,16 +106,16 @@ export default function AirlineLogin() {
           <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 text-center text-xs space-y-3 font-semibold text-gray-500">
             <div className="flex items-center justify-center gap-1.5">
               <OfficeBuildingIcon className="w-4 h-4 text-booking-lightblue" />
-              <span>{t("new_brand_operator")}</span>
+              <span>New brand operator?</span>
               <Link to="/airline/register" className="text-booking-lightblue hover:underline">
-                {t("register_partner_link")}
+                Register Partner account
               </Link>
             </div>
             <div className="flex items-center justify-center gap-1.5">
               <UserIcon className="w-4 h-4 text-booking-lightblue" />
-              <span>{t("traveling_passenger")}</span>
+              <span>Traveling as a passenger?</span>
               <Link to="/login" className="text-booking-lightblue hover:underline">
-                {t("user_signin_link")}
+                User Sign In
               </Link>
             </div>
           </div>

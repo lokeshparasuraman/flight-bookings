@@ -6,14 +6,12 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import { useToast } from "../contexts/ToastContext";
 import { MealIcon, BaggageIcon, WifiIcon, ShieldIcon } from "../components/Icons";
 import Footer from "../components/Footer";
-import { useLanguage } from "../contexts/LanguageContext";
 
 // Hardcoded occupied seats for realistic mockup
 const occupiedSeats: string[] = [];
 
 export default function FlightDetail() {
-  const { t } = useLanguage();
-  const { id } = useParams();
+    const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { showToast } = useToast();
@@ -196,6 +194,14 @@ export default function FlightDetail() {
 
     if (returnFlight && selectedReturnSeats.length === 0) {
       showToast("warning", "Please select at least one seat from the return flight seating map.");
+      return;
+    }
+
+    if (returnFlight && selectedSeats.length !== selectedReturnSeats.length) {
+      showToast(
+        "warning",
+        `Please select the same number of seats for both flights. Currently selected: ${selectedSeats.length} outbound, ${selectedReturnSeats.length} return.`
+      );
       return;
     }
 
@@ -759,7 +765,7 @@ export default function FlightDetail() {
 
               {/* Payment selection */}
               <div className="border-t border-gray-150 dark:border-gray-750 pt-4 space-y-4">
-                <div className="font-bold text-xs uppercase tracking-wider text-gray-450">{t("payment_method")}</div>
+                <div className="font-bold text-xs uppercase tracking-wider text-gray-450">Payment Method</div>
 
                 <div className="flex gap-2">
                   <button
@@ -842,7 +848,7 @@ export default function FlightDetail() {
                     <span>Confirming...</span>
                   </>
                 ) : (
-                  t("confirm_pay")
+                  "CONFIRM AND BOOK SEATS ➔"
                 )}
               </button>
 

@@ -25,7 +25,6 @@ import { createRoot } from "react-dom/client";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React, { Suspense, lazy } from "react";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import { LanguageProvider } from "./contexts/LanguageContext";
 
 // ─── Lazy-loaded page components ─────────────────────────────────────────────
 // Each of these becomes a separate JS chunk in the build output.
@@ -47,46 +46,42 @@ import { ToastProvider } from "./contexts/ToastContext";
 // ─── Root App component ───────────────────────────────────────────────────────
 function App() {
   return (
-    // Language must wrap everything — even error states need translated text
-    <LanguageProvider>
-      {/* Theme wraps inside language so the theme toggle label can be translated */}
-      <ThemeProvider>
-        {/* Toast notifications live here — any child can call showToast() */}
-        <ToastProvider>
-          {/* Catch any runtime render errors so the whole app doesn't white-screen */}
-          <ErrorBoundary>
-            <BrowserRouter>
-              {/* Suspense fallback shows while lazy chunks are loading */}
-              <Suspense
-                fallback={
-                  <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-booking-lightblue" />
-                  </div>
-                }
-              >
-                <Routes>
-                  {/* Public pages */}
-                  <Route path="/"                   element={<Home />} />
-                  <Route path="/search"             element={<SearchResults />} />
-                  <Route path="/flight/:id"         element={<FlightDetail />} />
-                  <Route path="/login"              element={<Login />} />
-                  <Route path="/register"           element={<Register />} />
-                  <Route path="/routes"             element={<AvailableRoutes />} />
+    <ThemeProvider>
+      {/* Toast notifications live here — any child can call showToast() */}
+      <ToastProvider>
+        {/* Catch any runtime render errors so the whole app doesn't white-screen */}
+        <ErrorBoundary>
+          <BrowserRouter>
+            {/* Suspense fallback shows while lazy chunks are loading */}
+            <Suspense
+              fallback={
+                <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-b-4 border-booking-lightblue" />
+                </div>
+              }
+            >
+              <Routes>
+                {/* Public pages */}
+                <Route path="/"                   element={<Home />} />
+                <Route path="/search"             element={<SearchResults />} />
+                <Route path="/flight/:id"         element={<FlightDetail />} />
+                <Route path="/login"              element={<Login />} />
+                <Route path="/register"           element={<Register />} />
+                <Route path="/routes"             element={<AvailableRoutes />} />
 
-                  {/* Authenticated passenger pages */}
-                  <Route path="/bookings"           element={<Bookings />} />
+                {/* Authenticated passenger pages */}
+                <Route path="/bookings"           element={<Bookings />} />
 
-                  {/* Airline / partner portal pages */}
-                  <Route path="/airline/login"      element={<AirlineLogin />} />
-                  <Route path="/airline/register"   element={<AirlineRegister />} />
-                  <Route path="/airline/dashboard"  element={<AirlineDashboard />} />
-                </Routes>
-              </Suspense>
-            </BrowserRouter>
-          </ErrorBoundary>
-        </ToastProvider>
-      </ThemeProvider>
-    </LanguageProvider>
+                {/* Airline / partner portal pages */}
+                <Route path="/airline/login"      element={<AirlineLogin />} />
+                <Route path="/airline/register"   element={<AirlineRegister />} />
+                <Route path="/airline/dashboard"  element={<AirlineDashboard />} />
+              </Routes>
+            </Suspense>
+          </BrowserRouter>
+        </ErrorBoundary>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }
 

@@ -58,40 +58,25 @@
 /* ─── Component layer: reusable UI building blocks ───────────────────────────
    These are classes we apply via className="..." in JSX.                     */
 @layer components {
-  /* Primary CTA button — orange gradient, all-caps, no border-radius (our
-     design system uses sharp edges everywhere).                               */
+  /* Primary CTA button — orange gradient, all-caps, with premium rounded corners. */
   .btn-primary {
-    @apply bg-gradient-to-r from-[#ff6636] to-[#ff3600] text-white font-bold py-3 px-8 rounded-none transition-all duration-200 shadow-md hover:shadow-lg hover:brightness-105 transform hover:-translate-y-0.5 active:translate-y-0 tracking-wider uppercase outline-none;
+    @apply bg-gradient-to-r from-[#ff6636] to-[#ff3600] text-white font-bold py-3 px-8 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:brightness-105 transform hover:-translate-y-0.5 active:translate-y-0 tracking-wider uppercase outline-none;
   }
 
-  /* Secondary / ghost button — white background with a lightblue border.
-     Used for less-important actions like "Print" or "Back".                  */
+  /* Secondary / ghost button — white background with a lightblue border. */
   .btn-secondary {
-    @apply bg-white dark:bg-gray-800 border border-booking-lightblue text-booking-lightblue hover:bg-booking-lightblue/5 font-bold py-3 px-8 rounded-none transition-all duration-200 outline-none;
+    @apply bg-white dark:bg-gray-800 border border-booking-lightblue text-booking-lightblue hover:bg-booking-lightblue/5 font-bold py-3 px-8 rounded-xl transition-all duration-200 outline-none;
   }
 
-  /* Standard form input — covers text, number, date, select fields.
-     Focus ring uses the brand blue so it's accessible and on-brand.         */
+  /* Standard form input — covers text, number, date, select fields. */
   .input-field {
-    @apply w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-none focus:ring-2 focus:ring-booking-lightblue focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500;
+    @apply w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-booking-lightblue focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500;
   }
 
-  /* Card shell — white / dark-gray box with a soft shadow.
-     Hover lifts the shadow slightly to give a "pressable card" feel.        */
+  /* Card shell — white / dark-gray box with a soft shadow. */
   .card {
-    @apply bg-white dark:bg-gray-800 rounded-none shadow-soft hover:shadow-soft-lg transition-all duration-300 border border-gray-100 dark:border-gray-700;
+    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-soft hover:shadow-soft-lg transition-all duration-300 border border-gray-100 dark:border-gray-700;
   }
-}
-
-/* ─── Global sharp-edges override ────────────────────────────────────────────
-   Our design system is intentionally "no curves" — every box is sharp-edged.
-   We nuclear-option this with !important so nothing accidentally gets rounded.
-   EXCEPTION: We carve out the .blob class below because blobs need to be
-   ellipses. We also exempt the floating AI button circle.                   */
-*:not(.blob):not(.blob-1):not(.blob-2):not(.blob-3),
-*:not(.blob):not(.blob-1):not(.blob-2):not(.blob-3)::before,
-*:not(.blob):not(.blob-1):not(.blob-2):not(.blob-3)::after {
-  border-radius: 0px !important;
 }
 
 /* ─── Number input arrow removal ─────────────────────────────────────────────

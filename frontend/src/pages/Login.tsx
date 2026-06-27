@@ -25,11 +25,9 @@ import { useNavigate, Link } from "react-router-dom";
 import Header from "../components/Header";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { EyeIcon, EyeOffIcon, FlightIcon, TicketIcon, OfficeBuildingIcon } from "../components/Icons";
-import { useLanguage } from "../contexts/LanguageContext";
 
 export default function Login() {
-  const { t } = useLanguage();
-  const [identifier, setIdentifier] = useState("");
+    const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -129,10 +127,10 @@ export default function Login() {
               <div className="text-center mb-8">
                 <FlightIcon className="w-16 h-16 text-booking-lightblue mx-auto mb-4" />
               <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">
-                {t("welcome")}
+                Welcome
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
-                {t("login_subtitle")}
+                Manage your bookings and check in easily
               </p>
             </div>
 
@@ -152,12 +150,12 @@ export default function Login() {
               <form onSubmit={submit} className="space-y-6">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                    {t("email_or_phone")}
+                    Email or Phone
                   </label>
                   <input
                     type="text"
                     className="input-field"
-                    placeholder={t("email_or_phone_placeholder")}
+                    placeholder="your@email.com or +919876543210"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     required
@@ -166,7 +164,7 @@ export default function Login() {
                 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                    {t("password_label")}
+                    Password
                   </label>
                   <div className="relative">
                     <input
@@ -198,7 +196,7 @@ export default function Login() {
                     onClick={() => setForgotMode(true)}
                     className="text-sm text-gray-600 dark:text-gray-400 hover:text-booking-lightblue"
                   >
-                    {t("forgot_password")}
+                    Forgot Password?
                   </button>
                   <button
                     type="submit"
@@ -208,10 +206,10 @@ export default function Login() {
                     {loading ? (
                       <>
                         <LoadingSpinner size="sm" />
-                        <span>{t("logging_in")}</span>
+                        <span>Logging in...</span>
                       </>
                     ) : (
-                      t("login_btn")
+                      "LOG IN ➔"
                     )}
                   </button>
                 </div>
@@ -225,19 +223,19 @@ export default function Login() {
                 <form onSubmit={sendReset} className="space-y-4">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      {t("email_or_phone")}
+                      Email or Phone
                     </label>
                     <input
                       type="text"
                       className="input-field"
-                      placeholder={t("email_or_phone_placeholder")}
+                      placeholder="your@email.com or +919876543210"
                       value={identifier}
                       onChange={(e) => setIdentifier(e.target.value)}
                       required
                     />
                     {!identifierValid && identifier.trim() && (
                       <div className="text-xs text-red-655 dark:text-red-400 mt-2">
-                        {t("invalid_identifier")}
+                        Enter a valid email or E.164 phone (e.g. +919876543210)
                       </div>
                     )}
                   </div>
@@ -249,22 +247,22 @@ export default function Login() {
                     {loading ? (
                       <>
                         <LoadingSpinner size="sm" />
-                        <span>{t("submitting")}</span>
+                        <span>Submitting...</span>
                       </>
                     ) : (
-                      t("request_otp")
+                      "Request OTP"
                     )}
                   </button>
                 </form>
                 <form onSubmit={resetPwd} className="space-y-4">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      {t("otp_code")}
+                      Enter OTP Code
                     </label>
                     <input
                       type="text"
                       className="input-field"
-                      placeholder={t("enter_code")}
+                      placeholder="Enter code"
                       value={resetCode}
                       onChange={(e) => setResetCode(e.target.value)}
                       required
@@ -272,12 +270,12 @@ export default function Login() {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                      {t("new_password")}
+                      New Password
                     </label>
                     <input
                       type="password"
                       className="input-field"
-                      placeholder={t("new_password")}
+                      placeholder="New Password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       required
@@ -285,7 +283,7 @@ export default function Login() {
                   </div>
                   <div className="flex items-center justify-between">
                     <button type="button" onClick={() => setForgotMode(false)} className="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
-                      {t("back_to_login")}
+                      Back to Login
                     </button>
                     <button
                       type="submit"
@@ -295,10 +293,10 @@ export default function Login() {
                       {loading ? (
                         <>
                           <LoadingSpinner size="sm" />
-                          <span>{t("submitting")}</span>
+                          <span>Submitting...</span>
                         </>
                       ) : (
-                        t("reset_password")
+                        "Reset Password"
                       )}
                     </button>
                   </div>
@@ -309,19 +307,19 @@ export default function Login() {
             <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 text-center text-xs space-y-3 font-semibold text-gray-500">
               <div className="flex items-center justify-center gap-1.5">
                 <TicketIcon className="w-4 h-4 text-booking-lightblue" />
-                <span>{t("no_account")}</span>
+                <span>Don't have an account?</span>
                 <Link
                   to="/register"
                   className="text-booking-lightblue hover:underline"
                 >
-                  {t("register_here")}
+                  Register here
                 </Link>
               </div>
               <div className="flex items-center justify-center gap-1.5">
                 <OfficeBuildingIcon className="w-4 h-4 text-booking-lightblue" />
-                <span>{t("carrier_operator")}</span>
+                <span>Carrier operator?</span>
                 <Link to="/airline/login" className="text-booking-lightblue hover:underline">
-                  {t("partner_login_btn")}
+                  Partner Login
                 </Link>
               </div>
             </div>

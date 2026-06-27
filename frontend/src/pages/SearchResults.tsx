@@ -36,7 +36,6 @@ import Header from "../components/Header";
 import EnhancedAiChat from "../components/EnhancedAiChat";
 import { FlightIcon } from "../components/Icons";
 import Footer from "../components/Footer";
-import { useLanguage } from "../contexts/LanguageContext";
 
 // Simple helper to read query params from the URL
 function useQuery() {
@@ -44,8 +43,7 @@ function useQuery() {
 }
 
 export default function SearchResults() {
-  const { t } = useLanguage();
-  const q = useQuery();
+    const q = useQuery();
   const navigate = useNavigate();
 
   // Pull search parameters straight from the URL
@@ -238,7 +236,7 @@ export default function SearchResults() {
               className="text-booking-lightblue hover:text-booking-blue flex items-center space-x-2 transition-all font-bold text-sm"
             >
               <span>←</span>
-              <span>{t("modify_search")}</span>
+              <span>Modify search / Go Back</span>
             </button>
           </div>
 
@@ -253,20 +251,20 @@ export default function SearchResults() {
                   <span className="text-booking-lightblue">⇌</span>
                   <span>{destination}</span>
                   <span className="text-xs uppercase font-extrabold px-2.5 py-1 bg-booking-lightblue/10 text-booking-lightblue rounded-full border border-booking-lightblue/20">
-                    {isRoundTrip ? t("round_trip") : t("one_way")}
+                    {isRoundTrip ? "ROUND TRIP" : "ONE WAY"}
                   </span>
                 </h1>
                 <p className="text-xs font-semibold text-gray-500 dark:text-gray-400 mt-1 flex flex-wrap gap-x-4">
-                  <span>{t("departure")}: {formatDate(date)}</span>
-                  {isRoundTrip && <span>{t("return")}: {formatDate(returnDate)}</span>}
+                  <span>DEPARTURE: {formatDate(date)}</span>
+                  {isRoundTrip && <span>RETURN: {formatDate(returnDate)}</span>}
                 </p>
               </div>
 
               <div className="text-xs font-bold text-green-600 dark:text-green-400 px-3.5 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full flex items-center gap-1.5 shadow-sm shrink-0">
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 {isRoundTrip 
-                  ? `${processedOutbound.length} / ${processedReturn.length} ${t("outbound_return_available")}`
-                  : `${processedOutbound.length} ${t("flights_list")}`
+                  ? `${processedOutbound.length} / ${processedReturn.length} $Outbound & Return Available`
+                  : `${processedOutbound.length} $Flights List`
                 }
               </div>
             </div>
@@ -288,23 +286,23 @@ export default function SearchResults() {
             <div className="bg-white dark:bg-gray-900 border border-gray-200/60 dark:border-gray-800 rounded-2xl p-5 mb-6 flex flex-wrap items-center justify-between gap-6 shadow-soft animate-scale-in">
               {/* 1. Sort controls */}
               <div className="flex items-center gap-2.5">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("sort_by")}</span>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Sort By</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
                   className="input-field py-1.5 px-3 text-xs w-auto font-bold bg-gray-50 dark:bg-gray-850 border border-gray-200 dark:border-gray-700 rounded-full"
                 >
-                  <option value="cheapest">{t("cheapest_ticket")}</option>
-                  <option value="expensive">{t("highest_price")}</option>
-                  <option value="earliest">{t("earliest_departure")}</option>
-                  <option value="duration">{t("shortest_flight")}</option>
+                  <option value="cheapest">Cheapest Ticket</option>
+                  <option value="expensive">Highest Price</option>
+                  <option value="earliest">Earliest Departure</option>
+                  <option value="duration">Shortest Flight</option>
                 </select>
               </div>
 
               {/* 2. Airline selection */}
               {allAirlines.length > 0 && (
                 <div className="flex items-center flex-wrap gap-3">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("airlines")}</span>
+                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Airlines</span>
                   <div className="flex flex-wrap gap-1.5">
                     {allAirlines.map(airline => {
                       const isActive = selectedAirlines.includes(airline);
@@ -331,11 +329,11 @@ export default function SearchResults() {
 
               {/* 3. Time Slot filter */}
               <div className="flex items-center flex-wrap gap-3">
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{t("schedules")}</span>
+                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Schedules</span>
                 <div className="flex gap-1.5">
                   {["morning", "afternoon", "evening"].map(slot => {
                     const isActive = selectedTimes.includes(slot);
-                    const labels: Record<string, string> = { morning: t("morning"), afternoon: t("afternoon"), evening: t("evening") };
+                    const labels: Record<string, string> = { morning: "🌅 Morning", afternoon: "☀️ Afternoon", evening: "🌙 Evening" };
                     return (
                       <button
                         key={slot}
@@ -373,10 +371,10 @@ export default function SearchResults() {
               <div className="space-y-4">
                 <div className="bg-[#0c2443] text-white py-3 px-5 rounded-2xl shadow-md flex items-center justify-between">
                   <h2 className="font-extrabold text-xs uppercase tracking-widest">
-                    {t("departure")} • {origin} ➔ {destination}
+                    DEPARTURE • {origin} ➔ {destination}
                   </h2>
                   <span className="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded">
-                    {processedOutbound.length} {t("options_count")}
+                    {processedOutbound.length} option(s)
                   </span>
                 </div>
                  {processedOutbound.length === 0 ? (
@@ -384,8 +382,8 @@ export default function SearchResults() {
                     <div className="flex justify-center mb-3">
                       <FlightIcon className="w-10 h-10 text-gray-300 dark:text-gray-650 transform -rotate-45" />
                     </div>
-                    <h3 className="font-bold text-gray-700 dark:text-gray-350">{t("no_departure_flights")}</h3>
-                    <p className="text-xs text-gray-505 mt-1">{t("try_modifying_filters")}</p>
+                    <h3 className="font-bold text-gray-700 dark:text-gray-350">No departure flights found</h3>
+                    <p className="text-xs text-gray-505 mt-1">Please try modifying filter selection.</p>
                   </div>
                 ) : (
                   <div className="space-y-3.5 max-h-[70vh] overflow-y-auto pr-1">
@@ -412,7 +410,7 @@ export default function SearchResults() {
                               </div>
                             </div>
                             <div className="text-right">
-                              <span className="text-[10px] text-gray-405 font-medium block">{t("starting_fare")}</span>
+                              <span className="text-[10px] text-gray-405 font-medium block">Starting fare</span>
                               {fareInfo.discountPct > 0 && (
                                 <span className="text-[10px] text-gray-400 line-through block">
                                   ₹{(f.basePriceCents / 100).toLocaleString('en-IN')}
@@ -462,10 +460,10 @@ export default function SearchResults() {
               <div className="space-y-4">
                 <div className="bg-[#0c2443] text-white py-3 px-5 rounded-2xl shadow-md flex items-center justify-between">
                   <h2 className="font-extrabold text-xs uppercase tracking-widest">
-                    {t("return")} • {destination} ➔ {origin}
+                    RETURN • {destination} ➔ {origin}
                   </h2>
                   <span className="text-[10px] font-bold bg-white/20 px-2 py-0.5 rounded">
-                    {processedReturn.length} {t("options_count")}
+                    {processedReturn.length} option(s)
                   </span>
                 </div>
 
@@ -474,8 +472,8 @@ export default function SearchResults() {
                     <div className="flex justify-center mb-3">
                       <FlightIcon className="w-10 h-10 text-gray-300 dark:text-gray-655 transform -rotate-45" />
                     </div>
-                    <h3 className="font-bold text-gray-700 dark:text-gray-350">{t("no_return_flights")}</h3>
-                    <p className="text-xs text-gray-505 mt-1">{t("try_modifying_filters")}</p>
+                    <h3 className="font-bold text-gray-700 dark:text-gray-350">No return flights found</h3>
+                    <p className="text-xs text-gray-505 mt-1">Please try modifying filter selection.</p>
                   </div>
                 ) : (
                   <div className="space-y-3.5 max-h-[70vh] overflow-y-auto pr-1">
@@ -502,7 +500,7 @@ export default function SearchResults() {
                               </div>
                             </div>
                             <div className="text-right">
-                              <span className="text-[10px] text-gray-405 font-medium block">{t("starting_fare")}</span>
+                              <span className="text-[10px] text-gray-405 font-medium block">Starting fare</span>
                               {fareInfo.discountPct > 0 && (
                                 <span className="text-[10px] text-gray-400 line-through block">
                                   ₹{(f.basePriceCents / 100).toLocaleString('en-IN')}
@@ -560,10 +558,10 @@ export default function SearchResults() {
                     <FlightIcon className="w-16 h-16 text-gray-300 dark:text-gray-655 transform -rotate-45" />
                   </div>
                   <h2 className="text-2xl font-bold text-gray-855 dark:text-gray-200 mb-2">
-                    {t("no_matching_flights")}
+                    No matching flights found
                   </h2>
                   <p className="text-xs text-gray-505 mb-6">
-                    {t("try_relaxing_filters")}
+                    Try checking or relaxing your filters.
                   </p>
                   <button
                     onClick={() => {
@@ -573,7 +571,7 @@ export default function SearchResults() {
                     }}
                     className="btn-primary"
                   >
-                    {t("reset_search_filters")}
+                    Reset Search Filters
                   </button>
                 </div>
               ) : (
@@ -599,10 +597,10 @@ export default function SearchResults() {
               <div className="bg-white dark:bg-gray-905 border border-gray-205/60 dark:border-gray-800 rounded-3xl p-6 md:p-8 shadow-soft">
                 <h2 className="text-lg md:text-xl font-extrabold text-gray-855 dark:text-white mb-3 flex items-center gap-2">
                   <span>🤖</span>
-                  <span>{t("interactive_ai_recommendations")}</span>
+                  <span>Interactive AI Chat Recommendations</span>
                 </h2>
                 <p className="text-xs md:text-sm text-gray-505 dark:text-gray-400 mb-6 leading-relaxed font-semibold">
-                  {t("interactive_ai_recommendations_desc")}
+                  Ask our AI travel assistant to help you locate cheaper fares or find specific departure windows.
                 </p>
                 <div className="rounded-2xl overflow-hidden border border-gray-205 dark:border-gray-800 h-[500px]">
                   <EnhancedAiChat sessionId={`session-${origin}-${destination}`} />
@@ -623,7 +621,7 @@ export default function SearchResults() {
             <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-gray-600 dark:text-gray-300">
               {selectedOutbound ? (
                 <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-850 p-2 rounded-xl border border-gray-200/50 dark:border-gray-700/50 min-w-0">
-                  <span className="text-booking-lightblue font-bold shrink-0">{t("outbound")}</span>
+                  <span className="text-booking-lightblue font-bold shrink-0">OUTBOUND:</span>
                   <span className="font-extrabold text-gray-850 dark:text-white truncate">{selectedOutbound.airline}</span>
                   <span className="shrink-0">({selectedOutbound.flightNumber})</span>
                   <span className="shrink-0">{formatTime(selectedOutbound.departure)}</span>
@@ -631,13 +629,13 @@ export default function SearchResults() {
                 </div>
               ) : (
                 <div className="text-red-550 font-bold uppercase tracking-wider py-2">
-                  {t("select_departure_flight")}
+                  ⚠️ Select Departure Flight
                 </div>
               )}
 
               {selectedReturn ? (
                 <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-855 p-2 rounded-xl border border-gray-205/50 dark:border-gray-700/50 min-w-0">
-                  <span className="text-booking-lightblue font-bold shrink-0">{t("return_capital")}</span>
+                  <span className="text-booking-lightblue font-bold shrink-0">RETURN:</span>
                   <span className="font-extrabold text-gray-855 dark:text-white truncate">{selectedReturn.airline}</span>
                   <span className="shrink-0">({selectedReturn.flightNumber})</span>
                   <span className="shrink-0">{formatTime(selectedReturn.departure)}</span>
@@ -645,7 +643,7 @@ export default function SearchResults() {
                 </div>
               ) : (
                 <div className="text-red-550 font-bold uppercase tracking-wider py-2">
-                  {t("select_return_flight")}
+                  ⚠️ Select Return Flight
                 </div>
               )}
             </div>
@@ -654,7 +652,7 @@ export default function SearchResults() {
             <div className="flex items-center gap-5 justify-between w-full md:w-auto">
               {selectedOutbound && selectedReturn && (
                 <div className="text-right">
-                  <span className="text-[10px] text-gray-400 block font-medium uppercase tracking-wider">{t("combined_total_fares")}</span>
+                  <span className="text-[10px] text-gray-400 block font-medium uppercase tracking-wider">Combined Total Fares</span>
                   {fareInfo.discountPct > 0 && (
                     <div className="text-sm text-gray-400 line-through">
                       ₹{((selectedOutbound.basePriceCents + selectedReturn.basePriceCents) / 100).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
@@ -674,7 +672,7 @@ export default function SearchResults() {
                 disabled={!selectedOutbound || !selectedReturn}
                 className="btn-primary py-3.5 px-8 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-extrabold tracking-wider"
               >
-                {t("book_round_trip")}
+                BOOK ROUND TRIP ➔
               </button>
             </div>
 

@@ -1,107 +1,82 @@
-# FlyFast API — Layered Flight Booking Engine
+# FlyFast Backend Engine — Layered Flight Booking API
 
-This repository contains the backend engine driving FlyFast. It is designed around a layered (Controller-Service-Repository) architecture, type-safety via TypeScript, database mapping using Prisma ORM, and high security measures to protect transactions and user authentication.
+This is the backend API engine for FlyFast. It utilizes a layered Controller-Service-Repository architecture, typed request validators, security headers, database mapping using Prisma ORM, and integrated transaction rollbacks.
 
 ---
 
-## Technical Architecture
+## Architectural Layout
 
 ```
-┌────────────────────────────────────────────────────────┐
-│                      HTTP Request                      │
-└──────────────────────────┬─────────────────────────────┘
-                           │
-                           ▼
-┌────────────────────────────────────────────────────────┐
-│                  Security Middlewares                  │
-│       CORS, Helmet, Rate Limiters, Auth Guards         │
-└──────────────────────────┬─────────────────────────────┘
-                           │
-                           ▼
-┌────────────────────────────────────────────────────────┐
-│                   Controllers Layer                    │
-│      Route Registry, Request Validators, HTTP Map      │
-└──────────────────────────┬─────────────────────────────┘
-                           │
-                           ▼
-┌────────────────────────────────────────────────────────┐
-│                     Services Layer                     │
-│      Business Logic, AI Fallbacks, Mail, OTP           │
-└──────────────────────────┬─────────────────────────────┘
-                           │
-                           ▼
-┌────────────────────────────────────────────────────────┐
-│                    Database & ORM                      │
-│             Prisma Client, PostgreSQL / SQLite          │
-└────────────────────────────────────────────────────────┘
+                        +----------------------+
+                        |     HTTP Request     |
+                        +----------+-----------+
+                                   |
+                                   v
+                        +----------+-----------+
+                        | Security Middleware  |
+                        | (CORS, Rate Limiter) |
+                        +----------+-----------+
+                                   |
+                                   v
+                        +----------+-----------+
+                        |  Controllers Layer   |
+                        | (Req / Res mapping)  |
+                        +----------+-----------+
+                                   |
+                                   v
+                        +----------+-----------+
+                        |    Services Layer    |
+                        | (Business Decisions) |
+                        +----------+-----------+
+                                   |
+                                   v
+                        +----------+-----------+
+                        |    Database Layer    |
+                        |  (Prisma & SQLite)   |
+                        +----------------------+
 ```
 
-### Layered Codebase Organization
-- **`/controllers`**: Endpoint routing definitions, input validation chains (`express-validator`), and HTTP status mapping.
-- **`/services`**: Independent modules containing the core business logic (auth, bookings, AI chat mapping, notifications, SMS/mail senders).
-- **`/middlewares`**: Reusable middlewares including JWT validation, rate limiting pipelines, and the global error boundary.
-- **`/utils`**: Pure helper logic, checksum calculations (Luhn check), and text/phone format validators.
+### Directory Map
+- **`/src/controllers`**: Handles request endpoints, validation chains (`express-validator`), and HTTP status response codes.
+- **`/src/services`**: Contains isolated business logic modules (booking management, user profiles, LLM clients, SMS/email sandboxing).
+- **`/src/middlewares`**: Common middleware functions including JWT authentication guards, rate-limiting configurations, and global error logging.
+- **`/src/utils`**: Independent helper utilities (Luhn checksum algorithms, pattern validators).
+- **`/prisma`**: Schema mappings and database migration/seeding routines.
 
 ---
 
-## Core System Features
+## Getting Started
 
-### 1. Resilient NLP Intent Fallback
-When users type flight queries (e.g. *"Delhi to Mumbai tomorrow"*), the engine attempts to resolve intents using OpenAI. In case of API rate limits or quota depletions (HTTP 429), the controller traps the failure and seamlessly falls back to a custom **local regex-based heuristic parser** to avoid returning errors to the user.
-
-### 2. Standardized Security Pipeline
-- **Middleware Rate-Limiting:** Explicitly configured rate limiting on auth and chatbot routes, placed *before* route execution to guard controllers against brute-force attacks while bypassing preflight CORS `OPTIONS` requests.
-- **Helmet Headers:** Secures the Express instance with modern headers to restrict scripting origins.
-- **Safe Error Boundary:** Catch-all Express boundary mapping technical db connection failures to user-friendly messages while logging critical traceback diagnostics privately on the host terminal.
-
-### 3. Verification & Sandbox OTPs
-- Validates phone verification and password reset flows with transactional SMS (via Twilio) and SMTP mail (via Nodemailer).
-- Features sandbox OTP codes (`123456` or `000000`) available in non-production environments to streamline automated verification testing.
-
----
-
-## Setup & Local Development
-
-### Prerequisites
-- Node.js (v18+)
-- Postgres database instance (or SQLite configuration)
-
-### Installation
-
-1. Install module dependencies:
+### Local Setup
+1. Install node modules:
    ```bash
    npm install
    ```
-
-2. Configure environment variables in `.env` (refer to `.env.example` if available):
+2. Configure `.env`:
    ```env
+   DATABASE_URL="file:./dev.db"
    PORT=4000
-   DATABASE_URL="postgresql://username:password@localhost:5432/dbname"
-   JWT_SECRET="generate_a_random_jwt_signing_key_here"
-   OPENAI_API_KEY="your-openai-api-key"
+   JWT_SECRET="wWAewCqNlYWIoINEDonLvXFszMxUZWbC"
+   OPENAI_API_KEY="your-key-here"
    ```
-
-3. Synchronize database schema and build client code:
+3. Initialize SQLite DB:
    ```bash
    npx prisma db push
    npx prisma generate
    ```
-
-4. Populate sample airports and mock flight departures:
+4. Seed mock flight data:
    ```bash
-   npm run seed
+   npx ts-node prisma/seed.ts
    ```
-
-5. Launch the local hot-reload daemon:
+5. Boot dev server:
    ```bash
    npm run dev
    ```
-   The backend API will initialize at `http://localhost:4000`.
 
 ---
 
-## Running Lint & Compile Checks
+## Verification & Testing
+Verify TypeScript compiler compliance:
 ```bash
-# Typecheck TypeScript source
 npm run typecheck
 ```

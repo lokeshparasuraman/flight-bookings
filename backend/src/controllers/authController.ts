@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as authService from "../services/authService";
 import { body, validationResult } from "express-validator";
 import { isValidPhone } from "../utils/validators";
+import { prisma } from "../db";
 
 const router = Router();
 
@@ -109,6 +110,29 @@ router.post(
     }
   }
 );
+
+router.post("/dev/otp/latest", async (req, res, next) => {
+  try {
+    const { identifier, type } = req.body;
+    const user = await prisma.user.findFirst({
+      where: {
+        OR: [
+          { email: identifier },
+          { phone: identifier }
+        ]
+      }
+    });
+    if (!user) return res.status(404).json({ error: "User not found" });
+    const record = await prisma.verificationCode.findFirst({
+      where: { userId: user.id, type: type || "PHONE" },
+      orderBy: { createdAt: "desc" }
+    });
+    if (!record) return res.status(404).json({ error: "No OTP found" });
+    res.json({ code: record.code });
+  } catch (e) {
+    next(e);
+  }
+});
 
 export default router;
 router.post(

@@ -62,8 +62,10 @@ async function main() {
   console.log(`Generated ${flightsToCreate.length} flights for seeding.`);
 
   // Clean existing flights first to avoid duplicate errors / key issues when re-seeding
+  await prisma.payment.deleteMany({});
+  await prisma.booking.deleteMany({});
   await prisma.flight.deleteMany({});
-  console.log("Deleted old flights.");
+  console.log("Deleted old flights and dependent bookings/payments.");
 
   // Insert in batches of 100 to be friendly to Neon database limits and speed
   const batchSize = 100;

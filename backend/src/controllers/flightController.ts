@@ -62,15 +62,20 @@ function parseSearchFallback(query: string): any {
 
   // Parse Date
   let dateStr: string | null = null;
-  const today = new Date("2026-06-19"); // Baseline date
+  const today = new Date();
+  const dateTodayStr = today.toISOString().split('T')[0];
   if (q.includes("tomorrow")) {
-    const tomorrow = new Date(today);
+    const tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
     dateStr = tomorrow.toISOString().split('T')[0];
   } else if (q.includes("next monday")) {
-    dateStr = "2026-06-22"; // 2026-06-19 is Friday. Next Monday is 22nd.
+    const nextMonday = new Date();
+    const day = today.getDay();
+    const distance = (8 - day) % 7 || 7;
+    nextMonday.setDate(today.getDate() + distance);
+    dateStr = nextMonday.toISOString().split('T')[0];
   } else if (q.includes("next week")) {
-    const nextWeek = new Date(today);
+    const nextWeek = new Date();
     nextWeek.setDate(today.getDate() + 7);
     dateStr = nextWeek.toISOString().split('T')[0];
   } else {
@@ -90,7 +95,7 @@ function parseSearchFallback(query: string): any {
   // Fallback to defaults to keep it functional
   if (!origin) origin = "DEL";
   if (!destination) destination = "BOM";
-  if (!dateStr) dateStr = "2025-12-20"; // default flight seed date
+  if (!dateStr) dateStr = dateTodayStr; // default to actual system date
 
   return {
     origin,
@@ -120,6 +125,7 @@ router.post("/ai-search", async (req, res, next) => {
       return res.status(400).json({ error: "Query is required" });
     }
 
+    const todayStr = new Date().toISOString().split('T')[0];
     const systemPrompt = `You are a flight search parsing assistant. Parse the user's natural language query into a structured JSON search query for flights.
 You must respond in JSON ONLY. Do not include any markdown formatting, backticks, or explanation.
 
@@ -135,7 +141,7 @@ The output JSON structure must be exactly:
 
 Note:
 - If a city is mentioned, map it to its airport code if you know it (e.g. Delhi -> DEL, Mumbai -> BOM, Bangalore/Bengaluru -> BLR, Mysore -> MYS). If you don't know it, keep it as code or null.
-- Dates should be converted to ISO format "YYYY-MM-DD" relative to the current local time of 2026-06-19. E.g. "tomorrow" would be 2026-06-20, "next Monday" would be 2026-06-22.
+- Dates should be converted to ISO format "YYYY-MM-DD" relative to the current local time of ${todayStr}. E.g. if today is ${todayStr}, "tomorrow" would be tomorrow's date.
 - If no date is mentioned, keep date as null.`;
 
     const messages = [

@@ -25,11 +25,9 @@ import { useNavigate, Link } from "react-router-dom";
 import Header from "../components/Header";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { EyeIcon, EyeOffIcon, SecureIcon, FlightIcon, OfficeBuildingIcon } from "../components/Icons";
-import { useLanguage } from "../contexts/LanguageContext";
 
 export default function Register() {
-  const { t } = useLanguage();
-
+  
   // Only true during local development — enables the OTP reveal helper button
   const IS_DEV = (import.meta as any).env?.DEV === true;
 
@@ -137,10 +135,10 @@ export default function Register() {
             <div>
             <div className="text-center mb-8">
               <h2 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-2">
-                {t("register_title")}
+                Create Account
               </h2>
               <p className="text-gray-600 dark:text-gray-400">
-                {t("register_subtitle")}
+                Join FlyFast and start your journey
               </p>
             </div>
 
@@ -154,7 +152,7 @@ export default function Register() {
             <form onSubmit={submit} className="space-y-6">
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  {t("full_name")}
+                  Full Name
                 </label>
                 <input
                   type="text"
@@ -168,7 +166,7 @@ export default function Register() {
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  {t("email_address")}
+                  Email Address
                 </label>
                 <input
                   type="email"
@@ -182,7 +180,7 @@ export default function Register() {
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  {t("mobile_number")}
+                  Mobile Number
                 </label>
                 <input
                   type="tel"
@@ -192,12 +190,12 @@ export default function Register() {
                   onChange={(e) => setPhone(e.target.value)}
                   required
                 />
-                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{t("phone_otp_note")}</div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">We will send an OTP to this number.</div>
               </div>
 
               <div>
                 <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  {t("password_label")}
+                  Password
                 </label>
                 <div className="relative">
                   <input
@@ -231,10 +229,10 @@ export default function Register() {
                 {loading ? (
                   <>
                     <LoadingSpinner size="sm" />
-                    <span>{t("submitting")}</span>
+                    <span>Submitting...</span>
                   </>
                 ) : (
-                  t("register_title")
+                  "Create Account"
                 )}
               </button>
             </form>
@@ -244,17 +242,17 @@ export default function Register() {
               <form onSubmit={verifyOtp} className="space-y-6">
                 <div className="text-center mb-2">
                   <SecureIcon className="w-10 h-10 text-booking-lightblue mx-auto mb-2" />
-                  <div className="font-semibold">{t("otp_sent_title")}</div>
-                  <div className="text-sm text-gray-655 dark:text-gray-400">{t("otp_sent_desc")}</div>
+                  <div className="font-semibold">Verify OTP</div>
+                  <div className="text-sm text-gray-655 dark:text-gray-400">We have sent an OTP code to your registered mobile number</div>
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                    {t("otp_code")}
+                    Enter OTP Code
                   </label>
                   <input
                     type="text"
                     className="input-field"
-                    placeholder={t("otp_code")}
+                    placeholder="Enter OTP Code"
                     value={otpCode}
                     onChange={(e) => setOtpCode(e.target.value)}
                     required
@@ -266,7 +264,7 @@ export default function Register() {
                     onClick={resendOtp}
                     className="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
                   >
-                    {t("resend_otp")}
+                    Resend OTP
                   </button>
                   <button
                     type="submit"
@@ -276,10 +274,10 @@ export default function Register() {
                     {loading ? (
                       <>
                         <LoadingSpinner size="sm" />
-                        <span>{t("verifying")}</span>
+                        <span>Verifying...</span>
                       </>
                     ) : (
-                      t("verify_otp_btn")
+                      "VERIFY OTP ➔"
                     )}
                   </button>
                 </div>
@@ -291,10 +289,10 @@ export default function Register() {
                         onClick={showDevOtp}
                         className="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600"
                       >
-                        {t("show_otp_dev")}
+                        Show OTP (dev)
                       </button>
                       {devOtp && (
-                        <div className="text-sm text-gray-700 dark:text-gray-300">{t("current_otp")} <span className="font-mono font-semibold">{devOtp}</span></div>
+                        <div className="text-sm text-gray-700 dark:text-gray-300">Current OTP: <span className="font-mono font-semibold">{devOtp}</span></div>
                       )}
                     </div>
                   </div>
@@ -305,19 +303,19 @@ export default function Register() {
             <div className="mt-8 pt-6 border-t border-gray-100 dark:border-gray-800 text-center text-xs space-y-3 font-semibold text-gray-500">
               <div className="flex items-center justify-center gap-1.5">
                 <FlightIcon className="w-4 h-4 text-booking-lightblue transform -rotate-45" />
-                <span>{t("have_account")}</span>
+                <span>Already have an account?</span>
                 <Link
                   to="/login"
                   className="text-booking-lightblue hover:underline"
                 >
-                  {t("login_here")}
+                  Login here
                 </Link>
               </div>
               <div className="flex items-center justify-center gap-1.5">
                 <OfficeBuildingIcon className="w-4 h-4 text-booking-lightblue" />
-                <span>{t("carrier_operator")}</span>
+                <span>Carrier operator?</span>
                 <Link to="/airline/register" className="text-booking-lightblue hover:underline">
-                  {t("register_carrier_link")}
+                  Register carrier account
                 </Link>
               </div>
             </div>

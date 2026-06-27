@@ -16,7 +16,6 @@
 
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useLanguage } from "../contexts/LanguageContext";
 import {
   FlightIcon,
   OfficeBuildingIcon,
@@ -26,8 +25,7 @@ import {
 } from "./Icons";
 
 export default function Footer() {
-  const { t } = useLanguage();
-
+  
   // Controls whether the policy modals are visible
   const [showTerms, setShowTerms] = useState(false);
   const [showRefunds, setShowRefunds] = useState(false);
@@ -47,7 +45,7 @@ export default function Footer() {
               <span className="w-1.5 h-1.5 bg-booking-lightblue inline-block"></span>
             </Link>
             <p className="text-xs text-gray-400 leading-relaxed font-medium">
-              {t("footer_brand_desc")}
+              FlyFast is a next-generation AI-powered booking platform providing instantaneous flight comparison, smart seating, and premium customer service options.
             </p>
           </div>
 
@@ -55,22 +53,22 @@ export default function Footer() {
               Quick links to the main passenger-facing features.              */}
           <div>
             <h4 className="text-xs font-extrabold uppercase text-white dark:text-gray-200 tracking-wider mb-4 font-display">
-              {t("services")}
+              Services
             </h4>
             <ul className="space-y-2.5 text-xs font-semibold">
               <li>
                 <Link to="/routes" className="hover:text-booking-lightblue transition-colors">
-                  {t("available_routes")}
+                  Available Routes
                 </Link>
               </li>
               <li>
                 <Link to="/" className="hover:text-booking-lightblue transition-colors">
-                  {t("ai_super_search")}
+                  AI Super Search
                 </Link>
               </li>
               <li>
                 <Link to="/bookings" className="hover:text-booking-lightblue transition-colors">
-                  {t("manage_reservations")}
+                  Manage Reservations
                 </Link>
               </li>
             </ul>
@@ -80,37 +78,37 @@ export default function Footer() {
               Links for airlines and operators who want to join the platform. */}
           <div>
             <h4 className="text-xs font-extrabold uppercase text-white dark:text-gray-200 tracking-wider mb-4 font-display">
-              {t("join_business")}
+              Join the Business
             </h4>
             <ul className="space-y-2.5 text-xs font-semibold">
               <li>
                 <Link
                   to="/airline/register"
                   className="hover:text-booking-lightblue transition-colors flex items-center gap-1.5"
-                  data-tooltip={t("tooltip_register_business")}
+                  data-tooltip="Onboard a new travel business brand"
                 >
                   <FlightIcon className="w-4 h-4 text-booking-lightblue transform -rotate-45" />
-                  <span>{t("register_business")}</span>
+                  <span>Register Business</span>
                 </Link>
               </li>
               <li>
                 <Link
                   to="/airline/login"
                   className="hover:text-booking-lightblue transition-colors flex items-center gap-1.5"
-                  data-tooltip={t("tooltip_partner_login")}
+                  data-tooltip="Log in to the corporate operator panel"
                 >
                   <OfficeBuildingIcon className="w-4 h-4 text-booking-lightblue" />
-                  <span>{t("partner_console_login")}</span>
+                  <span>Partner Console Login</span>
                 </Link>
               </li>
               <li>
                 <Link
                   to="/airline/dashboard"
                   className="hover:text-booking-lightblue transition-colors flex items-center gap-1.5"
-                  data-tooltip={t("tooltip_operator_dashboard")}
+                  data-tooltip="Open partner listing dashboard"
                 >
                   <ChartIcon className="w-4 h-4 text-booking-lightblue" />
-                  <span>{t("operator_dashboard")}</span>
+                  <span>Operator Dashboard</span>
                 </Link>
               </li>
             </ul>
@@ -120,28 +118,28 @@ export default function Footer() {
               Phone number + clickable links that open inline policy modals.  */}
           <div>
             <h4 className="text-xs font-extrabold uppercase text-white dark:text-gray-200 tracking-wider mb-4 font-display">
-              {t("customer_support")}
+              Customer Support
             </h4>
             <ul className="space-y-2.5 text-xs font-semibold">
               <li className="text-gray-400">
-                {t("support_line")}: <span className="text-white font-bold">+91 98765 43210</span>
+                Support Line: <span className="text-white font-bold">+91 98765 43210</span>
               </li>
               <li>
                 <span
                   onClick={() => setShowRefunds(true)}
                   className="cursor-pointer hover:text-booking-lightblue transition-colors"
-                  data-tooltip={t("tooltip_cancellation_details")}
+                  data-tooltip="Read cancellation details & timelines"
                 >
-                  {t("cancellations_refunds")}
+                  Cancellations & Refunds
                 </span>
               </li>
               <li>
                 <span
                   onClick={() => setShowTerms(true)}
                   className="cursor-pointer hover:text-booking-lightblue transition-colors"
-                  data-tooltip={t("tooltip_view_terms")}
+                  data-tooltip="View site usage terms & rules"
                 >
-                  {t("terms_of_service")}
+                  Terms of Service
                 </span>
               </li>
             </ul>
@@ -152,7 +150,7 @@ export default function Footer() {
             Copyright line. Centered on mobile, space-between on desktop.    */}
         <div className="mt-12 pt-8 border-t border-gray-200/10 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-semibold text-gray-500">
           <div>
-            © {new Date().getFullYear()} FlyFast Inc. {t("all_rights_reserved")}
+            © {new Date().getFullYear()} FlyFast Inc. All rights reserved.
           </div>
         </div>
       </div>
@@ -168,37 +166,37 @@ export default function Footer() {
             </button>
             <div className="flex items-center gap-3 mb-5 pb-3 border-b border-gray-100 dark:border-gray-800">
               <ShieldIcon className="w-6 h-6 text-booking-lightblue" />
-              <h3 className="text-xl font-extrabold font-display uppercase tracking-wider">{t("cancellations_refunds")}</h3>
+              <h3 className="text-xl font-extrabold font-display uppercase tracking-wider">Cancellations & Refunds</h3>
             </div>
 
             <div className="space-y-4 text-xs md:text-sm text-gray-655 dark:text-gray-400 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin">
               <p>
-                {t("refunds_intro")}
+                At FlyFast, we believe in a hassle-free cancellation and refund process.
               </p>
 
               <div className="space-y-3">
                 <div className="p-3 bg-green-50 dark:bg-green-950/20 border-l-4 border-green-500">
-                  <h4 className="font-extrabold text-green-700 dark:text-green-400 uppercase tracking-wide text-xs">{t("refunds_policy_1")}</h4>
+                  <h4 className="font-extrabold text-green-700 dark:text-green-400 uppercase tracking-wide text-xs">100% Instant Refund Policy</h4>
                   <p className="text-xs mt-1">
-                    {t("refunds_policy_desc_1")}
+                    Cancellations initiated through the FlyFast app within the eligibility window qualify for a 100% instant refund of the base fare.
                   </p>
                 </div>
 
                 <div className="p-3 bg-gray-50 dark:bg-gray-855/50 border-l-4 border-booking-lightblue">
-                  <h4 className="font-extrabold text-gray-800 dark:text-gray-200 uppercase tracking-wide text-xs">{t("refunds_policy_2")}</h4>
+                  <h4 className="font-extrabold text-gray-800 dark:text-gray-200 uppercase tracking-wide text-xs">No Double Convenience Charges</h4>
                   <p className="text-xs mt-1">
-                    {t("refunds_policy_desc_2")}
+                    Unlike traditional booking agents, FlyFast does not charge additional transaction fees upon ticket cancellation.
                   </p>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <h4 className="font-bold text-gray-800 dark:text-gray-200">{t("refunds_steps_title")}</h4>
+                <h4 className="font-bold text-gray-800 dark:text-gray-200">How to request a refund:</h4>
                 <ol className="list-decimal pl-4 space-y-1 text-xs">
-                  <li>{t("refunds_step_1")}</li>
-                  <li>{t("refunds_step_2")}</li>
-                  <li>{t("refunds_step_3")}</li>
-                  <li>{t("refunds_step_4")}</li>
+                  <li>Navigate to the My Bookings console in your profile menu.</li>
+                  <li>Locate the active ticket you want to cancel and click the Cancel Ticket button.</li>
+                  <li>Your cancellation request will be processed immediately by our automated airline integration.</li>
+                  <li>Refund proceeds are instantly transferred back to your original source account (UPI, Bank Account, or Card).</li>
                 </ol>
               </div>
             </div>
@@ -208,7 +206,7 @@ export default function Footer() {
                 onClick={() => setShowRefunds(false)}
                 className="btn-primary py-2 px-6 text-xs uppercase"
               >
-                {t("close_policy")}
+                Close Policy
               </button>
             </div>
           </div>
@@ -227,40 +225,40 @@ export default function Footer() {
             </button>
             <div className="flex items-center gap-3 mb-5 pb-3 border-b border-gray-100 dark:border-gray-800">
               <SecureIcon className="w-6 h-6 text-booking-lightblue" />
-              <h3 className="text-xl font-extrabold font-display uppercase tracking-wider">{t("terms_of_service")}</h3>
+              <h3 className="text-xl font-extrabold font-display uppercase tracking-wider">Terms of Service</h3>
             </div>
 
             <div className="space-y-4 text-xs md:text-sm text-gray-655 dark:text-gray-400 max-h-[300px] overflow-y-auto pr-2 scrollbar-thin">
               <p>
-                {t("terms_intro")}
+                By using FlyFast, you agree to comply with and be bound by the following terms and regulations.
               </p>
 
               <div className="space-y-3 text-xs">
                 <div>
-                  <h4 className="font-extrabold text-gray-800 dark:text-gray-200">{t("terms_section_1")}</h4>
+                  <h4 className="font-extrabold text-gray-800 dark:text-gray-200">1. Booking Representation</h4>
                   <p className="mt-1">
-                    {t("terms_desc_1")}
+                    FlyFast acts as a real-time reservation gateway connecting passengers directly with registered airline carrier APIs. All pricing, schedules, and flight statuses are verified instantly.
                   </p>
                 </div>
 
                 <div>
-                  <h4 className="font-extrabold text-gray-800 dark:text-gray-200">{t("terms_section_2")}</h4>
+                  <h4 className="font-extrabold text-gray-800 dark:text-gray-200">2. Seating and Meal Choices</h4>
                   <p className="mt-1">
-                    {t("terms_desc_2")}
+                    Seat allocations and meal preferences submitted via our chatbot or details form are synced immediately with the airline partners. Seating upgrades may incur convenience costs based on airline rules.
                   </p>
                 </div>
 
                 <div>
-                  <h4 className="font-extrabold text-gray-800 dark:text-gray-200">{t("terms_section_3")}</h4>
+                  <h4 className="font-extrabold text-gray-800 dark:text-gray-200">3. Partner Accounts & Dashboard</h4>
                   <p className="mt-1">
-                    {t("terms_desc_3")}
+                    Airline operators are solely responsible for ensuring exact flight paths, scheduling accuracy, and fare compliance when inputting data in the operator console.
                   </p>
                 </div>
 
                 <div>
-                  <h4 className="font-extrabold text-gray-800 dark:text-gray-200">{t("terms_section_4")}</h4>
+                  <h4 className="font-extrabold text-gray-800 dark:text-gray-200">4. Privacy & Data Protection</h4>
                   <p className="mt-1">
-                    {t("terms_desc_4")}
+                    We secure customer information, UPI credentials, and booking histories using industry-standard SSL encryption. Your data is strictly shared with active carrier operators to verify boarding lists.
                   </p>
                 </div>
               </div>
@@ -271,7 +269,7 @@ export default function Footer() {
                 onClick={() => setShowTerms(false)}
                 className="btn-primary py-2 px-6 text-xs uppercase"
               >
-                {t("accept_close")}
+                Accept & Close
               </button>
             </div>
           </div>

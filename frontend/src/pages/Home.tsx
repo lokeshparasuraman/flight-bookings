@@ -29,7 +29,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import EnhancedAiChat from "../components/EnhancedAiChat";
-import { useLanguage } from "../contexts/LanguageContext";
 
 import {
   FlightIcon,
@@ -158,8 +157,7 @@ function DraggableAiButton({ onClick }: { onClick: () => void }) {
 
 // ──────────────────────────────────────────────────────────────────────────────
 export default function Home() {
-  const { t } = useLanguage();
-  const [tripType, setTripType] = useState<"oneway" | "roundtrip">("oneway");
+    const [tripType, setTripType] = useState<"oneway" | "roundtrip">("oneway");
   const [origin, setOrigin] = useState("DEL");
   const [destination, setDestination] = useState("BOM");
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -202,56 +200,56 @@ export default function Home() {
 
   const allPlaces = [
     // ── Flights ─────────────────────────────────────────────────────────────
-    { id: "agra", type: "flights", state: "Uttar Pradesh", code: "DEL", titleKey: "places_agra_title", descKey: "places_agra_desc", detailsKey: "places_agra_details", highlightsKey: "places_agra_highlights", bestTimeKey: "places_agra_best_time", img: "/places/taj_mahal.png", imgs: ["/places/taj_mahal.png", "/places/taj_mahal_detail.png"], price: "₹2,499" },
-    { id: "goa", type: "flights", state: "Goa", code: "GOI", titleKey: "places_goa_title", descKey: "places_goa_desc", detailsKey: "places_goa_details", highlightsKey: "places_goa_highlights", bestTimeKey: "places_goa_best_time", img: "/places/goa_beach.png", imgs: ["/places/goa_beach.png", "/places/goa_sunset.png"], price: "₹3,199" },
-    { id: "kerala", type: "flights", state: "Kerala", code: "COK", titleKey: "places_kerala_title", descKey: "places_kerala_desc", detailsKey: "places_kerala_details", highlightsKey: "places_kerala_highlights", bestTimeKey: "places_kerala_best_time", img: "/places/kerala_houseboat.png", imgs: ["/places/kerala_houseboat.png"], price: "₹4,299" },
-    { id: "ooty_tn_flight", type: "flights", state: "Tamil Nadu", code: "CJB", titleKey: "places_ooty_tn_title", descKey: "places_ooty_tn_desc", detailsKey: "places_ooty_tn_details", highlightsKey: "places_ooty_tn_highlights", bestTimeKey: "places_ooty_tn_best_time", img: "/places/ooty_tea_gardens.png", imgs: ["/places/ooty_tea_gardens.png"], price: "₹3,499" },
-    { id: "madurai_tn_flight", type: "flights", state: "Tamil Nadu", code: "IXM", titleKey: "places_madurai_tn_title", descKey: "places_madurai_tn_desc", detailsKey: "places_madurai_tn_details", highlightsKey: "places_madurai_tn_highlights", bestTimeKey: "places_madurai_tn_best_time", img: "/places/madurai_temple.png", imgs: ["/places/madurai_temple.png"], price: "₹2,999" },
-    { id: "mahabalipuram_tn_flight", type: "flights", state: "Tamil Nadu", code: "MAA", titleKey: "places_mahabalipuram_tn_title", descKey: "places_mahabalipuram_tn_desc", detailsKey: "places_mahabalipuram_tn_details", highlightsKey: "places_mahabalipuram_tn_highlights", bestTimeKey: "places_mahabalipuram_tn_best_time", img: "/places/mahabalipuram_shore.png", imgs: ["/places/mahabalipuram_shore.png"], price: "₹2,799" },
-    { id: "jaipur_flight", type: "flights", state: "Rajasthan", code: "JAI", titleKey: "places_jaipur_title", descKey: "places_jaipur_desc", detailsKey: "places_jaipur_details", highlightsKey: "places_jaipur_highlights", bestTimeKey: "places_jaipur_best_time", img: "/places/jaipur_amber_fort.png", imgs: ["/places/jaipur_amber_fort.png"], price: "₹2,799" },
-    { id: "bengaluru_flight", type: "flights", state: "Karnataka", code: "BLR", titleKey: "places_bengaluru_title", descKey: "places_bengaluru_desc", detailsKey: "places_bengaluru_details", highlightsKey: "places_bengaluru_highlights", bestTimeKey: "places_bengaluru_best_time", img: "/places/bengaluru_lalbagh.png", imgs: ["/places/bengaluru_lalbagh.png", "/places/bengaluru_nightlife.png"], price: "₹3,999" },
-    { id: "mumbai_flight", type: "flights", state: "Maharashtra", code: "BOM", titleKey: "places_mumbai_title", descKey: "places_mumbai_desc", detailsKey: "places_mumbai_details", highlightsKey: "places_mumbai_highlights", bestTimeKey: "places_mumbai_best_time", img: "/places/mumbai_gateway.png", imgs: ["/places/mumbai_gateway.png"], price: "₹4,599" },
-    { id: "varanasi_flight", type: "flights", state: "Uttar Pradesh", code: "VNS", titleKey: "places_varanasi_title", descKey: "places_varanasi_desc", detailsKey: "places_varanasi_details", highlightsKey: "places_varanasi_highlights", bestTimeKey: "places_varanasi_best_time", img: "/places/varanasi_ghat.png", imgs: ["/places/varanasi_ghat.png"], price: "₹3,299" },
-    { id: "munnar_flight", type: "flights", state: "Kerala", code: "COK", titleKey: "places_munnar_title", descKey: "places_munnar_desc", detailsKey: "places_munnar_details", highlightsKey: "places_munnar_highlights", bestTimeKey: "places_munnar_best_time", img: "/places/munnar_tea_estate.png", imgs: ["/places/munnar_tea_estate.png"], price: "₹5,199" },
-    { id: "pondicherry_flight", type: "flights", state: "Tamil Nadu", code: "MAA", titleKey: "places_pondicherry_title", descKey: "places_pondicherry_desc", detailsKey: "places_pondicherry_details", highlightsKey: "places_pondicherry_highlights", bestTimeKey: "places_pondicherry_best_time", img: "/places/pondicherry_french_quarter.png", imgs: ["/places/pondicherry_french_quarter.png"], price: "₹2,199" },
+    { id: "agra", type: "flights", state: "Uttar Pradesh", code: "DEL", title: "Agra (Taj Mahal)", desc: "Witness the monumental symbol of eternal love.", details: "Agra is home to the iconic Taj Mahal, a UNESCO World Heritage site and monument of eternal love built by Mughal Emperor Shah Jahan. The city also features Agra Fort, Akbar's Tomb, and Fatehpur Sikri, offering a deep dive into rich heritage.", highlights: "Taj Mahal Visit, Agra Fort Exploration, Traditional Mughal Cuisine tasting, Sunset over Yamuna River", bestTime: "October to March", img: "/places/taj_mahal.png", imgs: ["/places/taj_mahal.png", "/places/taj_mahal_detail.png"], price: "₹2,499" },
+    { id: "goa", type: "flights", state: "Goa", code: "GOI", title: "Goa Beaches", desc: "Soak in the sun at India's favorite beach paradise.", details: "Goa is renowned for its spectacular beaches, vibrant nightlife, Portuguese colonial architecture, and active water sports culture. North Goa offers lively clubs and busy coastlines, while South Goa offers tranquil, serene beaches.", highlights: "Beach hopping (Baga, Calangute, Palolem), Water sports & Scuba diving, Portuguese Forts visit, Seafood dining", bestTime: "November to February", img: "/places/goa_beach.png", imgs: ["/places/goa_beach.png", "/places/goa_sunset.png"], price: "₹3,199" },
+    { id: "kerala", type: "flights", state: "Kerala", code: "COK", title: "Kerala Backwaters", desc: "Unwind on a peaceful houseboat cruise through nature.", details: "Alleppey (Alappuzha) backwaters in Kerala are a vast, serene network of lakes, canals, and rivers. Cruising in a traditional houseboat allows you to witness scenic coconut groves, local fishing villages, and rich green landscape.", highlights: "Overnight Houseboat Cruise, Traditional Kerala Meals, Ayurvedic wellness therapies, Bird Sanctuary visits", bestTime: "September to March", img: "/places/kerala_houseboat.png", imgs: ["/places/kerala_houseboat.png"], price: "₹4,299" },
+    { id: "ooty_tn_flight", type: "flights", state: "Tamil Nadu", code: "CJB", title: "Ooty (Queen of Hill Stations)", desc: "Escape to the lush tea gardens and cool mountain air of Ooty.", details: "Ooty is a gorgeous hill station in the Nilgiri Hills of Tamil Nadu. Famed for its vast tea estates, colonial-era bungalows, Nilgiri Mountain Railway toy train, and serene gardens, it offers a refreshing mountain retreat.", highlights: "Nilgiri Mountain Railway ride, Ooty Lake boating, Botanical Garden stroll, Doddabetta Peak trek", bestTime: "October to June", img: "/places/ooty_tea_gardens.png", imgs: ["/places/ooty_tea_gardens.png"], price: "₹3,499" },
+    { id: "madurai_tn_flight", type: "flights", state: "Tamil Nadu", code: "IXM", title: "Madurai (The Temple City)", desc: "Explore the architectural grandeur of Meenakshi Amman Temple.", details: "Madurai is one of India's oldest continuously inhabited cities. Built around the historic Meenakshi Amman Temple, it is renowned for its vibrant festival celebrations, incredible gopuram carvings, and flavorful local culinary heritage.", highlights: "Meenakshi Temple tour, Tirumalai Nayakkar Palace light show, Shopping for Madurai Sungudi sarees, Local street food tour", bestTime: "October to March", img: "/places/madurai_temple.png", imgs: ["/places/madurai_temple.png"], price: "₹2,999" },
+    { id: "mahabalipuram_tn_flight", type: "flights", state: "Tamil Nadu", code: "MAA", title: "Mahabalipuram Shore", desc: "Gaze upon UNESCO-listed rock temples by the Bay of Bengal.", details: "Mahabalipuram is a historic town known for its UNESCO-listed group of Pallava monuments. Located on the coast of the Bay of Bengal, the Shore Temple, Five Rathas, and detailed rock carvings are breathtaking engineering feats of the 7th century.", highlights: "Shore Temple sunset walk, Five Rathas rock carvings, Arjuna's Penance relief, Beachside seafood dining", bestTime: "November to February", img: "/places/mahabalipuram_shore.png", imgs: ["/places/mahabalipuram_shore.png"], price: "₹2,799" },
+    { id: "jaipur_flight", type: "flights", state: "Rajasthan", code: "JAI", title: "Jaipur (The Pink City)", desc: "Explore the royal palaces and vibrant bazaars of Rajasthan's capital.", details: "Jaipur, the capital of Rajasthan, is known for its distinctive pink-colored buildings and stunning Rajput architecture. Visit the grand Amber Fort, the Hawa Mahal, and the City Palace. The city is a living museum of Rajasthan's royal heritage.", highlights: "Amber Fort elephant ride, Hawa Mahal photography, City Palace tour, Local gem shopping at Johari Bazaar", bestTime: "October to March", img: "/places/jaipur_amber_fort.png", imgs: ["/places/jaipur_amber_fort.png"], price: "₹2,799" },
+    { id: "bengaluru_flight", type: "flights", state: "Karnataka", code: "BLR", title: "Bengaluru (Garden City)", desc: "Discover India's tech hub with lush parks and vibrant nightlife.", details: "Bengaluru, India's Silicon Valley, blends modernity with colonial heritage. Explore the sprawling Lalbagh Botanical Garden, the historic Tipu Sultan's Palace, ISKCON temple, and enjoy a thriving craft beer and restaurant scene.", highlights: "Lalbagh Botanical Garden, Cubbon Park morning walk, UB City luxury shopping, Nandi Hills sunrise trek", bestTime: "October to February", img: "/places/bengaluru_lalbagh.png", imgs: ["/places/bengaluru_lalbagh.png", "/places/bengaluru_nightlife.png"], price: "₹3,999" },
+    { id: "mumbai_flight", type: "flights", state: "Maharashtra", code: "BOM", title: "Mumbai (City of Dreams)", desc: "Experience the energy of India's financial capital and entertainment hub.", details: "Mumbai, the city that never sleeps, is a bustling metropolis blending colonial architecture with Bollywood glamour. Visit the iconic Gateway of India, Marine Drive, Elephanta Caves (UNESCO), and Chhatrapati Shivaji Terminus.", highlights: "Gateway of India, Marine Drive sunset, Elephanta Caves UNESCO visit, Dharavi walking tour", bestTime: "November to February", img: "/places/mumbai_gateway.png", imgs: ["/places/mumbai_gateway.png"], price: "₹4,599" },
+    { id: "varanasi_flight", type: "flights", state: "Uttar Pradesh", code: "VNS", title: "Varanasi (City of Light)", desc: "Witness ancient ghats and sacred rituals along the Ganges river.", details: "Varanasi, one of the world's oldest living cities, is a deeply spiritual place where life and death converge on the sacred Ganges ghats. Witness the mesmerizing Ganga Aarti ceremony, explore narrow temple-lined lanes, and visit the ancient Kashi Vishwanath temple.", highlights: "Ganga Aarti ceremony, Boat ride at dawn, Kashi Vishwanath temple visit, Old city heritage walk", bestTime: "October to March", img: "/places/varanasi_ghat.png", imgs: ["/places/varanasi_ghat.png"], price: "₹3,299" },
+    { id: "munnar_flight", type: "flights", state: "Kerala", code: "COK", title: "Munnar Tea Gardens", desc: "Trek through endless rolling tea estates in Kerala's misty highlands.", details: "Munnar is a picturesque hill station in Kerala's Western Ghats, famous for its vast tea plantations, spice gardens, and stunning mountain landscapes. Visit the Tea Museum, trek to Anamudi Peak, and spot rare Neelakurinji flowers.", highlights: "Tea estate guided walk, Eravikulam National Park, Mattupetty Dam scenic drive, Spice garden tour", bestTime: "September to May", img: "/places/munnar_tea_estate.png", imgs: ["/places/munnar_tea_estate.png"], price: "₹5,199" },
+    { id: "pondicherry_flight", type: "flights", state: "Tamil Nadu", code: "MAA", title: "Pondicherry (French Riviera of the East)", desc: "Stroll through French colonial streets by the Bay of Bengal.", details: "Pondicherry, a former French colonial territory, offers a unique blend of French and Tamil cultures. The White Town features charming colonial villas, French cafes, and promenades by the sea. Visit Auroville, the international spiritual township.", highlights: "French Quarter heritage walk, Auroville meditation center, Rock Beach sunrise, Sri Aurobindo Ashram visit", bestTime: "October to March", img: "/places/pondicherry_french_quarter.png", imgs: ["/places/pondicherry_french_quarter.png"], price: "₹2,199" },
 
     // ── Hotels ──────────────────────────────────────────────────────────────
-    { id: "udaipur", type: "hotels", state: "Rajasthan", titleKey: "places_udaipur_title", descKey: "places_udaipur_desc", detailsKey: "places_udaipur_details", highlightsKey: "places_udaipur_highlights", bestTimeKey: "places_udaipur_best_time", img: "/places/lake_palace.png", imgs: ["/places/lake_palace.png"], rating: "4.9 ★" },
-    { id: "delhi", type: "hotels", state: "Delhi", titleKey: "places_delhi_title", descKey: "places_delhi_desc", detailsKey: "places_delhi_details", highlightsKey: "places_delhi_highlights", bestTimeKey: "places_delhi_best_time", img: "/places/delhi_imperial.png", imgs: ["/places/delhi_imperial.png", "/places/delhi_red_fort.png"], rating: "4.8 ★" },
-    { id: "goa_hotel", type: "hotels", state: "Goa", titleKey: "places_goa_hotel_title", descKey: "places_goa_hotel_desc", detailsKey: "places_goa_hotel_details", highlightsKey: "places_goa_hotel_highlights", bestTimeKey: "places_goa_hotel_best_time", img: "/places/goa_sunset.png", imgs: ["/places/goa_sunset.png", "/places/goa_beach.png"], rating: "4.7 ★" },
-    { id: "kerala_hotel", type: "hotels", state: "Kerala", titleKey: "places_kerala_hotel_title", descKey: "places_kerala_hotel_desc", detailsKey: "places_kerala_hotel_details", highlightsKey: "places_kerala_hotel_highlights", bestTimeKey: "places_kerala_hotel_best_time", img: "/places/kerala_houseboat.png", imgs: ["/places/kerala_houseboat.png"], rating: "4.8 ★" },
-    { id: "mumbai_hotel", type: "hotels", state: "Maharashtra", titleKey: "places_mumbai_hotel_title", descKey: "places_mumbai_hotel_desc", detailsKey: "places_mumbai_hotel_details", highlightsKey: "places_mumbai_hotel_highlights", bestTimeKey: "places_mumbai_hotel_best_time", img: "/places/mumbai_gateway.png", imgs: ["/places/mumbai_gateway.png"], rating: "4.9 ★" },
-    { id: "ooty_tn_hotel", type: "hotels", state: "Tamil Nadu", titleKey: "places_ooty_hotel_tn_title", descKey: "places_ooty_hotel_tn_desc", detailsKey: "places_ooty_hotel_tn_details", highlightsKey: "places_ooty_hotel_tn_highlights", bestTimeKey: "places_ooty_hotel_tn_best_time", img: "/places/ooty_tea_gardens.png", imgs: ["/places/ooty_tea_gardens.png"], rating: "4.6 ★" },
+    { id: "udaipur", type: "hotels", state: "Rajasthan", title: "Taj Lake Palace, Udaipur", desc: "Experience royal luxury floating on serene waters.", details: "Taj Lake Palace is a heritage hotel featuring stunning white marble architecture, built in 1746 by Maharana Jagat Singh II. Located on Lake Pichola, it offers royal luxury dining, vintage car tours, and boat cruises.", highlights: "Floating lake views, Fine-dining royal experience, Jharokha window architecture, Spa boat cruise", bestTime: "October to March", img: "/places/lake_palace.png", imgs: ["/places/lake_palace.png"], rating: "4.9 ★" },
+    { id: "delhi", type: "hotels", state: "Delhi", title: "The Imperial, New Delhi", desc: "Colonial-style heritage hotel in the heart of Delhi.", details: "Built in 1931, The Imperial is an award-winning colonial-style luxury hotel situated near Connaught Place. It features high ceilings, lush green gardens, a historic collection of museum art, and top-tier dining.", highlights: "Heritage art walk, Royal afternoon tea, Multi-cuisine fine dining, Luxury wellness spa", bestTime: "October to March", img: "/places/delhi_imperial.png", imgs: ["/places/delhi_imperial.png", "/places/delhi_red_fort.png"], rating: "4.8 ★" },
+    { id: "goa_hotel", type: "hotels", state: "Goa", title: "Taj Exotica Resort, Goa", desc: "Luxury beachfront resort on the serene shores of South Goa.", details: "Taj Exotica is a spectacular 56-acre resort situated on Benaulim beach in South Goa. This elegant property offers private beach access, multiple dining venues, a luxury spa, and world-class water sports facilities in a lush tropical setting.", highlights: "Private beach access, Infinity pool with ocean views, Jiva Spa therapy, Multi-cuisine dining with live music", bestTime: "November to February", img: "/places/goa_sunset.png", imgs: ["/places/goa_sunset.png", "/places/goa_beach.png"], rating: "4.7 ★" },
+    { id: "kerala_hotel", type: "hotels", state: "Kerala", title: "Kumarakom Lake Resort, Kerala", desc: "Heritage resort floating on the scenic Vembanad Lake.", details: "Kumarakom Lake Resort is an award-winning heritage property on the banks of the stunning Vembanad Lake. The resort features traditional Kerala architecture, private pool villas, Ayurvedic rejuvenation programs, and evening cultural performances.", highlights: "Lakefront villa stay, Traditional Ayurvedic treatments, Sunset houseboat cruise, Bird sanctuary boat tour", bestTime: "September to March", img: "/places/kerala_houseboat.png", imgs: ["/places/kerala_houseboat.png"], rating: "4.8 ★" },
+    { id: "mumbai_hotel", type: "hotels", state: "Maharashtra", title: "The Taj Mahal Palace, Mumbai", desc: "The iconic heritage hotel overlooking the Gateway of India.", details: "The Taj Mahal Palace, opened in 1903, is one of India's most iconic luxury hotels. Overlooking the Arabian Sea and the Gateway of India, it features stunning Moorish, Oriental, and Florentine architecture, world-class dining, and legendary hospitality.", highlights: "Gateway of India views, Fine dining at Masala Kraft, Heritage wing heritage tour, Rooftop Sea Lounge cocktails", bestTime: "November to February", img: "/places/mumbai_gateway.png", imgs: ["/places/mumbai_gateway.png"], rating: "4.9 ★" },
+    { id: "ooty_tn_hotel", type: "hotels", state: "Tamil Nadu", title: "Savoy Hotel, Ooty", desc: "A grand colonial-era heritage hotel in the Nilgiri Hills.", details: "The Savoy Hotel in Ooty, established in 1829, is one of India's oldest heritage hotels. Set amidst manicured gardens and pine trees, the colonial-era cottages offer an authentic hill station experience with modern comforts.", highlights: "Colonial garden cottages, Rose garden walks, Archery and croquet lawns, Traditional high tea service", bestTime: "April to June", img: "/places/ooty_tea_gardens.png", imgs: ["/places/ooty_tea_gardens.png"], rating: "4.6 ★" },
 
     // ── Homestays ────────────────────────────────────────────────────────────
-    { id: "coorg", type: "homestays", state: "Karnataka", titleKey: "places_coorg_title", descKey: "places_coorg_desc", detailsKey: "places_coorg_details", highlightsKey: "places_coorg_highlights", bestTimeKey: "places_coorg_best_time", img: "/places/coorg_plantation.png", imgs: ["/places/coorg_plantation.png"], rating: "4.7 ★" },
-    { id: "kodaikanal_tn_home", type: "homestays", state: "Tamil Nadu", titleKey: "places_kodaikanal_tn_title", descKey: "places_kodaikanal_tn_desc", detailsKey: "places_kodaikanal_tn_details", highlightsKey: "places_kodaikanal_tn_highlights", bestTimeKey: "places_kodaikanal_tn_best_time", img: "/places/kodaikanal_lake.png", imgs: ["/places/kodaikanal_lake.png"], rating: "4.6 ★" },
-    { id: "goa_homestay", type: "homestays", state: "Goa", titleKey: "places_goa_homestay_title", descKey: "places_goa_homestay_desc", detailsKey: "places_goa_homestay_details", highlightsKey: "places_goa_homestay_highlights", bestTimeKey: "places_goa_homestay_best_time", img: "/places/goa_beach.png", imgs: ["/places/goa_beach.png"], rating: "4.5 ★" },
-    { id: "wayanad_kerala_home", type: "homestays", state: "Kerala", titleKey: "places_wayanad_title", descKey: "places_wayanad_desc", detailsKey: "places_wayanad_details", highlightsKey: "places_wayanad_highlights", bestTimeKey: "places_wayanad_best_time", img: "/places/wayanad_treehouse.png", imgs: ["/places/wayanad_treehouse.png"], rating: "4.8 ★" },
-    { id: "lonavala_home", type: "homestays", state: "Maharashtra", titleKey: "places_lonavala_title", descKey: "places_lonavala_desc", detailsKey: "places_lonavala_details", highlightsKey: "places_lonavala_highlights", bestTimeKey: "places_lonavala_best_time", img: "/places/lonavala_valley.png", imgs: ["/places/lonavala_valley.png"], rating: "4.4 ★" },
+    { id: "coorg", type: "homestays", state: "Karnataka", title: "Cloud-Mist Villa, Coorg", desc: "Cozy estate cottage overlooking coffee valleys.", details: "Cloud-Mist Villa is a peaceful estate cottage nestled in the coffee plantations of Coorg. Wake up to misty mornings, fresh mountain air, scenic valley views, and local Kodava cuisine.", highlights: "Coffee plantation tour, Campfire under the stars, Trekking to Abbey Falls, Authentic Kodava meals", bestTime: "October to May", img: "/places/coorg_plantation.png", imgs: ["/places/coorg_plantation.png"], rating: "4.7 ★" },
+    { id: "kodaikanal_tn_home", type: "homestays", state: "Tamil Nadu", title: "Kodaikanal (Princess of Hills)", desc: "Unwind around the misty lakes and pine forests.", details: "Kodaikanal is a misty hill town situated in the Palani Hills of Tamil Nadu. Centered around a man-made star-shaped lake, it features scenic forest trails, towering pine trees, cool waterfalls, and pleasant weather all year.", highlights: "Coaker's Walk viewpoint, Row boating on Kodaikanal Lake, Pine Forest stroll, Pillars Rocks view", bestTime: "September to May", img: "/places/kodaikanal_lake.png", imgs: ["/places/kodaikanal_lake.png"], rating: "4.6 ★" },
+    { id: "goa_homestay", type: "homestays", state: "Goa", title: "Spice Garden Cottage, Goa", desc: "A rustic stay surrounded by aromatic spice plantations.", details: "A charming heritage homestay nestled in a working spice plantation in Ponda, Goa. Guests wake up to the fragrance of cardamom, pepper, and nutmeg, enjoy home-cooked Goan meals, and take guided plantation tours.", highlights: "Spice plantation guided tour, Home-cooked Goan fish curry lunch, Cashew feni tasting, Bird watching morning walks", bestTime: "October to April", img: "/places/goa_beach.png", imgs: ["/places/goa_beach.png"], rating: "4.5 ★" },
+    { id: "wayanad_kerala_home", type: "homestays", state: "Kerala", title: "Treehouse Cottages, Wayanad", desc: "Wake up to misty jungle mornings in a scenic treetop cottage.", details: "Wayanad's treehouse stays offer a magical experience of living amidst the dense tropical jungle. Wake up to sounds of wildlife, trek through ancient caves, visit tribal villages, and experience authentic Kerala forest living.", highlights: "Treetop sunrise views, Edakkal Cave rock carvings visit, Chembra Peak trek, Tribal village cultural tour", bestTime: "October to May", img: "/places/wayanad_treehouse.png", imgs: ["/places/wayanad_treehouse.png"], rating: "4.8 ★" },
+    { id: "lonavala_home", type: "homestays", state: "Maharashtra", title: "Tiger's Lair, Lonavala", desc: "A cozy hilltop retreat in the misty Sahyadri mountains.", details: "Tiger's Lair is a premium hillside resort in Lonavala, situated in the scenic Sahyadri mountain range. Offering stunning valley views, infinity pools, and adventure activities, it's the perfect weekend escape from Mumbai and Pune.", highlights: "Bhushi Dam waterfall walk, Rajmachi Fort trek, Local chikki shopping, Valley view sunset", bestTime: "June to September (Monsoon), October to February", img: "/places/lonavala_valley.png", imgs: ["/places/lonavala_valley.png"], rating: "4.4 ★" },
 
     // ── Buses ────────────────────────────────────────────────────────────────
-    { id: "ooty", type: "buses", state: "Tamil Nadu", titleKey: "places_ooty_title", descKey: "places_ooty_desc", detailsKey: "places_ooty_details", highlightsKey: "places_ooty_highlights", bestTimeKey: "places_ooty_best_time", img: "/places/ooty_tea_gardens.png", imgs: ["/places/ooty_tea_gardens.png"], price: "₹899" },
-    { id: "goa_bus", type: "buses", state: "Goa", titleKey: "places_goa_bus_title", descKey: "places_goa_bus_desc", detailsKey: "places_goa_bus_details", highlightsKey: "places_goa_bus_highlights", bestTimeKey: "places_goa_bus_best_time", img: "/places/goa_beach.png", imgs: ["/places/goa_beach.png"], price: "₹1,299" },
-    { id: "jaipur_bus", type: "buses", state: "Rajasthan", titleKey: "places_jaipur_bus_title", descKey: "places_jaipur_bus_desc", detailsKey: "places_jaipur_bus_details", highlightsKey: "places_jaipur_bus_highlights", bestTimeKey: "places_jaipur_bus_best_time", img: "/places/jaipur_amber_fort.png", imgs: ["/places/jaipur_amber_fort.png"], price: "₹1,099" },
-    { id: "pondicherry_bus", type: "buses", state: "Tamil Nadu", titleKey: "places_pondicherry_bus_title", descKey: "places_pondicherry_bus_desc", detailsKey: "places_pondicherry_bus_details", highlightsKey: "places_pondicherry_bus_highlights", bestTimeKey: "places_pondicherry_bus_best_time", img: "/places/pondicherry_french_quarter.png", imgs: ["/places/pondicherry_french_quarter.png"], price: "₹499" },
-    { id: "mysore_bus", type: "buses", state: "Karnataka", titleKey: "places_mysore_bus_title", descKey: "places_mysore_bus_desc", detailsKey: "places_mysore_bus_details", highlightsKey: "places_mysore_bus_highlights", bestTimeKey: "places_mysore_bus_best_time", img: "/places/mysore_palace.png", imgs: ["/places/mysore_palace.png"], price: "₹799" },
+    { id: "ooty", type: "buses", state: "Tamil Nadu", title: "Bangalore to Ooty", desc: "Scenic overnight luxury sleeper bus routes.", details: "Travel from the bustling tech hub of Bangalore to the serene hill station of Ooty in a premium sleeper bus. The journey passes through scenic forest areas, tea gardens, and the famous Bandipur Tiger Reserve hairpin curves.", highlights: "Bandipur Tiger Reserve views, Overnight luxury sleeper, Tea garden sightseeing, Ooty Lake boating", bestTime: "March to June", img: "/places/ooty_tea_gardens.png", imgs: ["/places/ooty_tea_gardens.png"], price: "₹899" },
+    { id: "goa_bus", type: "buses", state: "Goa", title: "Panaji to Calangute Beach", desc: "Breezy coastal bus routes connecting Goa's best beaches.", details: "Hop on Goa's iconic Kadamba buses and explore the state's stunning coastline. The Panaji to Calangute route passes through scenic coastal villages, local markets, and offers stunning glimpses of the Arabian Sea.", highlights: "Calangute and Baga beach stops, Local market browsing, Panaji old city walk, Church of Our Lady of Immaculate Conception visit", bestTime: "November to February", img: "/places/goa_beach.png", imgs: ["/places/goa_beach.png"], price: "₹1,299" },
+    { id: "jaipur_bus", type: "buses", state: "Rajasthan", title: "Delhi to Jaipur Express", desc: "Premium Volvo bus connecting Delhi to the Pink City.", details: "The Delhi to Jaipur Volvo bus is one of India's most popular intercity routes, covering 280 km in about 5-6 hours. Premium AC sleeper buses depart multiple times daily, offering a comfortable journey through Rajasthan's golden landscape.", highlights: "Comfortable AC Volvo coaches, Multiple daily departures, Amber Fort, Hawa Mahal, Jantar Mantar access", bestTime: "October to March", img: "/places/jaipur_amber_fort.png", imgs: ["/places/jaipur_amber_fort.png"], price: "₹1,099" },
+    { id: "pondicherry_bus", type: "buses", state: "Tamil Nadu", title: "Chennai to Pondicherry", desc: "A scenic East Coast Road drive to the French Quarter.", details: "The Chennai to Pondicherry route along the East Coast Road (ECR) is one of South India's most scenic drives. State government buses run frequently, passing through beautiful fishing villages, beach resorts, and historic Mahabalipuram.", highlights: "East Coast Road scenic views, Mahabalipuram stop option, Pondicherry White Town walk, Auroville visit", bestTime: "October to March", img: "/places/pondicherry_french_quarter.png", imgs: ["/places/pondicherry_french_quarter.png"], price: "₹499" },
+    { id: "mysore_bus", type: "buses", state: "Karnataka", title: "Bengaluru to Mysore Royal", desc: "Luxury AC bus to the heritage city of palaces.", details: "The Bengaluru to Mysore premium bus service covers 145 km in about 3 hours. Mysore is famous for its stunning Mysore Palace, silk weaving, sandalwood products, and the world-famous Dasara festival celebrations.", highlights: "Mysore Palace illumination visit, Brindavan Gardens water fountain, Chamundi Hills temple trek, Silk weaving unit tour", bestTime: "September to February", img: "/places/mysore_palace.png", imgs: ["/places/mysore_palace.png"], price: "₹799" },
 
     // ── Cruise ───────────────────────────────────────────────────────────────
-    { id: "lakshadweep", type: "cruise", state: "Lakshadweep", titleKey: "places_lakshadweep_title", descKey: "places_lakshadweep_desc", detailsKey: "places_lakshadweep_details", highlightsKey: "places_lakshadweep_highlights", bestTimeKey: "places_lakshadweep_best_time", img: "/places/lakshadweep_cruise.png", imgs: ["/places/lakshadweep_cruise.png", "/places/lakshadweep_beach.png"], price: "₹18,500" },
-    { id: "goa_cruise", type: "cruise", state: "Goa", titleKey: "places_goa_cruise_title", descKey: "places_goa_cruise_desc", detailsKey: "places_goa_cruise_details", highlightsKey: "places_goa_cruise_highlights", bestTimeKey: "places_goa_cruise_best_time", img: "/places/goa_mandovi_cruise.png", imgs: ["/places/goa_mandovi_cruise.png", "/places/goa_sunset.png"], price: "₹4,500" },
-    { id: "kerala_cruise", type: "cruise", state: "Kerala", titleKey: "places_kerala_cruise_title", descKey: "places_kerala_cruise_desc", detailsKey: "places_kerala_cruise_details", highlightsKey: "places_kerala_cruise_highlights", bestTimeKey: "places_kerala_cruise_best_time", img: "/places/kerala_houseboat.png", imgs: ["/places/kerala_houseboat.png"], price: "₹9,800" },
-    { id: "rameshwaram_cruise", type: "cruise", state: "Tamil Nadu", titleKey: "places_rameshwaram_cruise_title", descKey: "places_rameshwaram_cruise_desc", detailsKey: "places_rameshwaram_cruise_details", highlightsKey: "places_rameshwaram_cruise_highlights", bestTimeKey: "places_rameshwaram_cruise_best_time", img: "/places/rameshwaram_pamban.png", imgs: ["/places/rameshwaram_pamban.png"], price: "₹6,200" },
+    { id: "lakshadweep", type: "cruise", state: "Lakshadweep", title: "Lakshadweep Explorer", desc: "Cruise through pristine lagoons and coral reefs.", details: "Embark on a luxury cruise to the pristine islands of Lakshadweep. Discover turquoise blue waters, rich marine life, white sand beaches, and coral reefs through snorkeling, kayaking, and glass-bottom boat tours.", highlights: "Snorkeling and scuba diving, Coral reef view tours, Kayaking in blue lagoons, Shipboard dining", bestTime: "October to May", img: "/places/lakshadweep_cruise.png", imgs: ["/places/lakshadweep_cruise.png", "/places/lakshadweep_beach.png"], price: "₹18,500" },
+    { id: "goa_cruise", type: "cruise", state: "Goa", title: "Goa Sunset River Cruise", desc: "Sail along the Mandovi River watching the golden Goa sunset.", details: "The famous Mandovi River cruise in Goa features live Goan folk music, traditional Dekhni dance performances, and breathtaking views of the Fort Aguada and Old Goa churches as the sun sets over the Arabian Sea.", highlights: "Live Goan folk music and dance, Sunset views over Fort Aguada, Old Goa riverside vistas, Open-deck cocktail bar", bestTime: "October to April", img: "/places/goa_mandovi_cruise.png", imgs: ["/places/goa_mandovi_cruise.png", "/places/goa_sunset.png"], price: "₹4,500" },
+    { id: "kerala_cruise", type: "cruise", state: "Kerala", title: "Kerala Backwater Luxury Cruise", desc: "An overnight luxury houseboat through Kerala's serene backwaters.", details: "Kerala's Kettuvallam (rice boat) cruise is an unforgettable experience through the Vembanad Lake and Alleppey backwaters. These premium houseboats feature air-conditioned cabins, sun decks, and on-board chefs serving authentic Kerala cuisine.", highlights: "Overnight houseboat cruise, Authentic Kerala meals on board, Village life views, Fishing net demonstrations", bestTime: "September to March", img: "/places/kerala_houseboat.png", imgs: ["/places/kerala_houseboat.png"], price: "₹9,800" },
+    { id: "rameshwaram_cruise", type: "cruise", state: "Tamil Nadu", title: "Rameshwaram Island Cruise", desc: "Experience the sacred Pamban strait and Gulf of Mannar waters.", details: "Take a scenic boat cruise from Rameshwaram to explore the Pamban strait and the waters of the Gulf of Mannar Marine National Park. Spot dolphins, sea turtles, and vibrant coral reefs in one of India's most biodiverse marine zones.", highlights: "Dolphin and turtle sightings, Gulf of Mannar coral reefs, Pamban Bridge views from water, Dhanushkodi approach by boat", bestTime: "October to April", img: "/places/rameshwaram_pamban.png", imgs: ["/places/rameshwaram_pamban.png"], price: "₹6,200" },
 
     // ── Tours ────────────────────────────────────────────────────────────────
-    { id: "ajanta", type: "tours", state: "Maharashtra", titleKey: "places_ajanta_title", descKey: "places_ajanta_desc", detailsKey: "places_ajanta_details", highlightsKey: "places_ajanta_highlights", bestTimeKey: "places_ajanta_best_time", img: "/places/ajanta_caves.png", imgs: ["/places/ajanta_caves.png"], durationKey: "places_ajanta_duration" },
-    { id: "madurai_tn_tour", type: "tours", state: "Tamil Nadu", titleKey: "places_madurai_tn_title", descKey: "places_madurai_tn_desc", detailsKey: "places_madurai_tn_details", highlightsKey: "places_madurai_tn_highlights", bestTimeKey: "places_madurai_tn_best_time", img: "/places/madurai_temple.png", imgs: ["/places/madurai_temple.png"], price: "₹1,499" },
-    { id: "mahabalipuram_tn_tour", type: "tours", state: "Tamil Nadu", titleKey: "places_mahabalipuram_tn_title", descKey: "places_mahabalipuram_tn_desc", detailsKey: "places_mahabalipuram_tn_details", highlightsKey: "places_mahabalipuram_tn_highlights", bestTimeKey: "places_mahabalipuram_tn_best_time", img: "/places/mahabalipuram_shore.png", imgs: ["/places/mahabalipuram_shore.png"], price: "₹999" },
-    { id: "rameshwaram_tn_tour", type: "tours", state: "Tamil Nadu", titleKey: "places_rameshwaram_tn_title", descKey: "places_rameshwaram_tn_desc", detailsKey: "places_rameshwaram_tn_details", highlightsKey: "places_rameshwaram_tn_highlights", bestTimeKey: "places_rameshwaram_tn_best_time", img: "/places/rameshwaram_pamban.png", imgs: ["/places/rameshwaram_pamban.png"], price: "₹2,199" },
-    { id: "jaipur_tour", type: "tours", state: "Rajasthan", titleKey: "places_jaipur_tour_title", descKey: "places_jaipur_tour_desc", detailsKey: "places_jaipur_tour_details", highlightsKey: "places_jaipur_tour_highlights", bestTimeKey: "places_jaipur_tour_best_time", img: "/places/jaipur_amber_fort.png", imgs: ["/places/jaipur_amber_fort.png"], durationKey: "places_jaipur_tour_duration" },
-    { id: "delhi_tour", type: "tours", state: "Delhi", titleKey: "places_delhi_tour_title", descKey: "places_delhi_tour_desc", detailsKey: "places_delhi_tour_details", highlightsKey: "places_delhi_tour_highlights", bestTimeKey: "places_delhi_tour_best_time", img: "/places/delhi_red_fort.png", imgs: ["/places/delhi_red_fort.png", "/places/delhi_imperial.png"], durationKey: "places_delhi_tour_duration" },
-    { id: "mysore_tour", type: "tours", state: "Karnataka", titleKey: "places_mysore_tour_title", descKey: "places_mysore_tour_desc", detailsKey: "places_mysore_tour_details", highlightsKey: "places_mysore_tour_highlights", bestTimeKey: "places_mysore_tour_best_time", img: "/places/mysore_palace.png", imgs: ["/places/mysore_palace.png", "/places/coorg_plantation.png"], durationKey: "places_mysore_tour_duration" },
-    { id: "kashi_tour", type: "tours", state: "Uttar Pradesh", titleKey: "places_kashi_title", descKey: "places_kashi_desc", detailsKey: "places_kashi_details", highlightsKey: "places_kashi_highlights", bestTimeKey: "places_kashi_best_time", img: "/places/kashi_vishwanath.png", imgs: ["/places/kashi_vishwanath.png", "/places/varanasi_ghat.png"], durationKey: "places_kashi_duration" }
+    { id: "ajanta", type: "tours", state: "Maharashtra", title: "Ajanta & Ellora Caves", desc: "Explore ancient rock-cut Buddhist and Hindu monuments.", details: "Witness the spectacular 30 rock-cut Buddhist cave monuments of Ajanta and 34 caves of Ellora, dating from the 2nd century BCE to the 10th century CE. The magnificent Kailash Temple in Ellora is a engineering marvel.", highlights: "Kailash Temple (Ellora), Ancient rock-cut murals, Buddhist monastery carvings, Archaeological museum tour", bestTime: "November to March", img: "/places/ajanta_caves.png", imgs: ["/places/ajanta_caves.png"], duration: "2 Days" },
+    { id: "madurai_tn_tour", type: "tours", state: "Tamil Nadu", title: "Madurai (The Temple City)", desc: "Explore the architectural grandeur of Meenakshi Amman Temple.", details: "Madurai is one of India's oldest continuously inhabited cities. Built around the historic Meenakshi Amman Temple, it is renowned for its vibrant festival celebrations, incredible gopuram carvings, and flavorful local culinary heritage.", highlights: "Meenakshi Temple tour, Tirumalai Nayakkar Palace light show, Shopping for Madurai Sungudi sarees, Local street food tour", bestTime: "October to March", img: "/places/madurai_temple.png", imgs: ["/places/madurai_temple.png"], price: "₹1,499" },
+    { id: "mahabalipuram_tn_tour", type: "tours", state: "Tamil Nadu", title: "Mahabalipuram Shore", desc: "Gaze upon UNESCO-listed rock temples by the Bay of Bengal.", details: "Mahabalipuram is a historic town known for its UNESCO-listed group of Pallava monuments. Located on the coast of the Bay of Bengal, the Shore Temple, Five Rathas, and detailed rock carvings are breathtaking engineering feats of the 7th century.", highlights: "Shore Temple sunset walk, Five Rathas rock carvings, Arjuna's Penance relief, Beachside seafood dining", bestTime: "November to February", img: "/places/mahabalipuram_shore.png", imgs: ["/places/mahabalipuram_shore.png"], price: "₹999" },
+    { id: "rameshwaram_tn_tour", type: "tours", state: "Tamil Nadu", title: "Rameshwaram Island", desc: "Journey across the sea bridge to the holy island.", details: "Rameshwaram is a holy town located on Pamban Island, connected to mainland India by the spectacular Pamban sea bridge. It is home to the Ramanathaswamy Temple, featuring the longest corridor of any Hindu temple in the world.", highlights: "Pamban Bridge crossing, Ramanathaswamy Temple corridor, Dhanushkodi ghost town exploration, Agnitheertham holy bath", bestTime: "October to March", img: "/places/rameshwaram_pamban.png", imgs: ["/places/rameshwaram_pamban.png"], price: "₹2,199" },
+    { id: "jaipur_tour", type: "tours", state: "Rajasthan", title: "Jaipur Royal Heritage Tour", desc: "A guided journey through Jaipur's most iconic royal monuments.", details: "This curated 2-day heritage tour of Jaipur covers all the iconic royal landmarks: the grand Amber Fort with its stunning Sheesh Mahal (mirror palace), the iconic Hawa Mahal, City Palace museum, Jantar Mantar astronomical observatory, and bustling bazaars.", highlights: "Amber Fort elephant ride, Hawa Mahal photography, Jantar Mantar observatory, Johari Bazaar gem shopping", bestTime: "October to March", img: "/places/jaipur_amber_fort.png", imgs: ["/places/jaipur_amber_fort.png"], duration: "2 Days" },
+    { id: "delhi_tour", type: "tours", state: "Delhi", title: "Delhi Heritage & Modern Walk", desc: "From Mughal monuments to Lutyens' Delhi in one epic tour.", details: "Explore Delhi's rich 3,000-year history across Old Delhi and New Delhi. Visit the magnificent Red Fort, Jama Masjid, Qutub Minar (UNESCO), India Gate, Humayun's Tomb, and the peaceful Lodhi Garden in a curated full-day tour.", highlights: "Red Fort sound and light show, Qutub Minar UNESCO visit, India Gate sunset, Chandni Chowk street food tour", bestTime: "October to March", img: "/places/delhi_red_fort.png", imgs: ["/places/delhi_red_fort.png", "/places/delhi_imperial.png"], duration: "1 Day" },
+    { id: "mysore_tour", type: "tours", state: "Karnataka", title: "Mysore Palace & Coorg Day Tour", desc: "Explore the royal opulence of Mysore Palace and misty Coorg.", details: "This combined Mysore and Coorg tour covers the stunning Mysore Palace (illuminated with 97,000 bulbs on Sundays), Chamundi Hills temple, Brindavan Gardens, and then the lush coffee estates of Coorg.", highlights: "Mysore Palace Sunday illumination, Brindavan Gardens fountain display, Chamundi Hills trek, Coorg coffee plantation visit", bestTime: "September to February", img: "/places/mysore_palace.png", imgs: ["/places/mysore_palace.png", "/places/coorg_plantation.png"], duration: "2 Days" },
+    { id: "kashi_tour", type: "tours", state: "Uttar Pradesh", title: "Kashi Vishwanath Pilgrimage", desc: "Follow the ancient spiritual path to Lord Shiva's holiest temple.", details: "Kashi (Varanasi) Vishwanath Temple is one of the most sacred Hindu temples, dedicated to Lord Shiva. The newly built Kashi Vishwanath Corridor provides a magnificent approach to the temple with stunning views of the Ganges and the ancient city.", highlights: "Kashi Vishwanath temple darshan, Ganga Aarti ceremony at Dashashwamedh Ghat, Sacred Ghats boat tour, Banaras Hindu University campus visit", bestTime: "October to March", img: "/places/kashi_vishwanath.png", imgs: ["/places/kashi_vishwanath.png", "/places/varanasi_ghat.png"], duration: "2 Days" }
   ];
 
   const nav = useNavigate();
@@ -377,16 +375,16 @@ export default function Home() {
   ];
 
   const tabs = [
-    { id: "flights", label: "Flights" },
-    { id: "hotels", label: "Hotels" },
-    { id: "homestays", label: "Villas & Homestays" },
-    { id: "holidays", label: "Holiday Packages" },
-    { id: "trains", label: "Trains" },
-    { id: "buses", label: "Buses" },
-    { id: "cabs", label: "Cabs" },
-    { id: "tours", label: "Tours & Attractions" },
-    { id: "cruise", label: "Cruise", badge: "new" },
-    { id: "insurance", label: "Travel Insurance" }
+    { id: "flights", label: "Flights", l1: "Book", l2: "Flights", searchLabel: "Search Flights" },
+    { id: "hotels", label: "Hotels", l1: "Book", l2: "Hotels", searchLabel: "Search Hotels" },
+    { id: "homestays", label: "Villas & Homestays", l1: "Villas &", l2: "Homestays", searchLabel: "Search Homestays" },
+    { id: "holidays", label: "Holiday Packages", l1: "Holiday", l2: "Packages", searchLabel: "Search Holidays" },
+    { id: "trains", label: "Trains", l1: "Book", l2: "Trains", searchLabel: "Search Trains" },
+    { id: "buses", label: "Buses", l1: "Book", l2: "Buses", searchLabel: "Search Buses" },
+    { id: "cabs", label: "Cabs", l1: "Book", l2: "Cabs", searchLabel: "Search Cabs" },
+    { id: "tours", label: "Tours & Attractions", l1: "Tours &", l2: "Attractions", searchLabel: "Search Tours" },
+    { id: "cruise", label: "Cruise", l1: "Book", l2: "Cruise", searchLabel: "Search Cruises", badge: "new" },
+    { id: "insurance", label: "Travel Insurance", l1: "Travel", l2: "Insurance", searchLabel: "Search Insurance" }
   ];
 
   const renderTabIcon = (id: string, className: string) => {
@@ -425,10 +423,10 @@ export default function Home() {
           <div className="container max-w-6xl mx-auto text-center relative z-10">
             {/* text-3xl on phones, scales up to 5xl on desktop */}
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-3 tracking-tight">
-              {t("compare_book")}
+              Compare & Book Flights Easily
             </h1>
             <p className="text-sm md:text-base text-gray-300 max-w-xl mx-auto font-medium">
-              {t("save_big")}
+              Save big with AI-powered flight recommendations & exclusive discounts.
             </p>
           </div>
         </div>
@@ -449,8 +447,8 @@ export default function Home() {
             {tabs.map((tab: any) => {
               const isActive = activeTab === tab.id;
               const tooltipLabel = tab.disabled
-                ? `${t("coming_soon")}: ${t(tab.id)}`
-                : `${t("search")} ${t(tab.id)}`;
+                ? `Coming Soon: ${tab.label}`
+                : `Search ${tab.label}`;
               return (
                 // Tooltip wraps the button and renders its bubble via ReactDOM.createPortal
                 // so the label is always on top of every nav key on all screen sizes.
@@ -472,10 +470,10 @@ export default function Home() {
                       {renderTabIcon(tab.id, "w-5 h-5 md:w-6 md:h-6")}
                     </div>
                     <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-wider leading-tight block whitespace-normal w-full px-0.5">
-                      {t(`tab_${tab.id}_l1`)}
+                      {tab.l1}
                     </span>
                     <span className="text-[9px] md:text-[10px] uppercase font-bold tracking-wider leading-tight block whitespace-normal w-full px-0.5">
-                      {t(`tab_${tab.id}_l2`)}
+                      {tab.l2}
                     </span>
                     {isActive && (
                       <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 md:w-10 h-0.5 md:h-1 bg-[#008cff] rounded-full"></span>
@@ -502,7 +500,7 @@ export default function Home() {
                     className="w-4.5 h-4.5 text-[#008cff] focus:ring-[#008cff] border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-850"
                   />
                   <span className={`text-sm font-bold tracking-wide transition-colors ${tripType === "oneway" ? "text-[#008cff]" : "text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"}`}>
-                    {t("one_way")}
+                    ONE WAY
                   </span>
                 </label>
 
@@ -515,7 +513,7 @@ export default function Home() {
                     className="w-4.5 h-4.5 text-[#008cff] focus:ring-[#008cff] border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-850"
                   />
                   <span className={`text-sm font-bold tracking-wide transition-colors ${tripType === "roundtrip" ? "text-[#008cff]" : "text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300"}`}>
-                    {t("round_trip")}
+                    ROUND TRIP
                   </span>
                 </label>
               </div>
@@ -533,7 +531,7 @@ export default function Home() {
                   <div className="md:col-span-2 relative flex flex-col md:grid md:grid-cols-2 divide-gray-200 dark:divide-gray-800 border border-gray-200 dark:border-gray-800 md:border-0 rounded-2xl md:rounded-none overflow-visible">
                     {/* From Field */}
                     <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[100px] border-b border-gray-200 dark:border-gray-800 md:border-b-0 md:border-r">
-                      <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("from")}</span>
+                      <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">FROM</span>
                       <input
                         type="text"
                         value={origin}
@@ -562,7 +560,7 @@ export default function Home() {
 
                     {/* To Field */}
                     <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[100px]">
-                      <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("to")}</span>
+                      <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">TO</span>
                       <input
                         type="text"
                         value={destination}
@@ -593,7 +591,7 @@ export default function Home() {
                     const displayDate = formatDateDisplay(date);
                     return (
                       <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer relative flex flex-col justify-center min-h-[110px]">
-                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("departure")}</span>
+                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">DEPARTURE</span>
                         <div className="flex items-baseline gap-1 mt-1">
                           <span className="text-3xl font-extrabold text-gray-800 dark:text-white leading-none">{displayDate.day}</span>
                           <span className="text-sm font-bold text-gray-800 dark:text-white">{displayDate.monthYear}</span>
@@ -625,12 +623,12 @@ export default function Home() {
                             : "hover:bg-blue-50/20 dark:hover:bg-blue-955/10"
                           }`}
                       >
-                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("return")}</span>
+                        <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">RETURN</span>
                         {isOneWay ? (
                           <>
-                            <span className="text-xl font-extrabold text-[#008cff] mt-1">+ {t("add")} {t("return")}</span>
+                            <span className="text-xl font-extrabold text-[#008cff] mt-1">+ Add RETURN</span>
                             <span className="block text-xs text-gray-450 dark:text-gray-555 mt-1 font-semibold">
-                              {t("tap_roundtrip")}
+                              Tap to book round-trip
                             </span>
                           </>
                         ) : (
@@ -656,7 +654,7 @@ export default function Home() {
 
                   {/* Travelers Info */}
                   <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer flex flex-col justify-center min-h-[110px]">
-                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">{t("travelers")}</span>
+                    <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">TRAVELERS</span>
                     <div className="flex items-baseline gap-1 mt-1">
                       <input
                         type="number"
@@ -681,28 +679,26 @@ export default function Home() {
                       <span className="text-sm font-bold text-gray-800 dark:text-white">Traveler(s)</span>
                     </div>
                     <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">
-                      {t("economy_class")}
+                      Economy Class
                     </span>
                   </div>
                 </div>
               )}
 
-              {/* ── Special Fares Row — only shown on the Flights tab ─────────────
-                  Chip-style selector: clicking a chip sets selectedSpecialFare.
-                  The discount info card slides in below to educate the user.    */}
+              {/* ── Consolidated Special Fares — Premium Glassmorphism Module ───────────── */}
               {activeTab === "flights" && (
-                <div className="mt-4 mb-2 animate-fade-in">
+                <div className="bg-white/30 dark:bg-gray-900/40 backdrop-blur-lg border border-white/20 dark:border-gray-800/30 shadow-xl rounded-3xl p-5 sm:p-6 mt-6 mb-4 animate-fade-in">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest shrink-0">Special Fares</span>
+                    <span className="text-[10px] font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest shrink-0">Special Fares</span>
                     {selectedSpecialFare !== "regular" && (
-                      <span className="text-[9px] bg-green-500/15 text-green-600 dark:text-green-400 font-extrabold px-2 py-0.5 rounded-full border border-green-500/20 animate-pulse shrink-0">
+                      <span className="text-[9px] bg-green-500/10 text-green-600 dark:text-green-400 font-extrabold px-2 py-0.5 rounded-full border border-green-500/20 animate-pulse shrink-0">
                         Discount Applied ✓
                       </span>
                     )}
                   </div>
 
-                  {/* Fare type chips — horizontal scroll on tiny phones, wraps on larger screens */}
-                  <div className="flex flex-wrap gap-2 mb-3 overflow-x-auto pb-0.5" style={{ WebkitOverflowScrolling: 'touch' }}>
+                  {/* Responsive grid of glass buttons */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
                     {specialFaresOptions.map((fare) => {
                       const isActive = selectedSpecialFare === fare.id;
                       return (
@@ -710,34 +706,35 @@ export default function Home() {
                           key={fare.id}
                           type="button"
                           onClick={() => setSelectedSpecialFare(fare.id)}
-                          className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border text-[11px] font-bold transition-all duration-200 select-none ${
+                          className={`flex flex-col justify-between p-3.5 border rounded-2xl transition-all duration-300 text-left relative backdrop-blur-sm cursor-pointer h-full min-h-[90px] ${
                             isActive
-                              ? "bg-[#008cff] text-white border-[#008cff] shadow-md scale-105"
-                              : "bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 border-gray-200 dark:border-gray-700 hover:border-[#008cff] hover:text-[#008cff]"
+                              ? "border-booking-lightblue bg-booking-lightblue/10 text-booking-lightblue dark:text-blue-400 font-extrabold scale-[1.02] shadow-md shadow-blue-500/5"
+                              : "bg-white/40 dark:bg-gray-850/20 border-white/30 dark:border-gray-800/30 text-gray-700 dark:text-gray-300 hover:bg-white/70 dark:hover:bg-gray-800/40 hover:scale-[1.02] active:scale-[0.98]"
                           }`}
                         >
-                          <span className="text-base leading-none">{fare.icon}</span>
-                          <span>{fare.title}</span>
-                          {fare.discountPct > 0 && (
-                            <span className={`text-[9px] font-extrabold px-1.5 py-0.5 rounded-full ml-0.5 ${
-                              isActive ? "bg-white/25 text-white" : "bg-green-500/15 text-green-600 dark:text-green-400"
-                            }`}>
-                              -{fare.discountPct}%
+                          {fare.badge && (
+                            <span className="absolute -top-2 right-2 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 text-purple-600 dark:text-purple-300 text-[8px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider backdrop-blur-md scale-90">
+                              {fare.badge}
                             </span>
                           )}
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-base leading-none">{fare.icon}</span>
+                            <span className="text-xs font-extrabold font-sans leading-tight">{fare.title}</span>
+                          </div>
+                          <span className="text-[10px] text-gray-500 dark:text-gray-400 font-semibold leading-tight">{fare.subtitle}</span>
                         </button>
                       );
                     })}
                   </div>
 
-                  {/* Perks info card — shows when a non-regular fare is active */}
+                  {/* Glassmorphic perks description */}
                   {selectedSpecialFare !== "regular" && (() => {
                     const fare = specialFaresOptions.find(f => f.id === selectedSpecialFare)!;
                     return (
-                      <div className="flex items-start gap-3 bg-green-50 dark:bg-green-950/30 border border-green-200/60 dark:border-green-800/40 rounded-2xl px-4 py-3 animate-fade-in overflow-hidden">
+                      <div className="flex items-start gap-3 bg-green-500/5 dark:bg-green-950/20 border border-green-500/20 dark:border-green-800/30 rounded-2xl p-4 mt-4 animate-slide-down">
                         <span className="text-xl mt-0.5 shrink-0">{fare.icon}</span>
                         <div className="flex-1 min-w-0">
-                          <div className="flex flex-wrap items-center gap-1.5 mb-0.5">
+                          <div className="flex flex-wrap items-center gap-1.5 mb-1">
                             <span className="text-xs font-extrabold text-green-700 dark:text-green-400 uppercase tracking-wide">{fare.title} Fare</span>
                             <span className="text-[9px] font-extrabold bg-green-500 text-white px-2 py-0.5 rounded-full shrink-0">{fare.subtitle}</span>
                             {fare.extraBaggage > 0 && (
@@ -746,7 +743,7 @@ export default function Home() {
                               </span>
                             )}
                           </div>
-                          <p className="text-[10px] text-green-700/80 dark:text-green-400/70 font-semibold leading-relaxed break-words">{fare.perks}</p>
+                          <p className="text-xs text-green-700/80 dark:text-green-400/70 font-semibold leading-relaxed break-words">{fare.perks}</p>
                         </div>
                       </div>
                     );
@@ -1522,38 +1519,7 @@ export default function Home() {
                 </div>
               )}
 
-              {/* Special Fares Selector Row */}
-              {activeTab === "flights" && (
-                <div className="mt-5 flex flex-col md:flex-row md:items-center gap-3">
-                  <span className="text-xs font-extrabold text-gray-400 dark:text-gray-505 uppercase tracking-wider shrink-0">
-                    {t("special_fares")}:
-                  </span>
-                  <div className="flex flex-wrap gap-2.5">
-                    {specialFaresOptions.map((option) => {
-                      const isSelected = selectedSpecialFare === option.id;
-                      return (
-                        <button
-                          key={option.id}
-                          type="button"
-                          onClick={() => setSelectedSpecialFare(option.id)}
-                          className={`flex flex-col items-start px-4 py-2 border rounded-xl transition-all text-left relative ${isSelected
-                              ? "border-[#008cff] bg-blue-50/40 dark:bg-blue-955/20 text-[#008cff]"
-                              : "border-gray-255 dark:border-gray-850 hover:border-gray-300 dark:hover:border-gray-700 bg-white dark:bg-gray-900 text-gray-755 dark:text-gray-300"
-                            }`}
-                        >
-                          {option.badge && (
-                            <span className="absolute -top-2 right-2 bg-gradient-to-r from-purple-500 to-[#008cff] text-white text-[7px] font-extrabold px-1.5 py-0.2 rounded-full uppercase tracking-wider scale-90">
-                              {option.badge}
-                            </span>
-                          )}
-                          <span className="text-xs font-extrabold">{option.title}</span>
-                          <span className="text-[9px] text-gray-450 dark:text-gray-500 font-semibold">{option.subtitle}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
+
 
             </form>
           </div>
@@ -1567,7 +1533,7 @@ export default function Home() {
               }}
               className="px-16 py-4 text-lg bg-gradient-to-r from-[#008cff] to-[#007cdb] hover:from-[#007cdb] hover:to-[#006cc7] text-white font-extrabold rounded-full transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100 flex items-center justify-center gap-2 group tracking-wider uppercase min-w-[240px]"
             >
-              <span>{t(`search_${activeTab}`)}</span>
+              <span>{tabs.find((t) => t.id === activeTab)?.searchLabel || "Search"}</span>
               <span className="group-hover:translate-x-1.5 transition-transform duration-200">➔</span>
             </button>
           </div>
@@ -1580,18 +1546,18 @@ export default function Home() {
             <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
               <div>
                 <span className="text-xs uppercase font-extrabold px-2.5 py-1 bg-booking-lightblue/10 text-booking-lightblue border border-booking-lightblue/20">
-                  {t("explore_destinations")}
+                  Explore Destinations
                 </span>
                 <h3 className="text-2xl md:text-3xl font-extrabold text-gray-900 dark:text-white mt-2 font-display tracking-tight">
-                  {activeTab === "flights" && t("popular_places_visit")}
-                  {activeTab === "hotels" && t("featured_hotels")}
-                  {activeTab === "homestays" && t("scenic_villas")}
-                  {activeTab === "buses" && t("popular_bus_routes")}
-                  {activeTab === "cruise" && t("stunning_cruises")}
-                  {activeTab === "tours" && t("top_tours_attractions")}
+                  {activeTab === "flights" && "Popular Places to Visit"}
+                  {activeTab === "hotels" && "Featured Luxury Hotels"}
+                  {activeTab === "homestays" && "Scenic Villas & Homestays"}
+                  {activeTab === "buses" && "Popular Bus Routes"}
+                  {activeTab === "cruise" && "Stunning Cruise Voyages"}
+                  {activeTab === "tours" && "Top Tours & Attractions"}
                 </h3>
                 <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1 font-medium">
-                  {t("places_to_visit_desc")}
+                  Unlock scenic tourist destinations and premium accommodations directly from the navigation bar tabs above.
                 </p>
                 {/* Search and Filters Area */}
                 <div className="flex flex-col sm:flex-row gap-4 mb-8 bg-[#faf8f5]/60 dark:bg-gray-900/60 p-4 border border-gray-200/50 dark:border-gray-800/50 items-center justify-between">
@@ -1601,7 +1567,7 @@ export default function Home() {
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder={t("label_search_placeholder")}
+                      placeholder="Search by state or place name..."
                       className="w-full pl-9 pr-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-sm outline-none text-gray-855 dark:text-white"
                     />
                     <span className="absolute left-3 top-2.5 text-gray-400">🔍</span>
@@ -1610,23 +1576,23 @@ export default function Home() {
                   {/* State Dropdown */}
                   <div className="flex items-center gap-3 w-full sm:w-auto">
                     <span className="text-xs font-bold text-gray-500 uppercase tracking-wider whitespace-nowrap">
-                      {t("label_filter_state")}:
+                      Filter by State:
                     </span>
                     <select
                       value={selectedState}
                       onChange={(e) => setSelectedState(e.target.value)}
                       className="px-3 py-2 bg-white dark:bg-gray-855 border border-gray-300 dark:border-gray-700 text-sm outline-none text-gray-855 dark:text-white w-full sm:w-56"
                     >
-                      <option value="all">{t("state_all")}</option>
-                      <option value="Tamil Nadu">{t("state_tamilnadu")}</option>
-                      <option value="Goa">{t("state_goa")}</option>
-                      <option value="Kerala">{t("state_kerala")}</option>
-                      <option value="Rajasthan">{t("state_rajasthan")}</option>
-                      <option value="Delhi">{t("state_delhi")}</option>
-                      <option value="Karnataka">{t("state_karnataka")}</option>
-                      <option value="Uttar Pradesh">{t("state_uttarpradesh")}</option>
-                      <option value="Lakshadweep">{t("state_lakshadweep")}</option>
-                      <option value="Maharashtra">{t("state_maharashtra")}</option>
+                      <option value="all">All States</option>
+                      <option value="Tamil Nadu">Tamil Nadu</option>
+                      <option value="Goa">Goa</option>
+                      <option value="Kerala">Kerala</option>
+                      <option value="Rajasthan">Rajasthan</option>
+                      <option value="Delhi">Delhi</option>
+                      <option value="Karnataka">Karnataka</option>
+                      <option value="Uttar Pradesh">Uttar Pradesh</option>
+                      <option value="Lakshadweep">Lakshadweep</option>
+                      <option value="Maharashtra">Maharashtra</option>
                     </select>
                   </div>
                 </div>
@@ -1637,8 +1603,8 @@ export default function Home() {
                     const matchesCategory = place.type === activeTab;
                     const matchesState = selectedState === "all" || place.state === selectedState;
 
-                    const titleText = t(place.titleKey).toLowerCase();
-                    const descText = t(place.descKey).toLowerCase();
+                    const titleText = place.title.toLowerCase();
+                    const descText = place.desc.toLowerCase();
                     const stateText = place.state.toLowerCase();
                     const query = searchQuery.toLowerCase();
                     const matchesQuery =
@@ -1652,7 +1618,7 @@ export default function Home() {
                   if (filteredPlaces.length === 0) {
                     return (
                       <div className="text-center py-12 bg-white dark:bg-gray-850 border border-gray-200/50 dark:border-gray-800/50 w-full">
-                        <p className="text-sm font-bold text-gray-500">{t("no_matching_flights")}</p>
+                        <p className="text-sm font-bold text-gray-500">No matching flights found</p>
                         <button
                           onClick={() => {
                             setSelectedState("all");
@@ -1660,7 +1626,7 @@ export default function Home() {
                           }}
                           className="mt-3 text-xs font-bold text-booking-lightblue underline hover:text-booking-lightblue/80"
                         >
-                          {t("reset_search_filters")}
+                          Reset Search Filters
                         </button>
                       </div>
                     );
@@ -1672,19 +1638,19 @@ export default function Home() {
                         <div
                           key={index}
                           onClick={() => setSelectedExplorePlace(place)}
-                          className="shrink-0 w-80 h-[390px] bg-white dark:bg-gray-855 dark:border-gray-750/60 border border-gray-150 shadow-md overflow-hidden hover:shadow-xl hover:border-booking-lightblue/25 transition-all duration-300 flex flex-col cursor-pointer group"
+                          className="shrink-0 w-80 h-[390px] bg-white dark:bg-gray-855 dark:border-gray-750/60 border border-gray-150 rounded-3xl shadow-md overflow-hidden hover:shadow-xl hover:border-booking-lightblue/25 transition-all duration-300 flex flex-col cursor-pointer group"
                         >
                           {/* Place Image */}
                           <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-900">
                             <img
                               src={place.img}
-                              alt={t(place.titleKey)}
+                              alt={place.title}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                               loading="lazy"
                             />
                             {place.price && (
                               <div className="absolute bottom-3 left-3 bg-gray-900/80 backdrop-blur-sm text-white text-[10px] font-extrabold px-2.5 py-1 uppercase tracking-wider">
-                                {t("starting_from")} {place.price}
+                                Starting From {place.price}
                               </div>
                             )}
                             {place.rating && (
@@ -1694,7 +1660,7 @@ export default function Home() {
                             )}
                             {place.durationKey && (
                               <div className="absolute bottom-3 left-3 bg-booking-lightblue text-white text-[10px] font-extrabold px-2.5 py-1 tracking-wider uppercase">
-                                {t(place.durationKey)}
+                                {place.duration}
                               </div>
                             )}
                           </div>
@@ -1702,13 +1668,13 @@ export default function Home() {
                           <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                             <div>
                               <div className="flex justify-between items-start gap-2">
-                                <h4 className="text-sm font-extrabold text-gray-855 dark:text-white uppercase tracking-wider">{t(place.titleKey)}</h4>
+                                <h4 className="text-sm font-extrabold text-gray-855 dark:text-white uppercase tracking-wider">{place.title}</h4>
                                 <span className="text-[9px] font-extrabold px-2 py-0.5 bg-gray-100 dark:bg-gray-750 text-gray-500 dark:text-gray-400 uppercase tracking-wide shrink-0">
                                   {place.state}
                                 </span>
                               </div>
                               <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed font-semibold mt-1">
-                                {t(place.descKey)}
+                                {place.desc}
                               </p>
                             </div>
                             <button
@@ -1718,7 +1684,7 @@ export default function Home() {
                               }}
                               className="w-full text-center py-2 bg-gray-50 dark:bg-gray-750 hover:bg-booking-lightblue hover:text-white text-[10px] font-extrabold text-booking-lightblue uppercase tracking-wider transition-colors duration-250 border-t border-gray-100 dark:border-gray-700/60"
                             >
-                              {t("explore_now")}
+                              Explore Now
                             </button>
                           </div>
                         </div>
@@ -1741,16 +1707,16 @@ export default function Home() {
                   </div>
                   <div>
                     <h4 className="text-lg md:text-xl font-extrabold text-gray-850 dark:text-white">
-                      {t("chat_assistant_title")}
+                      Chat with AI Travel Assistant
                     </h4>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {t("chat_assistant_sub")}
+                      Unlock exclusive savings up to 25% on selected routes
                     </p>
                   </div>
                 </div>
 
                 <p className="text-sm text-gray-655 dark:text-gray-300 leading-relaxed font-medium">
-                  {t("chat_assistant_desc")}
+                  Have specific schedule constraints or looking for the absolute best fare? Type query to get recommendations and book directly from the AI chat.
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 text-xs">
@@ -1760,7 +1726,7 @@ export default function Home() {
                   >
                     <span className="flex items-center gap-2">
                       <ChatBubbleIcon className="w-4 h-4 text-booking-lightblue" />
-                      <span>"{t("chats_prompt_del_bom")}"</span>
+                      <span>"Flights from DEL to BOM"</span>
                     </span>
                     <span className="text-gray-400">➔</span>
                   </button>
@@ -1770,7 +1736,7 @@ export default function Home() {
                   >
                     <span className="flex items-center gap-2">
                       <TagIcon className="w-4 h-4 text-booking-lightblue" />
-                      <span>"{t("chats_prompt_blr")}"</span>
+                      <span>"Cheap flights to Bangalore"</span>
                     </span>
                     <span className="text-gray-400">➔</span>
                   </button>
@@ -1782,7 +1748,7 @@ export default function Home() {
                 className="mt-6 w-full sm:w-auto self-start bg-gradient-to-r from-purple-500 to-pink-500 hover:brightness-105 text-white font-extrabold py-3.5 px-8 rounded-full transition-all duration-200 shadow-lg flex items-center justify-center gap-2"
               >
                 <RobotIcon className="w-5 h-5 text-white" />
-                <span>{t("open_chat_assistant")}</span>
+                <span>OPEN CHAT ASSISTANT</span>
               </button>
             </div>
 
@@ -1790,20 +1756,20 @@ export default function Home() {
             <div className="bg-white dark:bg-gray-800 border border-gray-150 dark:border-gray-700 p-6 md:p-8 rounded-3xl shadow-soft flex flex-col justify-between">
               <div className="space-y-4">
                 <h4 className="font-extrabold text-gray-855 dark:text-white uppercase tracking-wider text-xs">
-                  {t("why_flyfast")}
+                  Why FlyFast?
                 </h4>
                 <ul className="space-y-3.5 text-sm text-gray-655 dark:text-gray-400">
                   <li className="flex items-start gap-2.5">
                     <span className="text-green-500 font-bold">✓</span>
-                    <span>{t("why_flyfast_reason1")}</span>
+                    <span>No hidden payment gateway fees or convenience charges</span>
                   </li>
                   <li className="flex items-start gap-2.5">
                     <span className="text-green-500 font-bold">✓</span>
-                    <span>{t("why_flyfast_reason2")}</span>
+                    <span>100% Instant Refund on cancellations</span>
                   </li>
                   <li className="flex items-start gap-2.5">
                     <span className="text-green-500 font-bold">✓</span>
-                    <span>{t("why_flyfast_reason3")}</span>
+                    <span>Interactive 3D Seating maps with no standard selection fees</span>
                   </li>
                 </ul>
               </div>
@@ -1811,11 +1777,11 @@ export default function Home() {
               <div className="pt-6 border-t border-gray-100 dark:border-gray-755 flex items-center justify-between text-xs text-gray-400 dark:text-gray-500 font-semibold">
                 <span className="flex items-center gap-1.5">
                   <SecureIcon className="w-4 h-4 text-emerald-500" />
-                  {t("secure_ssl")}
+                  Secure SSL Payments
                 </span>
                 <span className="flex items-center gap-1.5">
                   <FlashIcon className="w-4 h-4 text-amber-500" />
-                  {t("fast_booking")}
+                  Fast Booking
                 </span>
               </div>
             </div>
@@ -1836,7 +1802,7 @@ export default function Home() {
           {/* Rich Destination Exploration Modal */}
           {selectedExplorePlace && (
             <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in backdrop-blur-sm">
-              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 w-full max-w-lg shadow-2xl animate-scale-in overflow-hidden flex flex-col max-h-[90vh]">
+              <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 w-full max-w-lg rounded-3xl shadow-2xl animate-scale-in overflow-hidden flex flex-col max-h-[90vh]">
 
                 {/* Image Header Block with Carousel */}
                 <div className="relative h-56 bg-gray-100 dark:bg-gray-955 overflow-hidden shrink-0">
@@ -1846,7 +1812,7 @@ export default function Home() {
                       <>
                         <img
                           src={imgs[activeImageIndex]}
-                          alt={t(selectedExplorePlace.titleKey)}
+                          alt={selectedExplorePlace.title}
                           className="w-full h-full object-cover transition-all duration-300"
                         />
                         {imgs.length > 1 && (
@@ -1890,7 +1856,7 @@ export default function Home() {
                   <button
                     onClick={() => setSelectedExplorePlace(null)}
                     className="absolute top-4 right-4 w-9 h-9 bg-black/40 hover:bg-black/60 text-white flex items-center justify-center font-bold transition-all focus:outline-none z-10"
-                    aria-label={t("places_close_details")}
+                    aria-label="Close Details"
                   >
                     ✕
                   </button>
@@ -1898,10 +1864,10 @@ export default function Home() {
                   {/* Title labels overlay */}
                   <div className="absolute bottom-4 left-5 right-5 text-white">
                     <h3 className="text-xl md:text-2xl font-extrabold uppercase tracking-wide leading-tight">
-                      {t(selectedExplorePlace.titleKey)}
+                      {selectedExplorePlace.title}
                     </h3>
                     <p className="text-xs text-gray-300 font-semibold mt-1">
-                      {t(selectedExplorePlace.descKey)}
+                      {selectedExplorePlace.desc}
                     </p>
                   </div>
                 </div>
@@ -1912,20 +1878,20 @@ export default function Home() {
                   {/* Description segment */}
                   <div className="space-y-1.5">
                     <h4 className="font-extrabold text-xs uppercase tracking-wider text-booking-lightblue">
-                      {t("places_overview_label")}
+                      Overview
                     </h4>
                     <p className="text-gray-600 dark:text-gray-300 leading-relaxed font-semibold">
-                      {t(selectedExplorePlace.detailsKey)}
+                      {selectedExplorePlace.details}
                     </p>
                   </div>
 
                   {/* Bulleted attractions */}
                   <div className="space-y-2">
                     <h4 className="font-extrabold text-xs uppercase tracking-wider text-booking-lightblue">
-                      {t("places_highlights_label")}
+                      Key Highlights
                     </h4>
                     <ul className="space-y-1.5 text-gray-500 dark:text-gray-400">
-                      {t(selectedExplorePlace.highlightsKey).split(", ").map((hl: string, i: number) => (
+                      {selectedExplorePlace.highlights.split(", ").map((hl: string, i: number) => (
                         <li key={i} className="flex items-start gap-2">
                           <span className="text-[#ff6636] font-bold">✓</span>
                           <span className="font-semibold text-xs sm:text-sm">{hl}</span>
@@ -1937,32 +1903,32 @@ export default function Home() {
                   {/* Seasonal advice */}
                   <div className="space-y-1">
                     <h4 className="font-extrabold text-xs uppercase tracking-wider text-booking-lightblue">
-                      {t("places_best_time_label")}
+                      Best Time to Visit
                     </h4>
                     <p className="text-gray-800 dark:text-gray-200 font-extrabold">
-                      {t(selectedExplorePlace.bestTimeKey)}
+                      {selectedExplorePlace.bestTime}
                     </p>
                   </div>
 
                   {/* Dynamic metric (Price/Rating/Duration) footer bar */}
                   {selectedExplorePlace.price && (
                     <div className="pt-3 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-xs">
-                      <span className="text-gray-400 font-bold uppercase tracking-wider">{t("starting_from")}</span>
+                      <span className="text-gray-400 font-bold uppercase tracking-wider">Starting From</span>
                       <span className="text-xl font-extrabold text-[#ff6636]">{selectedExplorePlace.price}</span>
                     </div>
                   )}
 
                   {selectedExplorePlace.rating && (
                     <div className="pt-3 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-xs">
-                      <span className="text-gray-400 font-bold uppercase tracking-wider">{t("places_user_rating_label")}</span>
+                      <span className="text-gray-400 font-bold uppercase tracking-wider">User Rating</span>
                       <span className="text-xs font-extrabold bg-amber-500 text-gray-950 px-2 py-0.5 font-mono">{selectedExplorePlace.rating}</span>
                     </div>
                   )}
 
                   {selectedExplorePlace.durationKey && (
                     <div className="pt-3 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center text-xs">
-                      <span className="text-gray-400 font-bold uppercase tracking-wider">{t("places_duration_label")}</span>
-                      <span className="text-xs font-extrabold text-[#ff6636] bg-[#ff6636]/10 px-2 py-0.5">{t(selectedExplorePlace.durationKey)}</span>
+                      <span className="text-gray-400 font-bold uppercase tracking-wider">Duration</span>
+                      <span className="text-xs font-extrabold text-[#ff6636] bg-[#ff6636]/10 px-2 py-0.5">{selectedExplorePlace.duration}</span>
                     </div>
                   )}
                 </div>
@@ -1973,7 +1939,7 @@ export default function Home() {
                     onClick={() => setSelectedExplorePlace(null)}
                     className="flex-1 py-3 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-extrabold text-xs uppercase tracking-wider transition-colors hover:bg-gray-100 dark:hover:bg-gray-850"
                   >
-                    {t("places_close_details")}
+                    Close Details
                   </button>
 
                   {activeTab === "flights" && selectedExplorePlace.code && (
@@ -1985,7 +1951,7 @@ export default function Home() {
                       }}
                       className="flex-1 py-3 bg-gradient-to-r from-[#ff6636] to-[#ff3600] text-white font-extrabold text-xs uppercase tracking-wider transition-all hover:brightness-105 shadow-md"
                     >
-                      {t("places_action_select")}
+                      Set as Destination
                     </button>
                   )}
 
@@ -1998,7 +1964,7 @@ export default function Home() {
                       }}
                       className="flex-1 py-3 bg-booking-lightblue text-white font-extrabold text-xs uppercase tracking-wider transition-all hover:brightness-105 shadow-md"
                     >
-                      {t("places_action_book")}
+                      Book Reservation
                     </button>
                   )}
                 </div>

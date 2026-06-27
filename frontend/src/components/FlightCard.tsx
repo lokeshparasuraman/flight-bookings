@@ -2,13 +2,11 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FlightIcon, HeartIcon } from "./Icons";
 import { useToast } from "../contexts/ToastContext";
-import { useLanguage } from "../contexts/LanguageContext";
 
 export default function FlightCard({ f, origin, destination, specialFare = "regular", fareDiscountPct = 0 }: any) {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const { showToast } = useToast();
-  const { t } = useLanguage();
-
+  
   useEffect(() => {
     try {
       const wl = JSON.parse(localStorage.getItem("wishlist") || "[]");
@@ -39,11 +37,11 @@ export default function FlightCard({ f, origin, destination, specialFare = "regu
       if (idx > -1) {
         updated = wl.filter((x: any) => x.id !== f.id);
         setIsWishlisted(false);
-        showToast("info", t("remove_from_wishlist"));
+        showToast("info", "Removed from wishlist!");
       } else {
         updated = [...wl, f];
         setIsWishlisted(true);
-        showToast("success", t("add_to_wishlist"));
+        showToast("success", "Added to wishlist!");
       }
       localStorage.setItem("wishlist", JSON.stringify(updated));
       window.dispatchEvent(new Event("wishlistUpdated"));
@@ -140,11 +138,11 @@ export default function FlightCard({ f, origin, destination, specialFare = "regu
             
             <div className="flex items-center space-x-2 mr-6">
               <span className="text-[10px] font-bold px-2.5 py-1 bg-gray-100 dark:bg-gray-700/60 text-gray-500 dark:text-gray-400 rounded-lg">
-                {t("non_stop")}
+                Non-stop
               </span>
               <span className="text-[10px] font-bold px-2.5 py-1 bg-green-500/10 text-green-600 dark:text-green-400 rounded-lg flex items-center">
                 <span className="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5 animate-pulse" />
-                {t("live_status")}
+                Live Status
               </span>
             </div>
           </div>
@@ -176,7 +174,7 @@ export default function FlightCard({ f, origin, destination, specialFare = "regu
                 </div>
               </div>
               <span className="text-[9px] text-booking-lightblue dark:text-booking-lightblue/80 font-bold tracking-wider uppercase">
-                {t("economy")}
+                Economy
               </span>
             </div>
 
@@ -199,7 +197,7 @@ export default function FlightCard({ f, origin, destination, specialFare = "regu
         <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center md:min-w-[170px] border-t md:border-t-0 md:border-l border-gray-100 dark:border-gray-700/60 pt-4 md:pt-0 md:pl-6 gap-4">
           <div className="text-left md:text-right">
             <span className="text-xs text-gray-400 dark:text-gray-500 font-medium block">
-              {t("fare_starting")}
+              Fare starting from
             </span>
             {/* Show original price struck-through when a fare discount is active */}
             {fareDiscountPct > 0 && (
@@ -216,7 +214,7 @@ export default function FlightCard({ f, origin, destination, specialFare = "regu
               </span>
             )}
             <span className="text-[10px] text-gray-400 dark:text-gray-500 block">
-              {t("taxes_fees")}
+              incl. taxes & fees
             </span>
           </div>
           
@@ -225,7 +223,7 @@ export default function FlightCard({ f, origin, destination, specialFare = "regu
             to={`/flight/${f.id}${specialFare && specialFare !== 'regular' ? `?specialFare=${specialFare}` : ''}`}
             className="btn-primary py-2.5 px-6 rounded-xl text-sm font-bold shadow-soft hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-center w-auto min-w-[110px]"
           >
-            {t("select_flight")}
+            Select ➔
           </Link>
         </div>
       </div>

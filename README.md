@@ -74,7 +74,7 @@ A full-stack, decoupled flight booking application designed with a layered servi
    ```env
    DATABASE_URL="file:./dev.db"
    PORT=4000
-   JWT_SECRET="wWAewCqNlYWIoINEDonLvXFszMxUZWbC"
+   JWT_SECRET="your-own-string"
    OPENAI_API_KEY="your-optional-openai-key"
    ```
 3. Sync the Prisma schema and build the SQLite database:

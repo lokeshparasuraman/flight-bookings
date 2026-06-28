@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import api from "../services/api";
 import Footer from "../components/Footer";
+import { GlobeIcon, FlightIcon, OfficeBuildingIcon } from "../components/Icons";
 
 interface RouteInfo {
   origin: string;
@@ -96,11 +97,27 @@ function getMatchingCodes(queryPart: string): string[] {
   return Array.from(codes);
 }
 
+const SearchIcon = ({ size = 18, className = "" }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <circle cx="11" cy="11" r="8"></circle>
+    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+  </svg>
+);
+
+const RoutesIllustration = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="mx-auto text-gray-300 dark:text-gray-700">
+    <circle cx="12" cy="12" r="10" />
+    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20" />
+  </svg>
+);
+
 export default function AvailableRoutes() {
   const navigate = useNavigate();
   const [routes, setRoutes] = useState<RouteInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterText, setFilterText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
   const today = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
@@ -116,6 +133,10 @@ export default function AvailableRoutes() {
         setLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterText]);
 
   const handleRouteClick = (origin: string, destination: string) => {
     navigate(`/search?origin=${origin}&destination=${destination}&date=${today}`);
@@ -177,19 +198,34 @@ export default function AvailableRoutes() {
   const totalRoutes = filteredRoutes.length;
   const totalFlights = filteredRoutes.reduce((acc, r) => acc + r._count.id, 0);
 
-  // Find primary hub from filtered routes
+  // Find primary hub from filtered routes (prefer major metro hubs DEL/BOM/BLR/HYD/MAA/CCU on ties, never Pune)
+  const hubPriority = ["DEL", "BOM", "BLR", "HYD", "MAA", "CCU"];
   const outgoingCounts: Record<string, number> = {};
   filteredRoutes.forEach((r) => {
     outgoingCounts[r.origin] = (outgoingCounts[r.origin] || 0) + r._count.id;
   });
+  
   let primaryHub = "N/A";
   let maxOutgoing = 0;
   Object.entries(outgoingCounts).forEach(([code, count]) => {
     if (count > maxOutgoing) {
       maxOutgoing = count;
       primaryHub = code;
+    } else if (count === maxOutgoing && maxOutgoing > 0) {
+      const currentIdx = hubPriority.indexOf(code);
+      const chosenIdx = hubPriority.indexOf(primaryHub);
+      if (currentIdx !== -1 && (chosenIdx === -1 || currentIdx < chosenIdx)) {
+        primaryHub = code;
+      }
     }
   });
+
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredRoutes.length / itemsPerPage);
+  const paginatedRoutes = filteredRoutes.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
@@ -217,8 +253,8 @@ export default function AvailableRoutes() {
               {/* Stat 1 */}
               <div className="bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-800/80 rounded-2xl p-5 shadow-sm hover:shadow-soft transition-all duration-300">
                 <div className="flex items-center space-x-4">
-                  <div className="text-3xl p-3 bg-booking-blue/10 dark:bg-booking-blue/20 rounded-xl text-booking-blue dark:text-booking-lightblue">
-                    🗺️
+                  <div className="p-3 bg-booking-blue/10 dark:bg-booking-blue/20 rounded-xl">
+                    <GlobeIcon size={24} className="text-booking-blue dark:text-booking-lightblue" />
                   </div>
                   <div>
                     <div className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">
@@ -234,8 +270,8 @@ export default function AvailableRoutes() {
               {/* Stat 2 */}
               <div className="bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-800/80 rounded-2xl p-5 shadow-sm hover:shadow-soft transition-all duration-300">
                 <div className="flex items-center space-x-4">
-                  <div className="text-3xl p-3 bg-booking-lightblue/10 dark:bg-booking-lightblue/20 rounded-xl text-booking-lightblue">
-                    ✈️
+                  <div className="p-3 bg-booking-lightblue/10 dark:bg-booking-lightblue/20 rounded-xl">
+                    <FlightIcon size={24} className="text-booking-lightblue" />
                   </div>
                   <div>
                     <div className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">
@@ -251,14 +287,14 @@ export default function AvailableRoutes() {
               {/* Stat 3 */}
               <div className="bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-800/80 rounded-2xl p-5 shadow-sm hover:shadow-soft transition-all duration-300">
                 <div className="flex items-center space-x-4">
-                  <div className="text-3xl p-3 bg-green-500/10 dark:bg-green-500/20 rounded-xl text-green-500">
-                    🏢
+                  <div className="p-3 bg-green-500/10 dark:bg-green-500/20 rounded-xl">
+                    <OfficeBuildingIcon size={24} className="text-green-600 dark:text-green-400" />
                   </div>
                   <div>
                     <div className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">
                       Primary Hub
                     </div>
-                    <div className="text-2xl font-extrabold text-booking-blue dark:text-booking-lightblue">
+                    <div className="text-2xl font-extrabold text-booking-blue dark:text-booking-lightblue truncate max-w-[200px]">
                       {primaryHub} {primaryHub !== "N/A" && <span className="text-xs text-gray-400 font-semibold">({airportNames[primaryHub]?.split(" (")[0] || primaryHub})</span>}
                     </div>
                   </div>
@@ -277,7 +313,9 @@ export default function AvailableRoutes() {
                 placeholder="Search city, airport, or code (e.g. BOM)..."
                 className="input-field py-3.5 pl-11 pr-4 shadow-soft"
               />
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-lg">🔍</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                <SearchIcon size={18} />
+              </span>
               {filterText && (
                 <button
                   onClick={() => setFilterText("")}
@@ -296,8 +334,10 @@ export default function AvailableRoutes() {
           ) : (
             <div className="animate-slide-up" style={{ animationDelay: "0.1s" }}>
               {filteredRoutes.length === 0 ? (
-                <div className="card p-12 text-center max-w-lg mx-auto">
-                  <div className="text-6xl mb-4">✈️🗺️</div>
+                <div className="card p-12 text-center max-w-lg mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm">
+                  <div className="mb-4">
+                    <RoutesIllustration />
+                  </div>
                   <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
                     No routes found
                   </h2>
@@ -319,7 +359,7 @@ export default function AvailableRoutes() {
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-100 dark:divide-gray-800/60">
-                        {filteredRoutes.map((r, idx) => (
+                        {paginatedRoutes.map((r, idx) => (
                           <tr
                             key={`${r.origin}-${r.destination}-${idx}`}
                             onClick={() => handleRouteClick(r.origin, r.destination)}
@@ -327,7 +367,7 @@ export default function AvailableRoutes() {
                           >
                             {/* S.No */}
                             <td className="py-4 px-6 text-center text-xs font-bold text-gray-400">
-                              {idx + 1}
+                              {(currentPage - 1) * itemsPerPage + idx + 1}
                             </td>
                             
                             {/* Origin */}
@@ -372,6 +412,42 @@ export default function AvailableRoutes() {
                       </tbody>
                     </table>
                   </div>
+
+                  {/* Pagination Controls */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-between px-6 py-4 border-t border-gray-150 dark:border-gray-800 bg-gray-50/40 dark:bg-gray-800/20">
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        Showing <span className="font-semibold text-gray-700 dark:text-gray-300">{(currentPage - 1) * itemsPerPage + 1}</span> to{" "}
+                        <span className="font-semibold text-gray-700 dark:text-gray-300">
+                          {Math.min(currentPage * itemsPerPage, filteredRoutes.length)}
+                        </span>{" "}
+                        of <span className="font-semibold text-gray-700 dark:text-gray-300">{filteredRoutes.length}</span> routes
+                      </div>
+                      
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentPage((prev) => Math.max(prev - 1, 1));
+                          }}
+                          disabled={currentPage === 1}
+                          className="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150"
+                        >
+                          Previous
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                          }}
+                          disabled={currentPage === totalPages}
+                          className="px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/60 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-150"
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

@@ -173,6 +173,24 @@ export default function AvailableRoutes() {
     return o.includes(upperQuery) || d.includes(upperQuery) || originName.includes(upperQuery) || destName.includes(upperQuery);
   });
 
+  // Stats Calculations
+  const totalRoutes = filteredRoutes.length;
+  const totalFlights = filteredRoutes.reduce((acc, r) => acc + r._count.id, 0);
+
+  // Find primary hub from filtered routes
+  const outgoingCounts: Record<string, number> = {};
+  filteredRoutes.forEach((r) => {
+    outgoingCounts[r.origin] = (outgoingCounts[r.origin] || 0) + r._count.id;
+  });
+  let primaryHub = "N/A";
+  let maxOutgoing = 0;
+  Object.entries(outgoingCounts).forEach(([code, count]) => {
+    if (count > maxOutgoing) {
+      maxOutgoing = count;
+      primaryHub = code;
+    }
+  });
+
   return (
     <div className="min-h-screen relative overflow-hidden bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans">
       {/* Background Animations */}
@@ -192,6 +210,62 @@ export default function AvailableRoutes() {
               Browse all operational flight connections across India. Click any route to view available flights for today.
             </p>
           </div>
+
+          {/* Stats Section */}
+          {!loading && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 animate-slide-up" style={{ animationDelay: "0.02s" }}>
+              {/* Stat 1 */}
+              <div className="bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-800/80 rounded-2xl p-5 shadow-sm hover:shadow-soft transition-all duration-300">
+                <div className="flex items-center space-x-4">
+                  <div className="text-3xl p-3 bg-booking-blue/10 dark:bg-booking-blue/20 rounded-xl text-booking-blue dark:text-booking-lightblue">
+                    🗺️
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">
+                      Total Routes
+                    </div>
+                    <div className="text-2xl font-extrabold text-booking-blue dark:text-booking-lightblue">
+                      {totalRoutes}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stat 2 */}
+              <div className="bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-800/80 rounded-2xl p-5 shadow-sm hover:shadow-soft transition-all duration-300">
+                <div className="flex items-center space-x-4">
+                  <div className="text-3xl p-3 bg-booking-lightblue/10 dark:bg-booking-lightblue/20 rounded-xl text-booking-lightblue">
+                    ✈️
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">
+                      Daily Flights
+                    </div>
+                    <div className="text-2xl font-extrabold text-booking-blue dark:text-booking-lightblue">
+                      {totalFlights}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stat 3 */}
+              <div className="bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-800/80 rounded-2xl p-5 shadow-sm hover:shadow-soft transition-all duration-300">
+                <div className="flex items-center space-x-4">
+                  <div className="text-3xl p-3 bg-green-500/10 dark:bg-green-500/20 rounded-xl text-green-500">
+                    🏢
+                  </div>
+                  <div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">
+                      Primary Hub
+                    </div>
+                    <div className="text-2xl font-extrabold text-booking-blue dark:text-booking-lightblue">
+                      {primaryHub} {primaryHub !== "N/A" && <span className="text-xs text-gray-400 font-semibold">({airportNames[primaryHub]?.split(" (")[0] || primaryHub})</span>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Search/Filter Widget */}
           <div className="max-w-md mx-auto mb-10 animate-slide-up" style={{ animationDelay: "0.05s" }}>
@@ -232,49 +306,72 @@ export default function AvailableRoutes() {
                   </p>
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {filteredRoutes.map((r, idx) => (
-                    <div
-                      key={`${r.origin}-${r.destination}-${idx}`}
-                      onClick={() => handleRouteClick(r.origin, r.destination)}
-                      className="bg-white dark:bg-gray-900 border border-gray-200/70 dark:border-gray-850 rounded-2xl p-5 cursor-pointer flex items-center justify-between hover:scale-[1.01] hover:shadow-soft active:scale-[0.99] transition-all duration-300 group shadow-sm"
-                    >
-                      <div className="flex items-center space-x-6">
-                        <div className="text-center">
-                          <div className="text-2xl font-extrabold text-booking-blue dark:text-booking-lightblue">
-                            {r.origin}
-                          </div>
-                          <div className="text-[10px] text-gray-400 font-semibold max-w-[120px] truncate">
-                            {airportNames[r.origin]?.split(" (")[0] || r.origin}
-                          </div>
-                        </div>
-
-                        <div className="flex flex-col items-center">
-                          <span className="text-gray-400 group-hover:text-booking-lightblue transition-colors duration-300 text-xl font-semibold">
-                            ➔
-                          </span>
-                          <span className="text-[9px] bg-booking-lightblue/10 text-booking-lightblue px-2 py-0.5 rounded-full font-bold uppercase mt-1">
-                            {r._count.id} {r._count.id === 1 ? 'Flight' : 'Flights'}
-                          </span>
-                        </div>
-
-                        <div className="text-center">
-                          <div className="text-2xl font-extrabold text-booking-blue dark:text-booking-lightblue">
-                            {r.destination}
-                          </div>
-                          <div className="text-[10px] text-gray-400 font-semibold max-w-[120px] truncate">
-                            {airportNames[r.destination]?.split(" (")[0] || r.destination}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="pr-2">
-                        <span className="text-booking-lightblue opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0 transition-all duration-300 text-lg font-bold">
-                          Book ➔
-                        </span>
-                      </div>
-                    </div>
-                  ))}
+                <div className="overflow-hidden rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-soft bg-white dark:bg-gray-900">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left border-collapse">
+                      <thead>
+                        <tr className="bg-gray-50/70 dark:bg-gray-800/40 text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider border-b border-gray-200/80 dark:border-gray-800">
+                          <th className="py-4 px-6 text-center w-16">#</th>
+                          <th className="py-4 px-6">Origin Airport (From)</th>
+                          <th className="py-4 px-6">Destination Airport (To)</th>
+                          <th className="py-4 px-6 text-center w-40">Daily Flights</th>
+                          <th className="py-4 px-6 text-right w-44">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100 dark:divide-gray-800/60">
+                        {filteredRoutes.map((r, idx) => (
+                          <tr
+                            key={`${r.origin}-${r.destination}-${idx}`}
+                            onClick={() => handleRouteClick(r.origin, r.destination)}
+                            className="hover:bg-gray-50/50 dark:hover:bg-gray-800/10 transition-colors duration-150 cursor-pointer group"
+                          >
+                            {/* S.No */}
+                            <td className="py-4 px-6 text-center text-xs font-bold text-gray-400">
+                              {idx + 1}
+                            </td>
+                            
+                            {/* Origin */}
+                            <td className="py-4 px-6">
+                              <div className="flex items-center space-x-3">
+                                <span className="px-2 py-1 bg-booking-blue/10 dark:bg-booking-blue/20 text-booking-blue dark:text-booking-lightblue font-extrabold text-sm rounded-lg min-w-[48px] text-center">
+                                  {r.origin}
+                                </span>
+                                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 max-w-[200px] truncate">
+                                  {airportNames[r.origin] || r.origin}
+                                </span>
+                              </div>
+                            </td>
+                            
+                            {/* Destination */}
+                            <td className="py-4 px-6">
+                              <div className="flex items-center space-x-3">
+                                <span className="px-2 py-1 bg-booking-blue/10 dark:bg-booking-blue/20 text-booking-blue dark:text-booking-lightblue font-extrabold text-sm rounded-lg min-w-[48px] text-center">
+                                  {r.destination}
+                                </span>
+                                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 max-w-[200px] truncate">
+                                  {airportNames[r.destination] || r.destination}
+                                </span>
+                              </div>
+                            </td>
+                            
+                            {/* Daily Flights Count */}
+                            <td className="py-4 px-6 text-center">
+                              <span className="text-xs font-bold text-booking-lightblue bg-booking-lightblue/10 dark:bg-booking-lightblue/20 px-3 py-1 rounded-full border border-booking-lightblue/20">
+                                {r._count.id} {r._count.id === 1 ? 'Flight' : 'Flights'}
+                              </span>
+                            </td>
+                            
+                            {/* Actions */}
+                            <td className="py-4 px-6 text-right">
+                              <button className="text-xs font-bold bg-booking-blue hover:bg-booking-lightblue text-white px-3.5 py-1.5 rounded-lg transition-colors duration-150 shadow-soft group-hover:scale-105 transform">
+                                Book Flights ➔
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               )}
             </div>

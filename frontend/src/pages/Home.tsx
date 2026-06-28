@@ -52,6 +52,148 @@ import {
 import Footer from "../components/Footer";
 import Tooltip from "../components/Tooltip";
 
+const airportMapping: Record<string, string> = {
+  DEL: "New Delhi, Indira Gandhi Intl Airport",
+  BOM: "Mumbai, Chhatrapati Shivaji Maharaj Airport",
+  BLR: "Bengaluru, Kempegowda Airport",
+  MAA: "Chennai International Airport",
+  CCU: "Kolkata, Netaji Bose Airport",
+  HYD: "Hyderabad, Rajiv Gandhi Airport",
+  PNQ: "Pune Airport",
+  AMD: "Ahmedabad Airport",
+  GOI: "Goa, Dabolim Airport",
+  COK: "Kochi, Cochin Airport",
+  JAI: "Jaipur Airport",
+  MYS: "Mysore Airport"
+};
+
+function getLevenshteinDistance(a: string, b: string): number {
+  const tmp = [];
+  let i, j;
+  for (i = 0; i <= a.length; i++) {
+    tmp.push([i]);
+  }
+  for (j = 1; j <= b.length; j++) {
+    tmp[0].push(j);
+  }
+  for (i = 1; i <= a.length; i++) {
+    for (j = 1; j <= b.length; j++) {
+      tmp[i][j] = Math.min(
+        tmp[i - 1][j] + 1,
+        tmp[i][j - 1] + 1,
+        tmp[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+      );
+    }
+  }
+  return tmp[a.length][b.length];
+}
+
+function isFuzzyMatch(text: string, query: string): boolean {
+  const cleanText = text.toLowerCase().trim();
+  const cleanQuery = query.toLowerCase().trim();
+  
+  if (!cleanQuery) return true;
+  if (cleanText.includes(cleanQuery)) return true;
+  
+  const queryWords = cleanQuery.split(/\s+/).filter(Boolean);
+  const textWords = cleanText.split(/[\s,.-]+/).filter(Boolean);
+  
+  return queryWords.every(qw => {
+    if (qw.length <= 2) {
+      return textWords.some(tw => tw.includes(qw));
+    }
+    const maxDistance = qw.length <= 4 ? 1 : 2;
+    return textWords.some(tw => {
+      if (tw.includes(qw) || qw.includes(tw)) return true;
+      if (tw.length >= qw.length) {
+        for (let i = 0; i <= tw.length - qw.length; i++) {
+          const slice = tw.slice(i, i + qw.length);
+          if (getLevenshteinDistance(slice, qw) <= maxDistance) {
+            return true;
+          }
+        }
+      } else {
+        if (getLevenshteinDistance(tw, qw) <= maxDistance) {
+          return true;
+        }
+      }
+      return false;
+    });
+  });
+}
+
+function resolveAirport(input: string): string | null {
+  const clean = input.trim().toUpperCase();
+  if (!clean) return null;
+  if (airportMapping[clean]) return clean;
+  
+  for (const code of Object.keys(airportMapping)) {
+    if (code.startsWith(clean) || clean.startsWith(code)) {
+      return code;
+    }
+  }
+  
+  let bestCode: string | null = null;
+  let bestDistance = Infinity;
+  const cleanInput = clean.toLowerCase();
+  
+  for (const [code, fullName] of Object.entries(airportMapping)) {
+    const cleanName = fullName.toLowerCase();
+    if (cleanName.includes(cleanInput)) return code;
+    
+    const inputWords = cleanInput.split(/\s+/).filter(Boolean);
+    const nameWords = cleanName.split(/[\s,.-]+/).filter(Boolean);
+    
+    for (const iw of inputWords) {
+      if (iw.length <= 2) continue;
+      for (const nw of nameWords) {
+        if (nw.length <= 2) continue;
+        const distance = getLevenshteinDistance(iw, nw);
+        const maxDistance = iw.length <= 4 ? 1 : 2;
+        if (distance <= maxDistance && distance < bestDistance) {
+          bestDistance = distance;
+          bestCode = code;
+        }
+      }
+    }
+  }
+  return bestCode;
+}
+
+function getSuggestions(input: string) {
+  const query = input.trim().toLowerCase();
+  const allAirports = Object.entries(airportMapping).map(([code, fullName]) => {
+    const parts = fullName.split(", ");
+    return {
+      code,
+      city: parts[0],
+      name: parts[1] || fullName
+    };
+  });
+  
+  if (!query) return allAirports;
+  
+  return allAirports
+    .map(airport => {
+      let score = 0;
+      const cleanCity = airport.city.toLowerCase();
+      const cleanName = airport.name.toLowerCase();
+      const cleanCode = airport.code.toLowerCase();
+      
+      if (cleanCode === query) score = 100;
+      else if (cleanCode.startsWith(query)) score = 90;
+      else if (cleanCity.startsWith(query)) score = 80;
+      else if (cleanCity.includes(query)) score = 60;
+      else if (cleanName.includes(query)) score = 40;
+      else if (isFuzzyMatch(airport.city + " " + airport.name, query)) score = 20;
+      
+      return { ...airport, score };
+    })
+    .filter(a => a.score > 0)
+    .sort((a, b) => b.score - a.score);
+}
+
+
 
 /**
  * DraggableAiButton — Floating Draggable AI Chat Launcher
@@ -160,6 +302,10 @@ export default function Home() {
     const [tripType, setTripType] = useState<"oneway" | "roundtrip">("oneway");
   const [origin, setOrigin] = useState("DEL");
   const [destination, setDestination] = useState("BOM");
+  const [originInput, setOriginInput] = useState("DEL");
+  const [destinationInput, setDestinationInput] = useState("BOM");
+  const [showOriginSuggestions, setShowOriginSuggestions] = useState(false);
+  const [showDestSuggestions, setShowDestSuggestions] = useState(false);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [returnDate, setReturnDate] = useState(
     new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
@@ -180,9 +326,14 @@ export default function Home() {
 
   const handleSwap = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const temp = origin;
+    const tempOrigin = origin;
+    const tempOriginInput = originInput;
+    
     setOrigin(destination);
-    setDestination(temp);
+    setOriginInput(destinationInput);
+    
+    setDestination(tempOrigin);
+    setDestinationInput(tempOriginInput);
   };
 
   React.useEffect(() => {
@@ -530,20 +681,55 @@ export default function Home() {
                   {/* From & To Combo with Swap Button */}
                   <div className="md:col-span-2 relative flex flex-col md:grid md:grid-cols-2 divide-gray-200 dark:divide-gray-800 border border-gray-200 dark:border-gray-800 md:border-0 rounded-2xl md:rounded-none overflow-visible">
                     {/* From Field */}
-                    <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[100px] border-b border-gray-200 dark:border-gray-800 md:border-b-0 md:border-r">
+                    <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[100px] border-b border-gray-200 dark:border-gray-800 md:border-b-0 md:border-r relative">
                       <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">FROM</span>
                       <input
                         type="text"
-                        value={origin}
-                        onChange={(e) => setOrigin(e.target.value.toUpperCase())}
+                        value={originInput}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setOriginInput(val);
+                          const resolved = resolveAirport(val);
+                          if (resolved) setOrigin(resolved);
+                        }}
+                        onFocus={() => setShowOriginSuggestions(true)}
+                        onBlur={() => setTimeout(() => setShowOriginSuggestions(false), 200)}
                         className="w-full bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
                         placeholder="DEL"
-                        maxLength={3}
                         required
                       />
                       <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 truncate max-w-full font-semibold" title={getAirportName(origin)}>
                         {getAirportName(origin)}
                       </span>
+
+                      {/* Autocomplete suggestions */}
+                      {showOriginSuggestions && (
+                        <div className="absolute left-0 right-0 top-[100%] mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
+                          {getSuggestions(originInput).map((airport) => (
+                            <div
+                              key={airport.code}
+                              onMouseDown={() => {
+                                setOrigin(airport.code);
+                                setOriginInput(airport.code);
+                                setShowOriginSuggestions(false);
+                              }}
+                              className="px-4 py-2 hover:bg-blue-50 dark:hover:bg-blue-955/20 cursor-pointer flex items-center justify-between border-b border-gray-100 dark:border-gray-800/40 last:border-b-0"
+                            >
+                              <div>
+                                <div className="text-sm font-bold text-gray-800 dark:text-white">
+                                  {airport.city}
+                                </div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                  {airport.name}
+                                </div>
+                              </div>
+                              <span className="text-xs font-extrabold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-md">
+                                {airport.code}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     {/* Mobile Swap Row — shown only on mobile between FROM and TO */}
@@ -559,20 +745,55 @@ export default function Home() {
                     </div>
 
                     {/* To Field */}
-                    <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[100px]">
+                    <div className="bg-white dark:bg-gray-900 p-5 hover:bg-blue-50/20 dark:hover:bg-blue-955/10 transition-colors cursor-pointer group flex flex-col justify-center min-h-[100px] relative">
                       <span className="block text-[11px] font-extrabold text-gray-400 uppercase tracking-wider mb-1">TO</span>
                       <input
                         type="text"
-                        value={destination}
-                        onChange={(e) => setDestination(e.target.value.toUpperCase())}
+                        value={destinationInput}
+                        onChange={(e) => {
+                          const val = e.target.value;
+                          setDestinationInput(val);
+                          const resolved = resolveAirport(val);
+                          if (resolved) setDestination(resolved);
+                        }}
+                        onFocus={() => setShowDestSuggestions(true)}
+                        onBlur={() => setTimeout(() => setShowDestSuggestions(false), 200)}
                         className="w-full bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
                         placeholder="BOM"
-                        maxLength={3}
                         required
                       />
                       <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 truncate max-w-full font-semibold" title={getAirportName(destination)}>
                         {getAirportName(destination)}
                       </span>
+
+                      {/* Autocomplete suggestions */}
+                      {showDestSuggestions && (
+                        <div className="absolute left-0 right-0 top-[100%] mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-lg z-50 max-h-60 overflow-y-auto">
+                          {getSuggestions(destinationInput).map((airport) => (
+                            <div
+                              key={airport.code}
+                              onMouseDown={() => {
+                                setDestination(airport.code);
+                                setDestinationInput(airport.code);
+                                setShowDestSuggestions(false);
+                              }}
+                              className="px-4 py-2 hover:bg-blue-50 dark:hover:bg-blue-955/20 cursor-pointer flex items-center justify-between border-b border-gray-100 dark:border-gray-800/40 last:border-b-0"
+                            >
+                              <div>
+                                <div className="text-sm font-bold text-gray-800 dark:text-white">
+                                  {airport.city}
+                                </div>
+                                <div className="text-xs text-gray-500 dark:text-gray-400">
+                                  {airport.name}
+                                </div>
+                              </div>
+                              <span className="text-xs font-extrabold bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-md">
+                                {airport.code}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
 
                     {/* Desktop Swap Button — absolute centre between FROM and TO */}
@@ -1603,14 +1824,10 @@ export default function Home() {
                     const matchesCategory = place.type === activeTab;
                     const matchesState = selectedState === "all" || place.state === selectedState;
 
-                    const titleText = place.title.toLowerCase();
-                    const descText = place.desc.toLowerCase();
-                    const stateText = place.state.toLowerCase();
-                    const query = searchQuery.toLowerCase();
                     const matchesQuery =
-                      titleText.includes(query) ||
-                      descText.includes(query) ||
-                      stateText.includes(query);
+                      isFuzzyMatch(place.title, searchQuery) ||
+                      isFuzzyMatch(place.desc, searchQuery) ||
+                      isFuzzyMatch(place.state, searchQuery);
 
                     return matchesCategory && matchesState && matchesQuery;
                   });

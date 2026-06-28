@@ -3,6 +3,7 @@ nixPkgs = ["nodejs_18"]
 
 [phases.install]
 cmds = [
+  "node backend/scripts/update-db-provider.js",
   "cd backend && npm install"
 ]
 
@@ -12,4 +13,5 @@ cmds = [
 ]
 
 [start]
-cmd = "node backend/dist/server.js"
+cmd = "cd backend && npx prisma db push && node dist/server.js"
+

@@ -93,8 +93,13 @@ function isFuzzyMatch(text: string, query: string): boolean {
   const cleanQuery = query.toLowerCase().trim();
   
   if (!cleanQuery) return true;
-  if (cleanText.includes(cleanQuery)) return true;
   
+  // Spaceless direct match check (ignores spaces/spacing completely!)
+  const spacelessText = cleanText.replace(/[\s,.-]+/g, "");
+  const spacelessQuery = cleanQuery.replace(/[\s,.-]+/g, "");
+  if (spacelessText.includes(spacelessQuery)) return true;
+  
+  // Word-by-word fuzzy matching for typos
   const queryWords = cleanQuery.split(/\s+/).filter(Boolean);
   const textWords = cleanText.split(/[\s,.-]+/).filter(Boolean);
   
@@ -104,7 +109,10 @@ function isFuzzyMatch(text: string, query: string): boolean {
     }
     const maxDistance = qw.length <= 4 ? 1 : 2;
     return textWords.some(tw => {
-      if (tw.includes(qw) || qw.includes(tw)) return true;
+      // Direct substring match (text word includes query word)
+      if (tw.includes(qw)) return true;
+      
+      // Fuzzy match
       if (tw.length >= qw.length) {
         for (let i = 0; i <= tw.length - qw.length; i++) {
           const slice = tw.slice(i, i + qw.length);

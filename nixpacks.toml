@@ -3,7 +3,7 @@ nixPkgs = ["nodejs_18"]
 
 [phases.install]
 cmds = [
-  "node backend/scripts/update-db-provider.js",
+  "node -e \"const fs=require('fs'); const p='backend/prisma/schema.prisma'; let s=fs.readFileSync(p,'utf8'); const u=process.env.DATABASE_URL||''; const sqlite='provider = ' + String.fromCharCode(34) + 'sqlite' + String.fromCharCode(34); const pg='provider = ' + String.fromCharCode(34) + 'postgresql' + String.fromCharCode(34); if(u.startsWith('postgres')){s=s.replace(sqlite,pg);}else{s=s.replace(pg,sqlite);} fs.writeFileSync(p,s,'utf8');\"",
   "cd backend && npm install"
 ]
 

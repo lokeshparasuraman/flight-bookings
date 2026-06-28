@@ -284,7 +284,7 @@ function DraggableAiButton({ onClick }: { onClick: () => void }) {
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       style={{ left: pos.x, top: pos.y }}
-      className="fixed z-50 select-none cursor-grab active:cursor-grabbing"
+      className="fixed z-50 select-none cursor-grab active:cursor-grabbing touch-none"
       title="Ask FlyFast AI"
     >
       {/* The circular gradient button — violet/fuchsia/blue gradient */}

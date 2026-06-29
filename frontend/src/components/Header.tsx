@@ -122,7 +122,7 @@ export default function Header() {
       )}
 
       {/* ── Main Header Bar ──────────────────────────────────────────────── */}
-      <header className="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50 transition-all duration-300">
+      <header className="glass-panel sticky top-0 z-50 transition-all duration-300 backdrop-blur-3xl bg-white/60 dark:bg-gray-900/60 border-b border-white/50 dark:border-white/10">
         <div className="container">
           {/* min-w-0 prevents flex children from overflowing on very small phones */}
           <div className="flex items-center justify-between h-16 md:h-20 min-w-0">
@@ -556,7 +556,7 @@ export default function Header() {
             onClick={() => setWishlistOpen(false)}
           />
           <div className="absolute inset-y-0 right-0 max-w-full flex pl-10">
-            <div className="w-screen max-w-md bg-white dark:bg-gray-900 shadow-2xl flex flex-col h-full border-l border-gray-200 dark:border-gray-800 animate-slide-left">
+            <div className="w-screen max-w-md glass-panel flex flex-col h-full border-l border-white/50 dark:border-gray-700/50 animate-slide-left shadow-2xl">
               {/* Header */}
               <div className="p-6 border-b border-gray-150 dark:border-gray-800 flex items-center justify-between">
                 <div className="flex items-center gap-2">
@@ -582,24 +582,26 @@ export default function Header() {
                   wishlistItems.map((item: any) => {
                     const handleRemove = (e: React.MouseEvent) => {
                       e.stopPropagation();
-                      const updated = wishlistItems.filter((x: any) => x.id !== item.id);
+                      const updated = wishlistItems.filter((x: any) => (x.id || `${x.origin}-${x.destination}`) !== (item.id || `${item.origin}-${item.destination}`));
                       localStorage.setItem("wishlist", JSON.stringify(updated));
                       setWishlistItems(updated);
                       window.dispatchEvent(new Event("wishlistUpdated"));
                     };
-                    const priceVal = (item.basePriceCents / 100).toLocaleString('en-IN', {
+                    const isFlight = !!item.basePriceCents;
+                    const priceVal = isFlight ? (item.basePriceCents / 100).toLocaleString('en-IN', {
                       maximumFractionDigits: 2,
                       minimumFractionDigits: 2
-                    });
+                    }) : null;
+                    
                     return (
                       <div
-                        key={item.id}
-                        className="p-4 border border-gray-150 dark:border-gray-800 rounded-none bg-gray-50/50 dark:bg-gray-850/30 hover:border-booking-lightblue/30 transition-all flex justify-between items-center gap-4 relative group"
+                        key={item.id || `${item.origin}-${item.destination}`}
+                        className="p-4 border border-gray-150 dark:border-gray-800 rounded-2xl bg-white/40 dark:bg-gray-850/30 hover:border-booking-lightblue/30 transition-all flex justify-between items-center gap-4 relative group backdrop-blur-md shadow-sm hover:shadow-md"
                       >
                         <div className="flex-1 space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-extrabold text-booking-lightblue uppercase tracking-wider">{item.airline}</span>
-                            <span className="text-[10px] text-gray-455 dark:text-gray-500 font-semibold">{item.flightNumber}</span>
+                            <span className="text-xs font-extrabold text-booking-lightblue uppercase tracking-wider">{isFlight ? item.airline : "Route"}</span>
+                            <span className="text-[10px] text-gray-455 dark:text-gray-500 font-semibold">{isFlight ? item.flightNumber : "Direct"}</span>
                           </div>
                           <div className="flex items-center gap-3">
                             <div className="text-sm font-extrabold text-gray-800 dark:text-gray-200">{item.origin}</div>
@@ -607,26 +609,26 @@ export default function Header() {
                             <div className="text-sm font-extrabold text-gray-800 dark:text-gray-200">{item.destination}</div>
                           </div>
                           <div className="text-[10px] font-semibold text-gray-400 dark:text-gray-500">
-                            {new Date(item.departure).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} • {new Date(item.departure).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}
+                            {isFlight ? `${new Date(item.departure).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} • ${new Date(item.departure).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}` : 'Daily Flights'}
                           </div>
                         </div>
                         <div className="text-right flex flex-col items-end justify-between h-full gap-3">
                           <div>
-                            <span className="text-[9px] text-gray-400 block font-medium uppercase tracking-wider">Fare starting from</span>
-                            <span className="text-sm font-extrabold text-booking-lightblue">₹{priceVal}</span>
+                            <span className="text-[9px] text-gray-400 block font-medium uppercase tracking-wider">{isFlight ? "Fare starting from" : "Available"}</span>
+                            <span className="text-sm font-extrabold text-booking-lightblue">{isFlight ? `₹${priceVal}` : "View Details"}</span>
                           </div>
                           <div className="flex gap-2">
                             <button
                               onClick={handleRemove}
-                              className="p-1.5 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-955/20 border border-red-500/10 transition-colors uppercase font-bold tracking-wider"
+                              className="p-1.5 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-955/20 border border-red-500/10 transition-colors uppercase font-bold tracking-wider rounded-lg"
                               title="Remove"
                             >
                               ✕
                             </button>
                             <Link
-                              to={`/flight/${item.id}`}
+                              to={isFlight ? `/flight/${item.id}` : `/search?origin=${item.origin}&destination=${item.destination}`}
                               onClick={() => setWishlistOpen(false)}
-                              className="px-3 py-1.5 text-xs bg-booking-lightblue text-white font-extrabold hover:brightness-105 transition-all text-center tracking-wider"
+                              className="px-3 py-1.5 text-xs bg-booking-lightblue text-white font-extrabold hover:brightness-105 transition-all text-center tracking-wider rounded-lg shadow-md"
                             >
                               ➔
                             </Link>

@@ -112,10 +112,10 @@ export default function FlightCard({ f, origin, destination, specialFare = "regu
       {/* Wishlist toggle button */}
       <button
         onClick={toggleWishlist}
-        className="absolute top-4 right-4 z-20 p-2.5 bg-gray-50/80 dark:bg-gray-750/80 hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 hover:text-red-500 transition-all focus:outline-none flex items-center justify-center shadow-sm"
+        className="absolute top-4 right-4 z-20 p-2.5 bg-white/50 dark:bg-gray-800/50 hover:bg-white dark:hover:bg-gray-700 text-gray-400 hover:text-red-500 transition-all focus:outline-none flex items-center justify-center shadow-sm rounded-full backdrop-blur-md"
         aria-label="Add to Wishlist"
       >
-        <HeartIcon className={`w-4.5 h-4.5 ${isWishlisted ? "text-red-500 fill-current scale-110" : "text-gray-400 dark:text-gray-500"} transition-all duration-200`} />
+        <HeartIcon className={`w-5 h-5 ${isWishlisted ? "text-red-500 fill-current scale-110" : "text-gray-400 dark:text-gray-500"} transition-all duration-200`} />
       </button>
 
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 relative z-10 pr-6">

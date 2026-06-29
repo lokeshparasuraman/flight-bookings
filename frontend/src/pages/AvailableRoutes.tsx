@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import api from "../services/api";
 import Footer from "../components/Footer";
-import { GlobeIcon, FlightIcon, OfficeBuildingIcon } from "../components/Icons";
+import { GlobeIcon, FlightIcon, OfficeBuildingIcon, HeartIcon } from "../components/Icons";
+import { useToast } from "../contexts/ToastContext";
 
 interface RouteInfo {
   origin: string;
@@ -113,6 +114,8 @@ const RoutesIllustration = () => (
 
 export default function AvailableRoutes() {
   const navigate = useNavigate();
+  const { showToast } = useToast();
+  const [wishlist, setWishlist] = useState<any[]>([]);
   const [routes, setRoutes] = useState<RouteInfo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -157,7 +160,52 @@ export default function AvailableRoutes() {
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchRoutes();
+    
+    // Load initial wishlist
+    try {
+      const wl = JSON.parse(localStorage.getItem("wishlist") || "[]");
+      setWishlist(wl);
+    } catch (e) {
+      setWishlist([]);
+    }
+    
+    const handleSync = () => {
+      try {
+        const wl = JSON.parse(localStorage.getItem("wishlist") || "[]");
+        setWishlist(wl);
+      } catch (e) {
+        setWishlist([]);
+      }
+    };
+    window.addEventListener("wishlistUpdated", handleSync);
+    return () => window.removeEventListener("wishlistUpdated", handleSync);
   }, []);
+
+  const toggleWishlist = (e: React.MouseEvent, route: RouteInfo) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const wl = JSON.parse(localStorage.getItem("wishlist") || "[]");
+      const idx = wl.findIndex((x: any) => x.origin === route.origin && x.destination === route.destination && !x.basePriceCents);
+      let updated = [];
+      if (idx > -1) {
+        updated = wl.filter((x: any, i: number) => i !== idx);
+        showToast("info", "Route removed from wishlist!");
+      } else {
+        updated = [...wl, { origin: route.origin, destination: route.destination }];
+        showToast("success", "Route added to wishlist!");
+      }
+      localStorage.setItem("wishlist", JSON.stringify(updated));
+      setWishlist(updated);
+      window.dispatchEvent(new Event("wishlistUpdated"));
+    } catch (e) {
+      showToast("error", "Failed to update wishlist");
+    }
+  };
+
+  const isRouteWishlisted = (r: RouteInfo) => {
+    return wishlist.some((x: any) => x.origin === r.origin && x.destination === r.destination && !x.basePriceCents);
+  };
 
   useEffect(() => {
     setCurrentPage(1);
@@ -386,7 +434,15 @@ export default function AvailableRoutes() {
                       >
                         <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
                         
-                        <div className="flex items-center justify-between mb-4">
+                        <button
+                          onClick={(e) => toggleWishlist(e, r)}
+                          className="absolute top-4 right-4 z-20 p-2.5 bg-white/50 dark:bg-gray-800/50 hover:bg-white dark:hover:bg-gray-700 text-gray-400 hover:text-red-500 transition-all focus:outline-none flex items-center justify-center shadow-sm rounded-full backdrop-blur-md"
+                          aria-label="Add to Wishlist"
+                        >
+                          <HeartIcon className={`w-5 h-5 ${isRouteWishlisted(r) ? "text-red-500 fill-current scale-110" : "text-gray-400 dark:text-gray-500"} transition-all duration-200`} />
+                        </button>
+                        
+                        <div className="flex items-center justify-between mb-4 pr-12">
                           <div className="flex items-center space-x-2">
                              <span className="text-xs font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest bg-gray-100/50 dark:bg-gray-800/50 px-2 py-0.5 rounded-md">Route #{((currentPage - 1) * itemsPerPage) + idx + 1}</span>
                           </div>

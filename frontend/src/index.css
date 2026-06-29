@@ -12,7 +12,7 @@
   /* Apply color transitions to everything so dark/light mode feels smooth.
      200ms is quick enough to feel snappy but slow enough to be noticeable.   */
   * {
-    @apply transition-colors duration-200;
+    @apply transition-all duration-300 ease-in-out;
   }
 
   /* Smooth anchor scrolling — avoids the jarring snap to headings.           */
@@ -24,7 +24,7 @@
      -webkit-font-smoothing makes text crisp on retina macOS/iOS screens.
      overflow-x: hidden prevents horizontal scrollbar from floating elements.  */
   body {
-    @apply bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+    @apply bg-gradient-to-br from-blue-50/50 via-indigo-50/30 to-purple-50/50 dark:from-gray-950 dark:via-gray-900 dark:to-indigo-950 text-gray-900 dark:text-gray-100;
     font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -60,22 +60,27 @@
 @layer components {
   /* Primary CTA button — orange gradient, all-caps, with premium rounded corners. */
   .btn-primary {
-    @apply bg-gradient-to-r from-[#ff6636] to-[#ff3600] text-white font-bold py-3 px-8 rounded-xl transition-all duration-200 shadow-md hover:shadow-lg hover:brightness-105 transform hover:-translate-y-0.5 active:translate-y-0 tracking-wider uppercase outline-none;
+    @apply backdrop-blur-md bg-gradient-to-r from-[#ff6636]/90 to-[#ff3600]/90 border border-white/20 text-white font-bold py-3 px-8 rounded-2xl transition-all duration-300 shadow-lg hover:shadow-[0_8px_30px_rgb(255,102,54,0.3)] transform hover:-translate-y-1 active:scale-95 tracking-wider uppercase outline-none;
   }
 
   /* Secondary / ghost button — white background with a lightblue border. */
   .btn-secondary {
-    @apply bg-white dark:bg-gray-800 border border-booking-lightblue text-booking-lightblue hover:bg-booking-lightblue/5 font-bold py-3 px-8 rounded-xl transition-all duration-200 outline-none;
+    @apply backdrop-blur-xl bg-white/40 dark:bg-gray-800/40 border border-booking-lightblue/50 text-booking-lightblue hover:bg-booking-lightblue/10 font-bold py-3 px-8 rounded-2xl transition-all duration-300 shadow-sm hover:shadow-md outline-none;
   }
 
   /* Standard form input — covers text, number, date, select fields. */
   .input-field {
-    @apply w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-booking-lightblue focus:border-transparent outline-none bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500;
+    @apply w-full px-4 py-3 border border-gray-300/50 dark:border-gray-600/50 rounded-2xl focus:ring-2 focus:ring-booking-lightblue focus:border-transparent outline-none backdrop-blur-xl bg-white/60 dark:bg-gray-800/60 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 shadow-inner transition-all duration-300;
   }
 
   /* Card shell — white / dark-gray box with a soft shadow. */
   .card {
-    @apply bg-white dark:bg-gray-800 rounded-2xl shadow-soft hover:shadow-soft-lg transition-all duration-300 border border-gray-100 dark:border-gray-700;
+    @apply backdrop-blur-2xl bg-white/40 dark:bg-gray-800/40 rounded-3xl shadow-xl hover:shadow-2xl hover:bg-white/50 dark:hover:bg-gray-800/50 transition-all duration-500 border border-white/50 dark:border-gray-700/50;
+  }
+
+  /* Glass panel shell — heavy blur, used for drawers, modals, header */
+  .glass-panel {
+    @apply backdrop-blur-3xl bg-white/60 dark:bg-gray-900/60 border border-white/50 dark:border-white/10 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)];
   }
 }
 

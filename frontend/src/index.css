@@ -18,6 +18,8 @@
   /* Smooth anchor scrolling — avoids the jarring snap to headings.           */
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+    max-width: 100vw;
   }
 
   /* Core body: beige-ish light bg, near-black dark bg, Lato as body font.
@@ -32,6 +34,7 @@
     padding: 0;
     /* Prevent any absolutely-positioned element from causing horizontal scroll */
     overflow-x: hidden;
+    max-width: 100vw;
   }
 
   /* Headings use Outfit (display font) — thicker, wider letterform gives them

@@ -1810,7 +1810,7 @@ export default function Home() {
                 const formEl = document.getElementById("search-form") as HTMLFormElement;
                 if (formEl) formEl.requestSubmit();
               }}
-              className="px-16 py-4 text-lg bg-gradient-to-r from-[#008cff] to-[#007cdb] hover:from-[#007cdb] hover:to-[#006cc7] text-white font-extrabold rounded-full transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100 flex items-center justify-center gap-2 group tracking-wider uppercase min-w-[240px]"
+              className="w-full sm:w-auto px-8 sm:px-16 py-4 text-sm sm:text-lg bg-gradient-to-r from-[#008cff] to-[#007cdb] hover:from-[#007cdb] hover:to-[#006cc7] text-white font-extrabold rounded-full transition-all duration-200 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-100 flex items-center justify-center gap-2 group tracking-wider uppercase sm:min-w-[240px]"
             >
               <span>{tabs.find((t) => t.id === activeTab)?.searchLabel || "Search"}</span>
               <span className="group-hover:translate-x-1.5 transition-transform duration-200">➔</span>

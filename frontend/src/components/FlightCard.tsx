@@ -194,8 +194,8 @@ export default function FlightCard({ f, origin, destination, specialFare = "regu
         </div>
 
         {/* Pricing / Booking column */}
-        <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center md:min-w-[170px] border-t md:border-t-0 md:border-l border-gray-100 dark:border-gray-700/60 pt-4 md:pt-0 md:pl-6 gap-4">
-          <div className="text-left md:text-right">
+        <div className="flex flex-col sm:flex-row md:flex-col items-stretch sm:items-center md:items-end justify-between md:justify-center md:min-w-[170px] border-t md:border-t-0 md:border-l border-gray-100 dark:border-gray-700/60 pt-4 md:pt-0 md:pl-6 gap-4">
+          <div className="text-left sm:text-right md:text-right">
             <span className="text-xs text-gray-400 dark:text-gray-500 font-medium block">
               Fare starting from
             </span>
@@ -221,7 +221,7 @@ export default function FlightCard({ f, origin, destination, specialFare = "regu
           {/* Carry the specialFare forward so FlightDetail applies the same discount */}
           <Link
             to={`/flight/${f.id}${specialFare && specialFare !== 'regular' ? `?specialFare=${specialFare}` : ''}`}
-            className="btn-primary py-2.5 px-6 rounded-xl text-sm font-bold shadow-soft hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-center w-auto min-w-[110px]"
+            className="btn-primary py-3 sm:py-2.5 px-6 rounded-xl text-sm font-bold shadow-soft hover:shadow-md hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 text-center w-full sm:w-auto min-w-[110px]"
           >
             Select ➔
           </Link>

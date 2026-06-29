@@ -1872,6 +1872,7 @@ export default function Home() {
                               alt={place.title}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                               loading="lazy"
+                              decoding="async"
                             />
                             {place.price && (
                               <div className="absolute bottom-3 left-3 bg-gray-900/80 backdrop-blur-sm text-white text-[10px] font-extrabold px-2.5 py-1 uppercase tracking-wider">
@@ -2039,6 +2040,8 @@ export default function Home() {
                           src={imgs[activeImageIndex]}
                           alt={selectedExplorePlace.title}
                           className="w-full h-full object-cover transition-all duration-300"
+                          loading="lazy"
+                          decoding="async"
                         />
                         {imgs.length > 1 && (
                           <>

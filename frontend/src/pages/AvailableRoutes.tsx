@@ -115,23 +115,48 @@ export default function AvailableRoutes() {
   const navigate = useNavigate();
   const [routes, setRoutes] = useState<RouteInfo[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [filterText, setFilterText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const today = new Date().toISOString().split("T")[0];
 
+  const fetchRoutes = async () => {
+    const cached = localStorage.getItem("cachedRoutes");
+    if (cached) {
+      try {
+        setRoutes(JSON.parse(cached));
+        setLoading(false);
+      } catch (e) {}
+    } else {
+      setLoading(true);
+    }
+    setError(null);
+
+    let success = false;
+    let attempts = 0;
+    while (!success && attempts < 3) {
+      try {
+        const r = await api.get("/flights/routes");
+        const fetchedRoutes = Array.isArray(r.data) ? r.data : [];
+        setRoutes(fetchedRoutes);
+        localStorage.setItem("cachedRoutes", JSON.stringify(fetchedRoutes));
+        success = true;
+      } catch (err) {
+        attempts++;
+        if (attempts >= 3) {
+           if (!cached) setError("Network error. Unable to load routes. Please check your connection.");
+        } else {
+           await new Promise(res => setTimeout(res, 1000 * attempts));
+        }
+      }
+    }
+    setLoading(false);
+  };
+
   useEffect(() => {
     window.scrollTo(0, 0);
-    api.get("/flights/routes")
-      .then((r) => {
-        setRoutes(Array.isArray(r.data) ? r.data : []);
-      })
-      .catch((err) => {
-        console.error("Failed to load routes", err);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    fetchRoutes();
   }, []);
 
   useEffect(() => {
@@ -331,10 +356,15 @@ export default function AvailableRoutes() {
             <div className="flex justify-center items-center py-20">
               <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-booking-lightblue"></div>
             </div>
+          ) : error ? (
+            <div className="text-center py-20 bg-red-50/50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-3xl backdrop-blur-md">
+              <p className="text-red-500 dark:text-red-400 font-bold mb-4">{error}</p>
+              <button onClick={() => fetchRoutes()} className="px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-extrabold transition-all shadow-md hover:shadow-lg">Try Again</button>
+            </div>
           ) : (
             <div className="animate-slide-up" style={{ animationDelay: "0.1s" }}>
               {filteredRoutes.length === 0 ? (
-                <div className="card p-12 text-center max-w-lg mx-auto bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl shadow-sm">
+                <div className="card p-12 text-center max-w-lg mx-auto bg-white/40 dark:bg-gray-900/40 backdrop-blur-xl border border-white/40 dark:border-gray-700/50 rounded-3xl shadow-xl">
                   <div className="mb-4">
                     <RoutesIllustration />
                   </div>
@@ -346,71 +376,56 @@ export default function AvailableRoutes() {
                   </p>
                 </div>
               ) : (
-                <div className="overflow-hidden rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-soft bg-white dark:bg-gray-900">
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left border-collapse">
-                      <thead>
-                        <tr className="bg-gray-50/70 dark:bg-gray-800/40 text-gray-500 dark:text-gray-400 text-xs font-bold uppercase tracking-wider border-b border-gray-200/80 dark:border-gray-800">
-                          <th className="py-4 px-6 text-center w-16">#</th>
-                          <th className="py-4 px-6">Origin Airport (From)</th>
-                          <th className="py-4 px-6">Destination Airport (To)</th>
-                          <th className="py-4 px-6 text-center w-40">Daily Flights</th>
-                          <th className="py-4 px-6 text-right w-44">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100 dark:divide-gray-800/60">
-                        {paginatedRoutes.map((r, idx) => (
-                          <tr
-                            key={`${r.origin}-${r.destination}-${idx}`}
-                            onClick={() => handleRouteClick(r.origin, r.destination)}
-                            className="hover:bg-gray-50/50 dark:hover:bg-gray-800/10 transition-colors duration-150 cursor-pointer group"
-                          >
-                            {/* S.No */}
-                            <td className="py-4 px-6 text-center text-xs font-bold text-gray-400">
-                              {(currentPage - 1) * itemsPerPage + idx + 1}
-                            </td>
-                            
-                            {/* Origin */}
-                            <td className="py-4 px-6">
-                              <div className="flex items-center space-x-3">
-                                <span className="px-2 py-1 bg-booking-blue/10 dark:bg-booking-blue/20 text-booking-blue dark:text-booking-lightblue font-extrabold text-sm rounded-lg min-w-[48px] text-center">
-                                  {r.origin}
-                                </span>
-                                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 max-w-[200px] truncate">
-                                  {airportNames[r.origin] || r.origin}
-                                </span>
-                              </div>
-                            </td>
-                            
-                            {/* Destination */}
-                            <td className="py-4 px-6">
-                              <div className="flex items-center space-x-3">
-                                <span className="px-2 py-1 bg-booking-blue/10 dark:bg-booking-blue/20 text-booking-blue dark:text-booking-lightblue font-extrabold text-sm rounded-lg min-w-[48px] text-center">
-                                  {r.destination}
-                                </span>
-                                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 max-w-[200px] truncate">
-                                  {airportNames[r.destination] || r.destination}
-                                </span>
-                              </div>
-                            </td>
-                            
-                            {/* Daily Flights Count */}
-                            <td className="py-4 px-6 text-center">
-                              <span className="text-xs font-bold text-booking-lightblue bg-booking-lightblue/10 dark:bg-booking-lightblue/20 px-3 py-1 rounded-full border border-booking-lightblue/20">
-                                {r._count.id} {r._count.id === 1 ? 'Flight' : 'Flights'}
-                              </span>
-                            </td>
-                            
-                            {/* Actions */}
-                            <td className="py-4 px-6 text-right">
-                              <button className="text-xs font-bold bg-booking-blue hover:bg-booking-lightblue text-white px-3.5 py-1.5 rounded-lg transition-colors duration-150 shadow-soft group-hover:scale-105 transform">
-                                Book Flights ➔
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                <div className="space-y-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {paginatedRoutes.map((r, idx) => (
+                      <div
+                        key={`${r.origin}-${r.destination}-${idx}`}
+                        onClick={() => handleRouteClick(r.origin, r.destination)}
+                        className="relative overflow-hidden group cursor-pointer backdrop-blur-xl bg-white/40 dark:bg-gray-900/40 border border-white/50 dark:border-gray-700/50 shadow-xl rounded-3xl p-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:bg-white/60 dark:hover:bg-gray-800/60"
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+                        
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center space-x-2">
+                             <span className="text-xs font-extrabold text-gray-400 dark:text-gray-500 uppercase tracking-widest bg-gray-100/50 dark:bg-gray-800/50 px-2 py-0.5 rounded-md">Route #{((currentPage - 1) * itemsPerPage) + idx + 1}</span>
+                          </div>
+                          <span className="text-xs font-bold text-booking-lightblue bg-booking-lightblue/10 dark:bg-booking-lightblue/20 px-3 py-1 rounded-full border border-booking-lightblue/20 backdrop-blur-md">
+                            {r._count.id} {r._count.id === 1 ? 'Flight' : 'Flights'}
+                          </span>
+                        </div>
+
+                        <div className="flex justify-between items-center relative py-2">
+                          <div className="flex flex-col items-center flex-1">
+                            <span className="text-3xl md:text-4xl font-extrabold text-booking-blue dark:text-booking-lightblue tracking-tighter">{r.origin}</span>
+                            <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 text-center max-w-[110px] truncate mt-1" title={airportNames[r.origin] || r.origin}>
+                               {airportNames[r.origin] || r.origin}
+                            </span>
+                          </div>
+
+                          <div className="flex-1 flex flex-col justify-center items-center px-2 relative h-10">
+                            <div className="w-full h-[2px] border-t-2 border-dashed border-gray-300 dark:border-gray-600"></div>
+                            <FlightIcon className="w-6 h-6 text-booking-blue dark:text-booking-lightblue absolute transform -rotate-45 group-hover:translate-x-3 transition-transform duration-500" />
+                          </div>
+
+                          <div className="flex flex-col items-center flex-1">
+                            <span className="text-3xl md:text-4xl font-extrabold text-booking-blue dark:text-booking-lightblue tracking-tighter">{r.destination}</span>
+                            <span className="text-[10px] font-semibold text-gray-500 dark:text-gray-400 text-center max-w-[110px] truncate mt-1" title={airportNames[r.destination] || r.destination}>
+                               {airportNames[r.destination] || r.destination}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="mt-5 pt-4 border-t border-gray-200/50 dark:border-gray-700/50 flex justify-between items-center relative z-10">
+                          <div className="text-xs font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+                             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Active Route
+                          </div>
+                          <button className="text-xs font-bold bg-gradient-to-r from-booking-blue to-booking-lightblue text-white px-4 py-2 rounded-xl transition-all duration-300 shadow-lg group-hover:shadow-booking-blue/40 transform group-hover:-translate-y-0.5">
+                            Book Now ➔
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
 
                   {/* Pagination Controls */}

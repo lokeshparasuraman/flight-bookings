@@ -83,27 +83,51 @@ export default function Bookings() {
 
   const loadBookings = async () => {
     setError("");
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        nav("/login");
-        return;
-      }
-      setAuthToken(token);
-      
-      const r = await api.get("/bookings/me");
-      const data = Array.isArray(r.data) ? r.data : [];
-      // Sort by booking created date, newest first
-      data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      setBookings(data);
-      setSelectedBookingIds(data.filter((bk: any) => bk.status === "CONFIRMED").map((bk: any) => bk.id));
-      setLoaded(true);
-    } catch (err: any) {
-      setError(err?.response?.data?.error || err?.message || "Failed to load bookings. Please verify authentication.");
-    } finally {
-      setLoading(false);
+    const token = localStorage.getItem("token");
+    if (!token) {
+      nav("/login");
+      return;
     }
+    setAuthToken(token);
+
+    const cached = localStorage.getItem("cachedBookings");
+    if (cached) {
+      try {
+        const data = JSON.parse(cached);
+        setBookings(data);
+        setSelectedBookingIds(data.filter((bk: any) => bk.status === "CONFIRMED").map((bk: any) => bk.id));
+        setLoaded(true);
+        setLoading(false);
+      } catch (e) {}
+    } else {
+      setLoading(true);
+    }
+
+    let success = false;
+    let attempts = 0;
+    while (!success && attempts < 3) {
+      try {
+        const r = await api.get("/bookings/me");
+        const data = Array.isArray(r.data) ? r.data : [];
+        // Sort by booking created date, newest first
+        data.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        setBookings(data);
+        setSelectedBookingIds(data.filter((bk: any) => bk.status === "CONFIRMED").map((bk: any) => bk.id));
+        localStorage.setItem("cachedBookings", JSON.stringify(data));
+        setLoaded(true);
+        success = true;
+      } catch (err: any) {
+        attempts++;
+        if (attempts >= 3) {
+          if (!cached) {
+            setError(err?.response?.data?.error || err?.message || "Failed to load bookings. Please check your connection.");
+          }
+        } else {
+          await new Promise(res => setTimeout(res, 1000 * attempts));
+        }
+      }
+    }
+    setLoading(false);
   };
 
   const cancelBooking = async (id: string) => {

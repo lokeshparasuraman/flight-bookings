@@ -1919,7 +1919,7 @@ export default function Home() {
                           <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-900 group/img">
                             <button
                               onClick={(e) => toggleWishlistPlace(e, place)}
-                              className="absolute top-3 right-3 z-20 p-2.5 bg-white/40 dark:bg-gray-800/40 hover:bg-white/80 dark:hover:bg-gray-700/80 text-gray-100 hover:text-red-500 transition-all focus:outline-none flex items-center justify-center shadow-sm rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 group-hover/img:opacity-100"
+                              className="absolute top-3 right-3 z-20 p-3 bg-white/60 dark:bg-gray-800/60 hover:bg-white/90 dark:hover:bg-gray-700/90 text-gray-100 hover:text-red-500 transition-all focus:outline-none flex items-center justify-center shadow-md rounded-full backdrop-blur-md opacity-100 md:opacity-0 md:group-hover:opacity-100 group-hover/img:opacity-100"
                               aria-label="Add to Wishlist"
                             >
                               <HeartIcon className={`w-5 h-5 ${isPlaceWishlisted(place) ? "text-red-500 fill-current scale-110 opacity-100" : "text-white"} transition-all duration-200`} />

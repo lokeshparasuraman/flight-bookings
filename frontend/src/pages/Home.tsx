@@ -47,8 +47,10 @@ import {
   FlashIcon,
   RobotIcon,
   ChatBubbleIcon,
-  TagIcon
+  TagIcon,
+  HeartIcon
 } from "../components/Icons";
+import { useToast } from "../contexts/ToastContext";
 import Footer from "../components/Footer";
 import Tooltip from "../components/Tooltip";
 
@@ -307,7 +309,55 @@ function DraggableAiButton({ onClick }: { onClick: () => void }) {
 
 // ──────────────────────────────────────────────────────────────────────────────
 export default function Home() {
-    const [tripType, setTripType] = useState<"oneway" | "roundtrip">("oneway");
+  const { showToast } = useToast();
+  const [wishlist, setWishlist] = useState<any[]>([]);
+
+  useEffect(() => {
+    try {
+      const wl = JSON.parse(localStorage.getItem("wishlist") || "[]");
+      setWishlist(wl);
+    } catch (e) {
+      setWishlist([]);
+    }
+    const handleSync = () => {
+      try {
+        const wl = JSON.parse(localStorage.getItem("wishlist") || "[]");
+        setWishlist(wl);
+      } catch (e) {
+        setWishlist([]);
+      }
+    };
+    window.addEventListener("wishlistUpdated", handleSync);
+    return () => window.removeEventListener("wishlistUpdated", handleSync);
+  }, []);
+
+  const toggleWishlistPlace = (e: React.MouseEvent, place: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      const wl = JSON.parse(localStorage.getItem("wishlist") || "[]");
+      const idx = wl.findIndex((x: any) => x.id === place.id && x.title === place.title);
+      let updated = [];
+      if (idx > -1) {
+        updated = wl.filter((x: any, i: number) => i !== idx);
+        showToast("info", "Place removed from wishlist!");
+      } else {
+        updated = [...wl, { id: place.id, title: place.title, type: place.type, img: place.img, price: place.price, state: place.state }];
+        showToast("success", "Place added to wishlist!");
+      }
+      localStorage.setItem("wishlist", JSON.stringify(updated));
+      setWishlist(updated);
+      window.dispatchEvent(new Event("wishlistUpdated"));
+    } catch (e) {
+      showToast("error", "Failed to update wishlist");
+    }
+  };
+
+  const isPlaceWishlisted = (place: any) => {
+    return wishlist.some((x: any) => x.id === place.id && x.title === place.title);
+  };
+
+  const [tripType, setTripType] = useState<"oneway" | "roundtrip">("oneway");
   const [origin, setOrigin] = useState("DEL");
   const [destination, setDestination] = useState("BOM");
   const [originInput, setOriginInput] = useState("DEL");
@@ -1866,7 +1916,14 @@ export default function Home() {
                           className="shrink-0 w-80 h-[390px] bg-white dark:bg-gray-855 dark:border-gray-750/60 border border-gray-150 rounded-3xl shadow-md overflow-hidden hover:shadow-xl hover:border-booking-lightblue/25 transition-all duration-300 flex flex-col cursor-pointer group"
                         >
                           {/* Place Image */}
-                          <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-900">
+                          <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-900 group/img">
+                            <button
+                              onClick={(e) => toggleWishlistPlace(e, place)}
+                              className="absolute top-3 right-3 z-20 p-2.5 bg-white/40 dark:bg-gray-800/40 hover:bg-white/80 dark:hover:bg-gray-700/80 text-gray-100 hover:text-red-500 transition-all focus:outline-none flex items-center justify-center shadow-sm rounded-full backdrop-blur-md opacity-0 group-hover:opacity-100 group-hover/img:opacity-100"
+                              aria-label="Add to Wishlist"
+                            >
+                              <HeartIcon className={`w-5 h-5 ${isPlaceWishlisted(place) ? "text-red-500 fill-current scale-110 opacity-100" : "text-white"} transition-all duration-200`} />
+                            </button>
                             <img
                               src={place.img}
                               alt={place.title}

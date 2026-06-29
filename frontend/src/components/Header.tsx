@@ -572,71 +572,136 @@ export default function Header() {
               </div>
 
               {/* Items List */}
-              <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-thin">
+              <div className="flex-1 overflow-y-auto p-6 space-y-6 scrollbar-thin">
                 {wishlistItems.length === 0 ? (
                   <div className="text-center py-20 space-y-3">
                     <HeartIcon className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto" />
                     <p className="text-sm font-semibold text-gray-455 dark:text-gray-500">Your wishlist is empty.</p>
                   </div>
                 ) : (
-                  wishlistItems.map((item: any) => {
-                    const handleRemove = (e: React.MouseEvent) => {
-                      e.stopPropagation();
-                      const updated = wishlistItems.filter((x: any) => (x.id || `${x.origin}-${x.destination}`) !== (item.id || `${item.origin}-${item.destination}`));
-                      localStorage.setItem("wishlist", JSON.stringify(updated));
-                      setWishlistItems(updated);
-                      window.dispatchEvent(new Event("wishlistUpdated"));
-                    };
-                    const isFlight = !!item.basePriceCents;
-                    const priceVal = isFlight ? (item.basePriceCents / 100).toLocaleString('en-IN', {
-                      maximumFractionDigits: 2,
-                      minimumFractionDigits: 2
-                    }) : null;
-                    
-                    return (
-                      <div
-                        key={item.id || `${item.origin}-${item.destination}`}
-                        className="p-4 border border-gray-150 dark:border-gray-800 rounded-2xl bg-white/40 dark:bg-gray-850/30 hover:border-booking-lightblue/30 transition-all flex justify-between items-center gap-4 relative group backdrop-blur-md shadow-sm hover:shadow-md"
-                      >
-                        <div className="flex-1 space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-extrabold text-booking-lightblue uppercase tracking-wider">{isFlight ? item.airline : "Route"}</span>
-                            <span className="text-[10px] text-gray-455 dark:text-gray-500 font-semibold">{isFlight ? item.flightNumber : "Direct"}</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="text-sm font-extrabold text-gray-800 dark:text-gray-200">{item.origin}</div>
-                            <span className="text-gray-300 text-xs">➔</span>
-                            <div className="text-sm font-extrabold text-gray-800 dark:text-gray-200">{item.destination}</div>
-                          </div>
-                          <div className="text-[10px] font-semibold text-gray-400 dark:text-gray-500">
-                            {isFlight ? `${new Date(item.departure).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} • ${new Date(item.departure).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}` : 'Daily Flights'}
-                          </div>
+                  <>
+                    {(() => {
+                      const flights = wishlistItems.filter((x: any) => !!x.basePriceCents);
+                      const routes = wishlistItems.filter((x: any) => x.origin && x.destination && !x.basePriceCents);
+                      const places = wishlistItems.filter((x: any) => x.title && x.type);
+
+                      const handleRemove = (item: any) => {
+                        const updated = wishlistItems.filter((x: any) => {
+                          if (item.type && x.type) return x.id !== item.id && x.title !== item.title;
+                          return (x.id || `${x.origin}-${x.destination}`) !== (item.id || `${item.origin}-${item.destination}`);
+                        });
+                        localStorage.setItem("wishlist", JSON.stringify(updated));
+                        setWishlistItems(updated);
+                        window.dispatchEvent(new Event("wishlistUpdated"));
+                      };
+
+                      return (
+                        <div className="space-y-8">
+                          {flights.length > 0 && (
+                            <div className="space-y-3">
+                              <h4 className="text-xs font-extrabold text-booking-lightblue uppercase tracking-widest border-b border-gray-200 dark:border-gray-800 pb-2">Saved Flights</h4>
+                              {flights.map((item: any) => {
+                                const priceVal = (item.basePriceCents / 100).toLocaleString('en-IN', { maximumFractionDigits: 2, minimumFractionDigits: 2 });
+                                return (
+                                  <div key={item.id} className="p-4 border border-gray-150 dark:border-gray-800 rounded-2xl bg-white/40 dark:bg-gray-850/30 hover:border-booking-lightblue/30 transition-all flex justify-between items-center gap-4 relative group backdrop-blur-md shadow-sm hover:shadow-md">
+                                    <div className="flex-1 space-y-2">
+                                      <div className="flex items-center justify-between">
+                                        <span className="text-xs font-extrabold text-booking-lightblue uppercase tracking-wider">{item.airline}</span>
+                                        <span className="text-[10px] text-gray-455 dark:text-gray-500 font-semibold">{item.flightNumber}</span>
+                                      </div>
+                                      <div className="flex items-center gap-3">
+                                        <div className="text-sm font-extrabold text-gray-800 dark:text-gray-200">{item.origin}</div>
+                                        <span className="text-gray-300 text-xs">➔</span>
+                                        <div className="text-sm font-extrabold text-gray-800 dark:text-gray-200">{item.destination}</div>
+                                      </div>
+                                      <div className="text-[10px] font-semibold text-gray-400 dark:text-gray-500">
+                                        {`${new Date(item.departure).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} • ${new Date(item.departure).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })}`}
+                                      </div>
+                                    </div>
+                                    <div className="text-right flex flex-col items-end justify-between h-full gap-3">
+                                      <div>
+                                        <span className="text-[9px] text-gray-400 block font-medium uppercase tracking-wider">Fare from</span>
+                                        <span className="text-sm font-extrabold text-booking-lightblue">₹{priceVal}</span>
+                                      </div>
+                                      <div className="flex gap-2">
+                                        <button onClick={(e) => { e.stopPropagation(); handleRemove(item); }} className="p-1.5 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-955/20 border border-red-500/10 transition-colors uppercase font-bold tracking-wider rounded-lg" title="Remove">✕</button>
+                                        <Link to={`/flight/${item.id}`} onClick={() => setWishlistOpen(false)} className="px-3 py-1.5 text-xs bg-booking-lightblue text-white font-extrabold hover:brightness-105 transition-all text-center tracking-wider rounded-lg shadow-md">➔</Link>
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {routes.length > 0 && (
+                            <div className="space-y-3">
+                              <h4 className="text-xs font-extrabold text-booking-lightblue uppercase tracking-widest border-b border-gray-200 dark:border-gray-800 pb-2">Saved Routes</h4>
+                              {routes.map((item: any) => (
+                                <div key={`${item.origin}-${item.destination}`} className="p-4 border border-gray-150 dark:border-gray-800 rounded-2xl bg-white/40 dark:bg-gray-850/30 hover:border-booking-lightblue/30 transition-all flex justify-between items-center gap-4 relative group backdrop-blur-md shadow-sm hover:shadow-md">
+                                  <div className="flex-1 space-y-2">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-xs font-extrabold text-booking-lightblue uppercase tracking-wider">Route</span>
+                                      <span className="text-[10px] text-gray-455 dark:text-gray-500 font-semibold">Direct</span>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                      <div className="text-sm font-extrabold text-gray-800 dark:text-gray-200">{item.origin}</div>
+                                      <span className="text-gray-300 text-xs">➔</span>
+                                      <div className="text-sm font-extrabold text-gray-800 dark:text-gray-200">{item.destination}</div>
+                                    </div>
+                                    <div className="text-[10px] font-semibold text-gray-400 dark:text-gray-500">Daily Flights</div>
+                                  </div>
+                                  <div className="text-right flex flex-col items-end justify-between h-full gap-3">
+                                    <div>
+                                      <span className="text-[9px] text-gray-400 block font-medium uppercase tracking-wider">Available</span>
+                                      <span className="text-sm font-extrabold text-booking-lightblue">View Details</span>
+                                    </div>
+                                    <div className="flex gap-2">
+                                      <button onClick={(e) => { e.stopPropagation(); handleRemove(item); }} className="p-1.5 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-955/20 border border-red-500/10 transition-colors uppercase font-bold tracking-wider rounded-lg" title="Remove">✕</button>
+                                      <Link to={`/search?origin=${item.origin}&destination=${item.destination}`} onClick={() => setWishlistOpen(false)} className="px-3 py-1.5 text-xs bg-booking-lightblue text-white font-extrabold hover:brightness-105 transition-all text-center tracking-wider rounded-lg shadow-md">➔</Link>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {places.length > 0 && (
+                            <div className="space-y-3">
+                              <h4 className="text-xs font-extrabold text-booking-lightblue uppercase tracking-widest border-b border-gray-200 dark:border-gray-800 pb-2">Saved Places</h4>
+                              {places.map((item: any) => (
+                                <div key={`${item.id}-${item.title}`} className="p-4 border border-gray-150 dark:border-gray-800 rounded-2xl bg-white/40 dark:bg-gray-850/30 hover:border-booking-lightblue/30 transition-all flex justify-between items-center gap-4 relative group backdrop-blur-md shadow-sm hover:shadow-md">
+                                  {item.img && (
+                                    <div className="h-16 w-16 rounded-xl overflow-hidden shrink-0 shadow-sm border border-gray-200 dark:border-gray-700">
+                                      <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
+                                    </div>
+                                  )}
+                                  <div className="flex-1 space-y-1">
+                                    <div className="flex items-center justify-between">
+                                      <span className="text-[10px] font-extrabold text-booking-lightblue uppercase tracking-wider">{item.type}</span>
+                                    </div>
+                                    <div className="text-sm font-extrabold text-gray-800 dark:text-gray-200 leading-tight">{item.title}</div>
+                                    {item.state && <div className="text-[10px] font-semibold text-gray-400 dark:text-gray-500">{item.state}</div>}
+                                  </div>
+                                  <div className="text-right flex flex-col items-end justify-between h-full gap-3">
+                                    {item.price ? (
+                                      <div>
+                                        <span className="text-sm font-extrabold text-[#ff6636] block">{item.price}</span>
+                                      </div>
+                                    ) : <div />}
+                                    <div className="flex gap-2">
+                                      <button onClick={(e) => { e.stopPropagation(); handleRemove(item); }} className="p-1.5 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-955/20 border border-red-500/10 transition-colors uppercase font-bold tracking-wider rounded-lg" title="Remove">✕</button>
+                                      <Link to="/" onClick={() => setWishlistOpen(false)} className="px-3 py-1.5 text-xs bg-booking-lightblue text-white font-extrabold hover:brightness-105 transition-all text-center tracking-wider rounded-lg shadow-md">➔</Link>
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
-                        <div className="text-right flex flex-col items-end justify-between h-full gap-3">
-                          <div>
-                            <span className="text-[9px] text-gray-400 block font-medium uppercase tracking-wider">{isFlight ? "Fare starting from" : "Available"}</span>
-                            <span className="text-sm font-extrabold text-booking-lightblue">{isFlight ? `₹${priceVal}` : "View Details"}</span>
-                          </div>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={handleRemove}
-                              className="p-1.5 text-xs text-red-500 hover:bg-red-50 dark:hover:bg-red-955/20 border border-red-500/10 transition-colors uppercase font-bold tracking-wider rounded-lg"
-                              title="Remove"
-                            >
-                              ✕
-                            </button>
-                            <Link
-                              to={isFlight ? `/flight/${item.id}` : `/search?origin=${item.origin}&destination=${item.destination}`}
-                              onClick={() => setWishlistOpen(false)}
-                              className="px-3 py-1.5 text-xs bg-booking-lightblue text-white font-extrabold hover:brightness-105 transition-all text-center tracking-wider rounded-lg shadow-md"
-                            >
-                              ➔
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })
+                      );
+                    })()}
+                  </>
                 )}
               </div>
             </div>

@@ -3,6 +3,7 @@ import * as authService from "../services/authService";
 import { body, validationResult } from "express-validator";
 import { isValidPhone } from "../utils/validators";
 import { prisma } from "../db";
+import { requireAuth, AuthRequest } from "../middlewares/authMiddleWare";
 
 const router = Router();
 
@@ -162,6 +163,21 @@ router.post(
       const { identifier, code } = req.body;
       const r = await authService.verifyLoginOtp(identifier, code);
       res.json(r);
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
+// Delete my passenger account
+router.delete(
+  "/me",
+  requireAuth,
+  async (req: AuthRequest, res, next) => {
+    try {
+      const userId = req.userId as string;
+      await authService.deleteUserAccount(userId);
+      res.json({ success: true, message: "User account successfully deleted" });
     } catch (e) {
       next(e);
     }

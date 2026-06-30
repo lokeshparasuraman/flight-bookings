@@ -27,6 +27,8 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
 import { useState, useEffect } from "react";
+import { useToast } from "../contexts/ToastContext";
+import api from "../services/api";
 import {
   SunIcon,
   MoonIcon,
@@ -44,12 +46,37 @@ const VITE_API_URL = (import.meta as any).env?.VITE_API_URL || "";
 
 export default function Header() {
   const { theme, toggleTheme } = useTheme();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
+  const { showToast } = useToast();
 
   // Read auth tokens on every render — if the user logs in/out in another tab
   // the header will reflect it correctly on their next interaction
   const token = localStorage.getItem("token");
   const airlineName = localStorage.getItem("airlineName");
+
+  // Account deletion states
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+
+  const confirmDeleteAccount = async () => {
+    setDeletingAccount(true);
+    try {
+      const isPartner = !!airlineName;
+      const endpoint = isPartner ? "/airline/me" : "/auth/me";
+      await api.delete(endpoint);
+      showToast("success", "Your account has been deleted successfully.");
+      
+      // Clear localStorage and redirect
+      localStorage.removeItem("token");
+      localStorage.removeItem("airlineName");
+      setConfirmDeleteOpen(false);
+      navigate("/");
+    } catch (err: any) {
+      showToast("error", err?.response?.data?.error || "Failed to delete account. Please try again.");
+    } finally {
+      setDeletingAccount(false);
+    }
+  };
 
   // Controls whether the mobile hamburger menu is expanded
   const [menuOpen, setMenuOpen] = useState(false);
@@ -380,6 +407,20 @@ export default function Header() {
                         </>
                       )}
 
+                      {/* Delete Account */}
+                      <button
+                        onClick={() => { setActiveDropdown(null); setConfirmDeleteOpen(true); }}
+                        className="w-full flex items-center gap-3 p-3.5 bg-red-650/5 dark:bg-red-955/10 hover:bg-red-650/10 transition-colors text-left border border-red-500/5 hover:border-red-500/10"
+                      >
+                        <div className="p-2 bg-red-100 dark:bg-red-950 text-red-650 dark:text-red-400 font-extrabold text-xs flex items-center justify-center">
+                          ✕
+                        </div>
+                        <div>
+                          <span className="block text-xs font-extrabold text-red-500 dark:text-red-400 uppercase tracking-wider">Delete Account</span>
+                          <span className="block text-[10px] text-gray-400 dark:text-gray-555 font-semibold mt-0.5">Permanently close account</span>
+                        </div>
+                      </button>
+
                       {/* Logout */}
                       <button
                         onClick={() => { setActiveDropdown(null); handleLogout(); }}
@@ -704,6 +745,49 @@ export default function Header() {
                   </>
                 )}
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Account Confirmation Modal */}
+      {confirmDeleteOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-all duration-300">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800 rounded-3xl p-6 shadow-2xl w-full max-w-sm text-center space-y-4">
+            <div className="w-12 h-12 bg-red-105 dark:bg-red-955/20 text-red-500 rounded-full flex items-center justify-center mx-auto border border-red-500/10">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+            </div>
+            <div>
+              <h3 className="text-base font-extrabold text-gray-855 dark:text-white">Delete Account?</h3>
+              <p className="text-xs text-gray-400 font-semibold mt-1">
+                Are you sure you want to permanently delete your account? All active {airlineName ? "listings and reservations" : "flight bookings"} will be permanently cancelled. This action cannot be undone.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => setConfirmDeleteOpen(false)}
+                className="w-full sm:flex-1 px-4 py-2.5 border border-gray-250 dark:border-gray-700 text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 text-xs font-bold rounded-xl uppercase tracking-wider transition-all"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={deletingAccount}
+                onClick={confirmDeleteAccount}
+                className="w-full sm:flex-1 bg-red-600 hover:bg-red-750 text-white text-xs font-bold py-2.5 rounded-xl uppercase tracking-wider transition-all shadow-md hover:shadow-lg flex items-center justify-center gap-1.5"
+              >
+                {deletingAccount ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    <span>Deleting...</span>
+                  </>
+                ) : (
+                  <span>Yes, Delete</span>
+                )}
+              </button>
             </div>
           </div>
         </div>

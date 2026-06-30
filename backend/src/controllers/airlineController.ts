@@ -153,4 +153,19 @@ router.delete(
   }
 );
 
+// Delete my partner account
+router.delete(
+  "/me",
+  requireAirlineAuth,
+  async (req: AuthRequest, res, next) => {
+    try {
+      const airlineId = req.airlineId as string;
+      await airlineService.deleteAirlineAccount(airlineId);
+      res.json({ success: true, message: "Airline partner account successfully deleted" });
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
 export default router;

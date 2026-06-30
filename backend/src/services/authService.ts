@@ -398,3 +398,27 @@ export async function getLatestOtp(identifier: string, type?: "PHONE" | "LOGIN" 
   return { code: record.code, expiresAt: record.expiresAt };
 }
 
+export async function deleteUserAccount(userId: string) {
+  const bookings = await prisma.booking.findMany({
+    where: { userId },
+    select: { id: true }
+  });
+  const bookingIds = bookings.map(b => b.id);
+
+  await prisma.$transaction([
+    prisma.payment.deleteMany({
+      where: { bookingId: { in: bookingIds } }
+    }),
+    prisma.booking.deleteMany({
+      where: { userId }
+    }),
+    prisma.verificationCode.deleteMany({
+      where: { userId }
+    }),
+    prisma.user.delete({
+      where: { id: userId }
+    })
+  ]);
+}
+
+

@@ -223,3 +223,42 @@ export async function deleteAirlineFlight(airlineId: string, flightId: string) {
   invalidateRoutesCache();
 }
 
+export async function deleteAirlineAccount(airlineId: string) {
+  // Get all flights registered by this airline
+  const flights = await prisma.flight.findMany({
+    where: { registeredAirlineId: airlineId },
+    select: { id: true }
+  });
+  const flightIds = flights.map(f => f.id);
+
+  // Find all bookings for these flights
+  const bookings = await prisma.booking.findMany({
+    where: { flightId: { in: flightIds } },
+    select: { id: true }
+  });
+  const bookingIds = bookings.map(b => b.id);
+
+  // Run cascading deletes in a transaction
+  await prisma.$transaction([
+    // 1. Delete payments for bookings of this airline's flights
+    prisma.payment.deleteMany({
+      where: { bookingId: { in: bookingIds } }
+    }),
+    // 2. Delete bookings for this airline's flights
+    prisma.booking.deleteMany({
+      where: { flightId: { in: flightIds } }
+    }),
+    // 3. Delete flights registered by this airline
+    prisma.flight.deleteMany({
+      where: { registeredAirlineId: airlineId }
+    }),
+    // 4. Finally delete the airline record itself
+    prisma.airline.delete({
+      where: { id: airlineId }
+    })
+  ]);
+
+  invalidateRoutesCache();
+}
+
+

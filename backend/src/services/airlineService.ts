@@ -1,6 +1,7 @@
 import { prisma } from "../db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { invalidateRoutesCache } from "./flightService";
 
 const JWT_SECRET = process.env.JWT_SECRET || "";
 if (!JWT_SECRET) {
@@ -84,7 +85,7 @@ export async function createAirlineFlight(
     throw Object.assign(new Error("Airline not found"), { status: 404 });
   }
 
-  return prisma.flight.create({
+  const flight = await prisma.flight.create({
     data: {
       origin: payload.origin.trim().toUpperCase(),
       destination: payload.destination.trim().toUpperCase(),
@@ -96,6 +97,9 @@ export async function createAirlineFlight(
       registeredAirlineId: airlineId
     }
   });
+
+  invalidateRoutesCache();
+  return flight;
 }
 
 export async function getAirlineFlights(airlineId: string) {

@@ -165,12 +165,7 @@ Note:
 
 router.get("/routes", async (req, res, next) => {
   try {
-    const routes = await prisma.flight.groupBy({
-      by: ["origin", "destination"],
-      _count: {
-        id: true
-      }
-    });
+    const routes = await flightService.getAvailableRoutes();
     res.json(routes);
   } catch (e) {
     next(e);

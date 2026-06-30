@@ -26,3 +26,30 @@ export async function searchFlights(origin: string, destination: string, date?: 
 export async function getFlightById(id: string) {
   return prisma.flight.findUnique({ where: { id } });
 }
+
+// In-memory cache for flight routes to optimize performance
+let cachedRoutes: any = null;
+let cacheTimestamp = 0;
+const CACHE_TTL = 30000; // Cache TTL of 30 seconds
+
+export async function getAvailableRoutes() {
+  const now = Date.now();
+  if (cachedRoutes && (now - cacheTimestamp < CACHE_TTL)) {
+    return cachedRoutes;
+  }
+
+  cachedRoutes = await prisma.flight.groupBy({
+    by: ["origin", "destination"],
+    _count: {
+      id: true
+    }
+  });
+  cacheTimestamp = now;
+  return cachedRoutes;
+}
+
+export function invalidateRoutesCache() {
+  cachedRoutes = null;
+  cacheTimestamp = 0;
+}
+

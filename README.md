@@ -131,6 +131,3 @@ npm run typecheck
 ```
 
 ---
-
-## License
-MIT

@@ -12,13 +12,21 @@ export async function registerAirline(name: string, email: string, password: str
   const cleanName = name.trim();
   const cleanEmail = email.trim().toLowerCase();
 
-  const existingName = await prisma.airline.findUnique({ where: { name: cleanName } });
-  if (existingName) {
+  const registeredAirlines = await prisma.airline.findMany({
+    select: { name: true, email: true }
+  });
+
+  const nameExists = registeredAirlines.some(
+    (a) => a.name.toLowerCase() === cleanName.toLowerCase()
+  );
+  if (nameExists) {
     throw Object.assign(new Error("Airline brand name is already registered"), { status: 400 });
   }
 
-  const existingEmail = await prisma.airline.findUnique({ where: { email: cleanEmail } });
-  if (existingEmail) {
+  const emailExists = registeredAirlines.some(
+    (a) => a.email.toLowerCase() === cleanEmail.toLowerCase()
+  );
+  if (emailExists) {
     throw Object.assign(new Error("Email address is already in use by another airline"), { status: 400 });
   }
 
@@ -135,3 +143,83 @@ export async function getAirlineBookings(airlineId: string) {
     orderBy: { createdAt: "desc" }
   });
 }
+
+export async function updateAirlineFlight(
+  airlineId: string,
+  flightId: string,
+  payload: {
+    origin?: string;
+    destination?: string;
+    flightNumber?: string;
+    departure?: string;
+    arrival?: string;
+    basePriceCents?: number;
+  }
+) {
+  const flight = await prisma.flight.findUnique({
+    where: { id: flightId }
+  });
+
+  if (!flight) {
+    throw Object.assign(new Error("Flight not found"), { status: 404 });
+  }
+
+  if (flight.registeredAirlineId !== airlineId) {
+    throw Object.assign(new Error("Unauthorized: You do not own this flight"), { status: 403 });
+  }
+
+  const updateData: any = {};
+  if (payload.origin !== undefined) updateData.origin = payload.origin.trim().toUpperCase();
+  if (payload.destination !== undefined) updateData.destination = payload.destination.trim().toUpperCase();
+  if (payload.flightNumber !== undefined) updateData.flightNumber = payload.flightNumber.trim().toUpperCase();
+  if (payload.departure !== undefined) updateData.departure = new Date(payload.departure);
+  if (payload.arrival !== undefined) updateData.arrival = new Date(payload.arrival);
+  if (payload.basePriceCents !== undefined) updateData.basePriceCents = payload.basePriceCents;
+
+  const updatedFlight = await prisma.flight.update({
+    where: { id: flightId },
+    data: updateData
+  });
+
+  invalidateRoutesCache();
+  return updatedFlight;
+}
+
+export async function deleteAirlineFlight(airlineId: string, flightId: string) {
+  const flight = await prisma.flight.findUnique({
+    where: { id: flightId }
+  });
+
+  if (!flight) {
+    throw Object.assign(new Error("Flight not found"), { status: 404 });
+  }
+
+  if (flight.registeredAirlineId !== airlineId) {
+    throw Object.assign(new Error("Unauthorized: You do not own this flight"), { status: 403 });
+  }
+
+  // Get bookings for this flight
+  const bookings = await prisma.booking.findMany({
+    where: { flightId: flightId },
+    select: { id: true }
+  });
+  const bookingIds = bookings.map(b => b.id);
+
+  await prisma.$transaction([
+    // Delete payments first
+    prisma.payment.deleteMany({
+      where: { bookingId: { in: bookingIds } }
+    }),
+    // Delete bookings next
+    prisma.booking.deleteMany({
+      where: { flightId: flightId }
+    }),
+    // Finally delete flight
+    prisma.flight.delete({
+      where: { id: flightId }
+    })
+  ]);
+
+  invalidateRoutesCache();
+}
+

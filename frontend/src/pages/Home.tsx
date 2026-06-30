@@ -339,7 +339,7 @@ export default function Home() {
       const idx = wl.findIndex((x: any) => x.id === place.id && x.title === place.title);
       let updated = [];
       if (idx > -1) {
-        updated = wl.filter((x: any, i: number) => i !== idx);
+        updated = wl.filter((_: any, i: number) => i !== idx);
         showToast("info", "Place removed from wishlist!");
       } else {
         updated = [...wl, { id: place.id, title: place.title, type: place.type, img: place.img, price: place.price, state: place.state }];

@@ -189,7 +189,7 @@ export default function AvailableRoutes() {
       const idx = wl.findIndex((x: any) => x.origin === route.origin && x.destination === route.destination && !x.basePriceCents);
       let updated = [];
       if (idx > -1) {
-        updated = wl.filter((x: any, i: number) => i !== idx);
+        updated = wl.filter((_: any, i: number) => i !== idx);
         showToast("info", "Route removed from wishlist!");
       } else {
         updated = [...wl, { origin: route.origin, destination: route.destination }];

@@ -105,4 +105,52 @@ router.get(
   }
 );
 
+// Update a flight route
+router.put(
+  "/flights/:id",
+  requireAirlineAuth,
+  body("origin").isLength({ min: 3, max: 100 }),
+  body("destination").isLength({ min: 3, max: 100 }),
+  body("flightNumber").isLength({ min: 2 }),
+  body("departure").isISO8601(),
+  body("arrival").isISO8601(),
+  body("basePriceCents").isInt({ min: 100 }),
+  async (req: AuthRequest, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ error: "Invalid flight parameters", details: errors.array() });
+    try {
+      const airlineId = req.airlineId as string;
+      const flightId = req.params.id;
+      const { origin, destination, flightNumber, departure, arrival, basePriceCents } = req.body;
+      const flight = await airlineService.updateAirlineFlight(airlineId, flightId, {
+        origin,
+        destination,
+        flightNumber,
+        departure,
+        arrival,
+        basePriceCents
+      });
+      res.json(flight);
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
+// Delete a flight route
+router.delete(
+  "/flights/:id",
+  requireAirlineAuth,
+  async (req: AuthRequest, res, next) => {
+    try {
+      const airlineId = req.airlineId as string;
+      const flightId = req.params.id;
+      await airlineService.deleteAirlineFlight(airlineId, flightId);
+      res.json({ success: true, message: "Flight successfully deleted" });
+    } catch (e) {
+      next(e);
+    }
+  }
+);
+
 export default router;

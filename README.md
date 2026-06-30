@@ -49,9 +49,10 @@ A full-stack, decoupled flight booking application designed with a layered servi
 ## Features
 
 - **Liquid Glass UI:** Apple-inspired glassmorphism with buttery smooth transitions across all devices.
-- **Global Wishlist:** Save specific flights or general routes directly to a synced, slide-out wishlist panel.
+- **Categorized Global Wishlist:** Save specific flights and travel destinations directly to a synced, slide-out wishlist panel divided into dedicated sections.
+- **Mobile & Tablet responsiveness:** Optimized flight cards, search forms, and grid layouts for smaller screens, featuring enlarged touch targets and persistent visibility for buttons on mobile.
+- **Performance & DB Optimizations:** Asynchronous image loading, SQLite database indexes on flight search fields, and in-memory server route caching with auto-invalidation to accelerate route loading.
 - **Offline Resilience:** Built-in caching and automatic retry logic keeps the app working even on spotty networks.
-- **Performance Optimized:** Images load asynchronously to guarantee instant page renders on slower connections.
 
 ---
 

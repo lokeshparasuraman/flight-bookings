@@ -45,7 +45,7 @@ module.exports = {
         },
         booking: {
           blue: '#2d2d30',
-          lightblue: '#a1a1aa',
+          lightblue: '#008cff',
           orange: '#ff5e36',
           yellow: '#ff9900',
         }

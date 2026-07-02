@@ -415,10 +415,10 @@ export default function FlightDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-955 text-gray-900 dark:text-gray-100 font-sans pb-16">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-955 text-gray-900 dark:text-gray-100 font-sans">
       <Header />
 
-      <div className="container py-8 max-w-6xl mx-auto px-4 animate-fade-in">
+      <div className="container py-8 max-w-6xl mx-auto px-4 animate-fade-in pb-16">
         <button
           onClick={() => navigate(-1)}
           className="text-booking-lightblue hover:text-booking-blue mb-6 flex items-center space-x-2 transition-colors font-bold text-sm"

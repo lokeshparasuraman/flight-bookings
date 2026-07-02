@@ -212,10 +212,11 @@ export default function AvailableRoutes() {
   }, [filterText]);
 
   const handleRouteClick = (origin: string, destination: string) => {
-    navigate(`/search?origin=${origin}&destination=${destination}&date=${today}`);
+    navigate(`/search?origin=${origin}&destination=${destination}&date=${today}`, { state: { from: "/routes" } });
   };
 
   const filteredRoutes = routes.filter((r) => {
+    if (!r._count || r._count.id <= 0) return false;
     const o = r.origin.toUpperCase();
     const d = r.destination.toUpperCase();
     const query = filterText.trim().toLowerCase();

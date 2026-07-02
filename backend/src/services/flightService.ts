@@ -40,6 +40,11 @@ export async function getAvailableRoutes() {
 
   cachedRoutes = await prisma.flight.groupBy({
     by: ["origin", "destination"],
+    where: {
+      departure: {
+        gt: new Date()
+      }
+    },
     _count: {
       id: true
     }

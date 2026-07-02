@@ -45,6 +45,8 @@ function useQuery() {
 export default function SearchResults() {
     const q = useQuery();
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromPage = location.state?.from;
 
   // Pull search parameters straight from the URL
   const origin = q.get("origin") || "DEL";
@@ -218,7 +220,7 @@ export default function SearchResults() {
   const isRoundTrip = tripType === "roundtrip" && returnDate;
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gray-50 dark:bg-gray-955 text-gray-900 dark:text-gray-100 font-sans pb-28">
+    <div className="min-h-screen relative overflow-hidden bg-gray-50 dark:bg-gray-955 text-gray-900 dark:text-gray-100 font-sans">
       {/* Background Animations */}
       <div className="bg-blobs">
         <div className="grid-pattern" />
@@ -227,12 +229,18 @@ export default function SearchResults() {
       <div className="relative z-10">
         <Header />
 
-        <div className="container py-8 max-w-7xl mx-auto px-4">
+        <div className="container py-8 max-w-7xl mx-auto px-4 pb-28">
           
           {/* Back Header navigation */}
           <div className="mb-6 animate-fade-in">
             <button
-              onClick={() => navigate("/")}
+              onClick={() => {
+                if (fromPage) {
+                  navigate(fromPage);
+                } else {
+                  navigate("/");
+                }
+              }}
               className="text-booking-lightblue hover:text-booking-blue flex items-center space-x-2 transition-all font-bold text-sm"
             >
               <span>←</span>
@@ -263,8 +271,8 @@ export default function SearchResults() {
               <div className="text-xs font-bold text-green-600 dark:text-green-400 px-3.5 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full flex items-center gap-1.5 shadow-sm shrink-0">
                 <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 {isRoundTrip 
-                  ? `${processedOutbound.length} / ${processedReturn.length} $Outbound & Return Available`
-                  : `${processedOutbound.length} $Flights List`
+                  ? `${processedOutbound.length} / ${processedReturn.length} Outbound & Return Available`
+                  : `${processedOutbound.length} Flights List`
                 }
               </div>
             </div>

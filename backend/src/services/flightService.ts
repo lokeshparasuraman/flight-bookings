@@ -32,7 +32,26 @@ let cachedRoutes: any = null;
 let cacheTimestamp = 0;
 const CACHE_TTL = 30000; // Cache TTL of 30 seconds
 
-export async function getAvailableRoutes() {
+export async function getAvailableRoutes(date?: string) {
+  if (date) {
+    const dateStart = new Date(date);
+    dateStart.setHours(0, 0, 0, 0);
+    const dateEnd = new Date(date);
+    dateEnd.setHours(23, 59, 59, 999);
+    return prisma.flight.groupBy({
+      by: ["origin", "destination"],
+      where: {
+        departure: {
+          gte: dateStart,
+          lte: dateEnd
+        }
+      },
+      _count: {
+        id: true
+      }
+    });
+  }
+
   const now = Date.now();
   if (cachedRoutes && (now - cacheTimestamp < CACHE_TTL)) {
     return cachedRoutes;

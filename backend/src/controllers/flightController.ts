@@ -165,7 +165,8 @@ Note:
 
 router.get("/routes", async (req, res, next) => {
   try {
-    const routes = await flightService.getAvailableRoutes();
+    const { date } = req.query;
+    const routes = await flightService.getAvailableRoutes(date ? String(date) : undefined);
     res.json(routes);
   } catch (e) {
     next(e);

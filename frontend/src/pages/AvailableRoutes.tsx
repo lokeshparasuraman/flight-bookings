@@ -123,9 +123,11 @@ export default function AvailableRoutes() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const today = new Date().toISOString().split("T")[0];
+  const [selectedDate, setSelectedDate] = useState(today);
 
-  const fetchRoutes = async () => {
-    const cached = localStorage.getItem("cachedRoutes");
+  const fetchRoutes = async (dateStr: string) => {
+    const cacheKey = `cachedRoutes_${dateStr}`;
+    const cached = localStorage.getItem(cacheKey);
     if (cached) {
       try {
         setRoutes(JSON.parse(cached));
@@ -140,10 +142,10 @@ export default function AvailableRoutes() {
     let attempts = 0;
     while (!success && attempts < 3) {
       try {
-        const r = await api.get("/flights/routes");
+        const r = await api.get(`/flights/routes?date=${dateStr}`);
         const fetchedRoutes = Array.isArray(r.data) ? r.data : [];
         setRoutes(fetchedRoutes);
-        localStorage.setItem("cachedRoutes", JSON.stringify(fetchedRoutes));
+        localStorage.setItem(cacheKey, JSON.stringify(fetchedRoutes));
         success = true;
       } catch (err) {
         attempts++;
@@ -159,7 +161,6 @@ export default function AvailableRoutes() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    fetchRoutes();
     
     // Load initial wishlist
     try {
@@ -180,6 +181,10 @@ export default function AvailableRoutes() {
     window.addEventListener("wishlistUpdated", handleSync);
     return () => window.removeEventListener("wishlistUpdated", handleSync);
   }, []);
+
+  useEffect(() => {
+    fetchRoutes(selectedDate);
+  }, [selectedDate]);
 
   const toggleWishlist = (e: React.MouseEvent, route: RouteInfo) => {
     e.preventDefault();
@@ -212,7 +217,7 @@ export default function AvailableRoutes() {
   }, [filterText]);
 
   const handleRouteClick = (origin: string, destination: string) => {
-    navigate(`/search?origin=${origin}&destination=${destination}&date=${today}`, { state: { from: "/routes" } });
+    navigate(`/search?origin=${origin}&destination=${destination}&date=${selectedDate}`, { state: { from: "/routes" } });
   };
 
   const filteredRoutes = routes.filter((r) => {
@@ -317,7 +322,7 @@ export default function AvailableRoutes() {
               Available Routes
             </h1>
             <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-              Browse all operational flight connections across India. Click any route to view available flights for today.
+              Browse all operational flight connections across India. Click any route to view available flights for the selected date.
             </p>
           </div>
 
@@ -377,27 +382,41 @@ export default function AvailableRoutes() {
             </div>
           )}
 
-          {/* Search/Filter Widget */}
-          <div className="max-w-md mx-auto mb-10 animate-slide-up" style={{ animationDelay: "0.05s" }}>
-            <div className="relative">
-              <input
-                type="text"
-                value={filterText}
-                onChange={(e) => setFilterText(e.target.value)}
-                placeholder="Search city, airport, or code (e.g. BOM)..."
-                className="input-field py-3.5 pl-11 pr-4 shadow-soft"
-              />
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-                <SearchIcon size={18} />
-              </span>
-              {filterText && (
-                <button
-                  onClick={() => setFilterText("")}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-sm font-semibold"
-                >
-                  Clear
-                </button>
-              )}
+          {/* Search/Filter & Date Picker Widget */}
+          <div className="max-w-3xl mx-auto mb-10 animate-slide-up" style={{ animationDelay: "0.05s" }}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-white dark:bg-gray-900 p-4 rounded-3xl border border-gray-200/80 dark:border-gray-800/80 shadow-soft">
+              {/* Search city/airport */}
+              <div className="relative">
+                <input
+                  type="text"
+                  value={filterText}
+                  onChange={(e) => setFilterText(e.target.value)}
+                  placeholder="Search city, airport, or code (e.g. BOM)..."
+                  className="w-full bg-gray-50 dark:bg-gray-955 border border-gray-200/50 dark:border-gray-800/50 rounded-2xl py-3.5 pl-11 pr-4 text-sm focus:outline-none focus:ring-2 focus:ring-booking-lightblue text-gray-900 dark:text-gray-100 placeholder-gray-400 font-semibold transition-all"
+                />
+                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                  <SearchIcon size={18} />
+                </span>
+                {filterText && (
+                  <button
+                    onClick={() => setFilterText("")}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-sm font-bold"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+
+              {/* Date Selection */}
+              <div className="relative">
+                <input
+                  type="date"
+                  value={selectedDate}
+                  min={today}
+                  onChange={(e) => setSelectedDate(e.target.value)}
+                  className="w-full bg-gray-50 dark:bg-gray-955 border border-gray-200/50 dark:border-gray-800/50 rounded-2xl py-3.5 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-booking-lightblue text-gray-900 dark:text-gray-100 font-bold cursor-pointer transition-all"
+                />
+              </div>
             </div>
           </div>
 
@@ -408,7 +427,7 @@ export default function AvailableRoutes() {
           ) : error ? (
             <div className="text-center py-20 bg-red-50/50 dark:bg-red-900/10 border border-red-200 dark:border-red-900/30 rounded-3xl backdrop-blur-md">
               <p className="text-red-500 dark:text-red-400 font-bold mb-4">{error}</p>
-              <button onClick={() => fetchRoutes()} className="px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-extrabold transition-all shadow-md hover:shadow-lg">Try Again</button>
+              <button onClick={() => fetchRoutes(selectedDate)} className="px-6 py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-extrabold transition-all shadow-md hover:shadow-lg">Try Again</button>
             </div>
           ) : (
             <div className="animate-slide-up" style={{ animationDelay: "0.1s" }}>

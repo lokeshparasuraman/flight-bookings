@@ -37,6 +37,58 @@ import { useToast } from "../contexts/ToastContext";
 import { FlightIcon, MealIcon, BaggageIcon, WifiIcon, ShieldIcon } from "../components/Icons";
 import Footer from "../components/Footer";
 
+const RealisticPrinterIcon = ({ size = 20, className = "" }: { size?: number; className?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <defs>
+      <linearGradient id="printBodyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#4A5568" />
+        <stop offset="100%" stopColor="#1A202C" />
+      </linearGradient>
+      <linearGradient id="printPaperGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#FFFFFF" />
+        <stop offset="85%" stopColor="#EDF2F7" />
+        <stop offset="100%" stopColor="#CBD5E0" />
+      </linearGradient>
+      <filter id="printShadow" x="-10%" y="-10%" width="120%" height="120%">
+        <feDropShadow dx="0" dy="1.5" stdDeviation="1" floodColor="#000000" floodOpacity="0.3" />
+      </filter>
+    </defs>
+    <path d="M8 8C8 6.89543 8.89543 6 10 6H22C23.1046 6 24 6.89543 24 8V12H8V8Z" fill="url(#printPaperGrad)" />
+    <rect x="4" y="11" width="24" height="12" rx="3" fill="url(#printBodyGrad)" filter="url(#printShadow)" />
+    <rect x="7" y="14" width="6" height="1.5" rx="0.75" fill="#48BB78" />
+    <circle cx="23" cy="15" r="1" fill="#3182CE" />
+    <circle cx="25" cy="15" r="1" fill="#E53E3E" />
+    <path d="M7 21C7 20.4477 7.44772 20 8 20H24C24.5523 20 25 20.4477 25 21V26C25 26.5523 24.5523 27 24 27H8C7.44772 27 7 26.5523 7 26V21Z" fill="url(#printPaperGrad)" filter="url(#printShadow)" />
+    <line x1="10" y1="23" x2="22" y2="23" stroke="#A0AEC0" strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="10" y1="25" x2="18" y2="25" stroke="#A0AEC0" strokeWidth="1.5" strokeLinecap="round" />
+  </svg>
+);
+
+const RealisticRefreshIcon = ({ size = 20, className = "" }: { size?: number; className?: string }) => (
+  <svg width={size} height={size} viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
+    <defs>
+      <linearGradient id="gradRefresh" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#38bdf8" />
+        <stop offset="50%" stopColor="#0ea5e9" />
+        <stop offset="100%" stopColor="#0284c7" />
+      </linearGradient>
+      <filter id="shadowRefresh" x="-10%" y="-10%" width="120%" height="120%">
+        <feDropShadow dx="0" dy="1.5" stdDeviation="1" floodColor="#0ea5e9" floodOpacity="0.4" />
+      </filter>
+    </defs>
+    <g filter="url(#shadowRefresh)">
+      <path
+        d="M16 6C11.58 6 7.78 8.44 5.86 12H10V14.5H3V7.5H5.5V10.24C7.8 6.48 11.82 4 16 4C21.78 4 26.63 7.91 27.76 13H25.2C24.16 9.32 20.39 6.5 16 6.5"
+        fill="url(#gradRefresh)"
+      />
+      <path
+        d="M16 26C20.42 26 24.22 23.56 26.14 20H22V17.5H29V24.5H26.5V21.76C24.2 25.52 20.18 28 16 28C10.22 28 5.37 24.09 4.24 19H6.8C7.84 22.68 11.61 26 16 26"
+        fill="url(#gradRefresh)"
+      />
+    </g>
+  </svg>
+);
+
 export default function Bookings() {
   const nav = useNavigate();
   const { showToast } = useToast();
@@ -181,16 +233,26 @@ export default function Bookings() {
       classText = "Business Class";
     }
 
+    const isBusiness = classText.includes("Business");
+    const headerBgClass = isCancelled
+      ? "bg-gray-300 dark:bg-gray-700"
+      : isBusiness
+        ? "bg-gradient-to-r from-purple-600 via-indigo-700 to-purple-800"
+        : "bg-gradient-to-r from-[#ff6636] via-[#ff4a1c] to-[#ff3600]";
+
     return (
       <div
         key={b.id || idx}
-        className={`relative bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-soft-lg overflow-hidden flex flex-col md:flex-row print:border-black print:text-black print:shadow-none animate-slide-up print:break-inside-avoid ${
+        className={`print-pass-card relative bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 dark:border-gray-700 shadow-soft-lg overflow-hidden flex flex-col md:flex-row print:shadow-none animate-slide-up print:break-inside-avoid ${
           selectedBookingIds.includes(b.id) ? "" : "print:hidden"
         } ${isCancelled ? "border-dashed border-red-200/50 dark:border-red-950/20 bg-gray-50/50 dark:bg-gray-900/10" : ""}`}
         style={{ animationDelay: `${idx * 0.08}s` }}
       >
+        {/* Top Accent Strip */}
+        <div className={`absolute top-0 left-0 right-0 h-1.5 ${headerBgClass}`}></div>
+
         {/* Left Side: Main Boarding Pass */}
-        <div className="flex-1 p-6 md:p-8 space-y-6">
+        <div className="print-pass-main flex-1 p-6 md:p-8 space-y-6 pt-7">
           {/* Header bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-2">
@@ -326,19 +388,19 @@ export default function Bookings() {
         </div>
 
         {/* Dotted Separator Line for ticket stub */}
-        <div className="hidden md:flex flex-col items-center justify-between py-4 relative print:flex">
-          <div className="w-4 h-4 bg-gray-50 dark:bg-gray-900 border-b border-r border-gray-200 dark:border-gray-700 rounded-full -mt-6 absolute top-0 print:bg-white print:border-black"></div>
+        <div className="hidden md:flex flex-col items-center justify-between py-4 relative print:flex z-10">
+          <div className="w-4 h-4 bg-gray-50 dark:bg-gray-955 border border-gray-200 dark:border-gray-700 rounded-full -mt-6 -ml-2 absolute top-0 z-10 print:bg-white print:border-black"></div>
           <div className="w-px h-full border-l border-dashed border-gray-300 dark:border-gray-600 print:border-black"></div>
-          <div className="w-4 h-4 bg-gray-50 dark:bg-gray-900 border-t border-r border-gray-200 dark:border-gray-700 rounded-full -mb-6 absolute bottom-0 print:bg-white print:border-black"></div>
+          <div className="w-4 h-4 bg-gray-50 dark:bg-gray-955 border border-gray-200 dark:border-gray-700 rounded-full -mb-6 -ml-2 absolute bottom-0 z-10 print:bg-white print:border-black"></div>
         </div>
-        <div className="flex md:hidden items-center justify-between px-4 relative w-full print:hidden">
-          <div className="w-4 h-4 bg-gray-50 dark:bg-gray-900 border-r border-b border-gray-200 dark:border-gray-700 rounded-full -ml-2 absolute left-0"></div>
+        <div className="flex md:hidden items-center justify-between px-4 relative w-full print:hidden z-10">
+          <div className="w-4 h-4 bg-gray-50 dark:bg-gray-955 border border-gray-200 dark:border-gray-700 rounded-full -ml-2 absolute left-0 z-10"></div>
           <div className="w-full h-px border-t border-dashed border-gray-300 dark:border-gray-600"></div>
-          <div className="w-4 h-4 bg-gray-50 dark:bg-gray-900 border-l border-b border-gray-200 dark:border-gray-700 rounded-full -mr-2 absolute right-0"></div>
+          <div className="w-4 h-4 bg-gray-50 dark:bg-gray-955 border border-gray-200 dark:border-gray-700 rounded-full -mr-2 absolute right-0 z-10"></div>
         </div>
 
         {/* Right Side: Ticket Stub & Barcode */}
-        <div className="w-full md:w-56 bg-gray-50/50 dark:bg-gray-800/30 p-6 md:p-8 flex flex-col justify-between items-center border-t md:border-t-0 md:border-l border-gray-100 dark:border-gray-700 print:border-black print:text-black">
+        <div className="print-pass-stub w-full md:w-56 bg-gray-50/50 dark:bg-gray-800/30 p-6 md:p-8 flex flex-col justify-between items-center border-t md:border-t-0 md:border-l border-gray-100 dark:border-gray-700 print:border-black print:text-black pt-7">
           <div className="w-full text-center space-y-4">
             <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
               BOARDING PASS STUB
@@ -417,7 +479,46 @@ export default function Bookings() {
   const cancelledBookings = bookings.filter(b => b.status === "CANCELLED");
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-gray-50 dark:bg-gray-950 print:bg-white print:text-black">
+    <div className="min-h-screen relative overflow-hidden bg-gray-50 dark:bg-gray-955 print:bg-white print:text-black">
+      <style>{`
+        @media print {
+          body {
+            background: #ffffff !important;
+            color: #000000 !important;
+          }
+          .print-pass-card {
+            border: 2px solid #000000 !important;
+            border-radius: 16px !important;
+            background: #ffffff !important;
+            color: #000000 !important;
+            box-shadow: none !important;
+            margin-bottom: 2.5rem !important;
+            page-break-inside: avoid !important;
+            page-break-after: always !important;
+            display: flex !important;
+            flex-direction: row !important;
+            min-height: 260px !important;
+            width: 100% !important;
+          }
+          .print-pass-main {
+            padding: 24px !important;
+            flex: 1 !important;
+          }
+          .print-pass-stub {
+            width: 240px !important;
+            padding: 24px !important;
+            border-left: 2px dashed #000000 !important;
+            background: #ffffff !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+          }
+          .print-hidden {
+            display: none !important;
+          }
+        }
+      `}</style>
       {/* Background Animations */}
       <div className="bg-blobs print:hidden">
         <div className="grid-pattern" />
@@ -446,16 +547,18 @@ export default function Bookings() {
             <button
               onClick={handlePrint}
               disabled={selectedBookingIds.length === 0}
-              className="btn-secondary py-2 px-4 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-700 hover:border-booking-lightblue dark:hover:border-booking-lightblue text-gray-700 dark:text-gray-200 hover:text-booking-blue dark:hover:text-booking-lightblue font-extrabold py-2.5 px-4 rounded-2xl shadow-sm hover:shadow-soft transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              🖨 Print Passes {selectedBookingIds.length > 0 ? `(${selectedBookingIds.length})` : ""}
+              <RealisticPrinterIcon size={18} />
+              <span>Print Passes {selectedBookingIds.length > 0 ? `(${selectedBookingIds.length})` : ""}</span>
             </button>
             <button
               onClick={loadBookings}
               disabled={loading}
-              className="btn-primary py-2 px-4 text-sm font-semibold disabled:opacity-50"
+              className="flex items-center gap-2 bg-gradient-to-r from-[#ff6636]/90 to-[#ff3600]/90 text-white font-extrabold py-2.5 px-4 rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              {loading ? "Refreshing..." : "🔄 Refresh"}
+              <RealisticRefreshIcon size={18} className={loading ? "animate-spin" : ""} />
+              <span>{loading ? "Refreshing..." : "Refresh"}</span>
             </button>
           </div>
         </div>

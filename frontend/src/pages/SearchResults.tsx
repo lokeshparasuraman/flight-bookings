@@ -379,18 +379,33 @@ export default function SearchResults() {
                     <div className="flex justify-center mb-3">
                       <FlightIcon className="w-10 h-10 text-gray-300 dark:text-gray-655 transform -rotate-45" />
                     </div>
-                    <h3 className="font-bold text-gray-700 dark:text-gray-350">No departure flights found</h3>
-                    <p className="text-xs text-gray-555 mt-1 mb-4">Please try modifying filter selection.</p>
-                    <button
-                      onClick={() => {
-                        setSelectedAirlines([]);
-                        setSelectedTimes([]);
-                        setSortBy("cheapest");
-                      }}
-                      className="px-4 py-2 bg-booking-lightblue hover:bg-booking-blue text-white rounded-xl text-xs font-bold transition-all shadow-md"
-                    >
-                      Reset Filters
-                    </button>
+                    {outboundFlights.length === 0 ? (
+                      <>
+                        <h3 className="font-bold text-gray-700 dark:text-gray-350">No flights scheduled</h3>
+                        <p className="text-xs text-gray-555 mt-1 mb-4">No departure flights operate on this route on this date.</p>
+                        <button
+                          onClick={() => navigate(-1)}
+                          className="px-4 py-2 bg-booking-lightblue hover:bg-booking-blue text-white rounded-xl text-xs font-bold transition-all shadow-md"
+                        >
+                          Go Back
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <h3 className="font-bold text-gray-700 dark:text-gray-350">No matching flights found</h3>
+                        <p className="text-xs text-gray-555 mt-1 mb-4">Please try modifying filter selection.</p>
+                        <button
+                          onClick={() => {
+                            setSelectedAirlines([]);
+                            setSelectedTimes([]);
+                            setSortBy("cheapest");
+                          }}
+                          className="px-4 py-2 bg-booking-lightblue hover:bg-booking-blue text-white rounded-xl text-xs font-bold transition-all shadow-md"
+                        >
+                          Reset Filters
+                        </button>
+                      </>
+                    )}
                   </div>
                 ) : (
                   <div className="space-y-3.5 max-h-[70vh] overflow-y-auto pr-1">
@@ -479,18 +494,33 @@ export default function SearchResults() {
                     <div className="flex justify-center mb-3">
                       <FlightIcon className="w-10 h-10 text-gray-300 dark:text-gray-655 transform -rotate-45" />
                     </div>
-                    <h3 className="font-bold text-gray-700 dark:text-gray-350">No return flights found</h3>
-                    <p className="text-xs text-gray-555 mt-1 mb-4">Please try modifying filter selection.</p>
-                    <button
-                      onClick={() => {
-                        setSelectedAirlines([]);
-                        setSelectedTimes([]);
-                        setSortBy("cheapest");
-                      }}
-                      className="px-4 py-2 bg-booking-lightblue hover:bg-booking-blue text-white rounded-xl text-xs font-bold transition-all shadow-md"
-                    >
-                      Reset Filters
-                    </button>
+                    {returnFlights.length === 0 ? (
+                      <>
+                        <h3 className="font-bold text-gray-700 dark:text-gray-350">No flights scheduled</h3>
+                        <p className="text-xs text-gray-555 mt-1 mb-4">No return flights operate on this route on this date.</p>
+                        <button
+                          onClick={() => navigate(-1)}
+                          className="px-4 py-2 bg-booking-lightblue hover:bg-booking-blue text-white rounded-xl text-xs font-bold transition-all shadow-md"
+                        >
+                          Go Back
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <h3 className="font-bold text-gray-700 dark:text-gray-350">No matching flights found</h3>
+                        <p className="text-xs text-gray-555 mt-1 mb-4">Please try modifying filter selection.</p>
+                        <button
+                          onClick={() => {
+                            setSelectedAirlines([]);
+                            setSelectedTimes([]);
+                            setSortBy("cheapest");
+                          }}
+                          className="px-4 py-2 bg-booking-lightblue hover:bg-booking-blue text-white rounded-xl text-xs font-bold transition-all shadow-md"
+                        >
+                          Reset Filters
+                        </button>
+                      </>
+                    )}
                   </div>
                 ) : (
                   <div className="space-y-3.5 max-h-[70vh] overflow-y-auto pr-1">
@@ -574,22 +604,41 @@ export default function SearchResults() {
                   <div className="flex justify-center mb-4">
                     <FlightIcon className="w-16 h-16 text-gray-300 dark:text-gray-655 transform -rotate-45" />
                   </div>
-                  <h2 className="text-2xl font-bold text-gray-855 dark:text-gray-200 mb-2">
-                    No matching flights found
-                  </h2>
-                  <p className="text-xs text-gray-505 mb-6">
-                    Try checking or relaxing your filters.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setSelectedAirlines([]);
-                      setSelectedTimes([]);
-                      setSortBy("cheapest");
-                    }}
-                    className="btn-primary"
-                  >
-                    Reset Search Filters
-                  </button>
+                  {outboundFlights.length === 0 ? (
+                    <>
+                      <h2 className="text-2xl font-bold text-gray-855 dark:text-gray-200 mb-2">
+                        No flights operating
+                      </h2>
+                      <p className="text-xs text-gray-555 mb-6">
+                        There are no flights operating on this route for the selected date.
+                      </p>
+                      <button
+                        onClick={() => navigate(-1)}
+                        className="btn-primary"
+                      >
+                        Go Back & Change Date
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <h2 className="text-2xl font-bold text-gray-855 dark:text-gray-200 mb-2">
+                        No matching flights found
+                      </h2>
+                      <p className="text-xs text-gray-555 mb-6">
+                        Try checking or relaxing your filters.
+                      </p>
+                      <button
+                        onClick={() => {
+                          setSelectedAirlines([]);
+                          setSelectedTimes([]);
+                          setSortBy("cheapest");
+                        }}
+                        className="btn-primary"
+                      >
+                        Reset Search Filters
+                      </button>
+                    </>
+                  )}
                 </div>
               ) : (
                 <div className="space-y-4">

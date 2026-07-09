@@ -5,9 +5,9 @@ export async function ensureFlightsSeededForDate(dateStr: string) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return;
 
   const dateStart = new Date(dateStr);
-  dateStart.setHours(0, 0, 0, 0);
+  dateStart.setUTCHours(0, 0, 0, 0);
   const dateEnd = new Date(dateStr);
-  dateEnd.setHours(23, 59, 59, 999);
+  dateEnd.setUTCHours(23, 59, 59, 999);
 
   // Check if flights exist for this date
   const count = await prisma.flight.count({
@@ -102,9 +102,9 @@ export async function searchFlights(origin: string, destination: string, date?: 
 
   if (date) {
     const dateStart = new Date(date);
-    dateStart.setHours(0, 0, 0, 0);
+    dateStart.setUTCHours(0, 0, 0, 0);
     const dateEnd = new Date(date);
-    dateEnd.setHours(23, 59, 59, 999);
+    dateEnd.setUTCHours(23, 59, 59, 999);
     where.departure = {
       gte: dateStart,
       lte: dateEnd
@@ -131,9 +131,9 @@ export async function getAvailableRoutes(date?: string) {
     await ensureFlightsSeededForDate(date);
     
     const dateStart = new Date(date);
-    dateStart.setHours(0, 0, 0, 0);
+    dateStart.setUTCHours(0, 0, 0, 0);
     const dateEnd = new Date(date);
-    dateEnd.setHours(23, 59, 59, 999);
+    dateEnd.setUTCHours(23, 59, 59, 999);
     return prisma.flight.groupBy({
       by: ["origin", "destination"],
       where: {

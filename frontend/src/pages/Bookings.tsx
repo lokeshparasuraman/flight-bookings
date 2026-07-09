@@ -149,11 +149,9 @@ export default function Bookings() {
         setBookings(data);
         setSelectedBookingIds(data.filter((bk: any) => bk.status === "CONFIRMED").map((bk: any) => bk.id));
         setLoaded(true);
-        setLoading(false);
       } catch (e) {}
-    } else {
-      setLoading(true);
     }
+    setLoading(true);
 
     let success = false;
     let attempts = 0;

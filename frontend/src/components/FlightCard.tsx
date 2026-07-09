@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { FlightIcon, HeartIcon } from "./Icons";
 import { useToast } from "../contexts/ToastContext";
+import { formatTime, formatShortDate as formatDate, getDuration } from "../utils/dateUtils";
 
 export default function FlightCard({ f, origin, destination, specialFare = "regular", fareDiscountPct = 0 }: any) {
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -49,29 +50,7 @@ export default function FlightCard({ f, origin, destination, specialFare = "regu
       showToast("error", "Failed to update wishlist");
     }
   };
-  const formatTime = (date: string) => {
-    return new Date(date).toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: false 
-    });
-  };
-
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric' 
-    });
-  };
-
-  const getDuration = (departure: string, arrival: string) => {
-    const dep = new Date(departure);
-    const arr = new Date(arrival);
-    const diff = arr.getTime() - dep.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}h ${minutes}m`;
-  };
+  
 
   const getAirlineColor = (airline: string) => {
     switch (airline.toLowerCase()) {

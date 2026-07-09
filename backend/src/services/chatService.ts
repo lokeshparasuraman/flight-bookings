@@ -2,7 +2,12 @@ import { callLLM } from "./llmClient";
 import * as flightService from "./flightService";
 
 // Helper to locally parse flight search intents
-// Helper to locally parse flight search intents
+function getLocalDateString(d: Date = new Date()): string {
+  const offset = d.getTimezoneOffset();
+  const localDate = new Date(d.getTime() - offset * 60 * 1000);
+  return localDate.toISOString().split('T')[0];
+}
+
 function localParseQuery(message: string): any {
   const m = message.toLowerCase().trim();
   const cities: Record<string, string> = {
@@ -60,7 +65,7 @@ function localParseQuery(message: string): any {
   }
 
   // 3. Parse Date: look for YYYY-MM-DD or tomorrow or today
-  let dateStr = new Date().toISOString().split("T")[0]; // default to today if not provided or parsed
+  let dateStr = getLocalDateString(); // default to today if not provided or parsed
   
   const dateMatch = m.match(/\d{4}-\d{2}-\d{2}/);
   if (dateMatch) {
@@ -68,15 +73,15 @@ function localParseQuery(message: string): any {
   } else if (m.includes("tomorrow")) {
     const tmr = new Date();
     tmr.setDate(tmr.getDate() + 1);
-    dateStr = tmr.toISOString().split("T")[0];
+    dateStr = getLocalDateString(tmr);
   } else if (m.includes("day after tomorrow")) {
     const dat = new Date();
     dat.setDate(dat.getDate() + 2);
-    dateStr = dat.toISOString().split("T")[0];
+    dateStr = getLocalDateString(dat);
   } else if (m.includes("next week")) {
     const nw = new Date();
     nw.setDate(nw.getDate() + 7);
-    dateStr = nw.toISOString().split("T")[0];
+    dateStr = getLocalDateString(nw);
   }
 
   return {

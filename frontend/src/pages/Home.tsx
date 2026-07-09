@@ -29,6 +29,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import EnhancedAiChat from "../components/EnhancedAiChat";
+import { getLocalDateString } from "../utils/dateUtils";
 
 import {
   FlightIcon,
@@ -364,9 +365,9 @@ export default function Home() {
   const [destinationInput, setDestinationInput] = useState("BOM");
   const [showOriginSuggestions, setShowOriginSuggestions] = useState(false);
   const [showDestSuggestions, setShowDestSuggestions] = useState(false);
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState(getLocalDateString());
   const [returnDate, setReturnDate] = useState(
-    new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+    getLocalDateString(new Date(Date.now() + 3 * 24 * 60 * 60 * 1000))
   );
   const [travelers, setTravelers] = useState<number | "">(1);
   const [showAiChat, setShowAiChat] = useState(false);

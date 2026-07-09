@@ -5,6 +5,7 @@ import api from "../services/api";
 import Footer from "../components/Footer";
 import { GlobeIcon, FlightIcon, OfficeBuildingIcon, HeartIcon } from "../components/Icons";
 import { useToast } from "../contexts/ToastContext";
+import { getLocalDateString, formatTime, getDuration } from "../utils/dateUtils";
 
 interface RouteInfo {
   origin: string;
@@ -122,8 +123,19 @@ export default function AvailableRoutes() {
   const [filterText, setFilterText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
-  const today = new Date().toISOString().split("T")[0];
+  const today = getLocalDateString();
   const [selectedDate, setSelectedDate] = useState(today);
+
+  // States for expanding route and displaying flight list
+  const [expandedRoute, setExpandedRoute] = useState<{ origin: string; destination: string } | null>(null);
+  const [expandedFlights, setExpandedFlights] = useState<any[]>([]);
+  const [loadingFlights, setLoadingFlights] = useState(false);
+  const [flightError, setFlightError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setExpandedRoute(null);
+    setExpandedFlights([]);
+  }, [selectedDate]);
 
   const fetchRoutes = async (dateStr: string) => {
     const cacheKey = `cachedRoutes_${dateStr}`;
@@ -216,8 +228,28 @@ export default function AvailableRoutes() {
     setCurrentPage(1);
   }, [filterText]);
 
-  const handleRouteClick = (origin: string, destination: string) => {
-    navigate(`/search?origin=${origin}&destination=${destination}&date=${selectedDate}`, { state: { from: "/routes" } });
+  const handleRouteClick = async (origin: string, destination: string) => {
+    if (expandedRoute?.origin === origin && expandedRoute?.destination === destination) {
+      setExpandedRoute(null);
+      setExpandedFlights([]);
+      return;
+    }
+
+    setExpandedRoute({ origin, destination });
+    setLoadingFlights(true);
+    setFlightError(null);
+    setExpandedFlights([]);
+
+    try {
+      const res = await api.get("/flights/search", {
+        params: { origin, destination, date: selectedDate }
+      });
+      setExpandedFlights(Array.isArray(res.data) ? res.data : []);
+    } catch (err) {
+      setFlightError("Failed to load flights for this route.");
+    } finally {
+      setLoadingFlights(false);
+    }
   };
 
   const filteredRoutes = routes.filter((r) => {
@@ -492,12 +524,55 @@ export default function AvailableRoutes() {
                           </div>
                         </div>
 
+                        {expandedRoute?.origin === r.origin && expandedRoute?.destination === r.destination && (
+                          <div onClick={(e) => e.stopPropagation()} className="mt-5 pt-4 border-t border-gray-250 dark:border-gray-700/80 space-y-3 cursor-default">
+                            <h4 className="text-xs font-extrabold uppercase tracking-wider text-booking-lightblue">Available Flights ({selectedDate}):</h4>
+                            {loadingFlights ? (
+                              <div className="flex justify-center py-4">
+                                <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-booking-lightblue"></div>
+                              </div>
+                            ) : flightError ? (
+                              <div className="text-xs text-red-500 font-semibold">{flightError}</div>
+                            ) : expandedFlights.length === 0 ? (
+                              <div className="text-xs text-gray-500 italic">No flights scheduled on this date.</div>
+                            ) : (
+                              <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                                {expandedFlights.map((flight) => (
+                                  <div key={flight.id} className="bg-white/60 dark:bg-gray-800/60 border border-white/40 dark:border-gray-700/40 rounded-2xl p-3 flex justify-between items-center gap-2 hover:border-booking-lightblue/40 transition-colors">
+                                    <div className="min-w-0">
+                                      <div className="flex items-center gap-1.5">
+                                        <span className="text-xs font-bold text-gray-800 dark:text-gray-200">{flight.airline}</span>
+                                        <span className="text-[10px] text-gray-450 dark:text-gray-400 font-semibold uppercase">{flight.flightNumber}</span>
+                                      </div>
+                                      <div className="text-[10px] text-gray-550 dark:text-gray-400 font-semibold mt-0.5">
+                                        {formatTime(flight.departure)} ➔ {formatTime(flight.arrival)} ({getDuration(flight.departure, flight.arrival)})
+                                      </div>
+                                    </div>
+                                    <div className="text-right shrink-0">
+                                      <span className="text-xs font-extrabold text-booking-blue dark:text-booking-lightblue block">₹{(flight.basePriceCents / 100).toLocaleString('en-IN')}</span>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          navigate(`/flight/${flight.id}`);
+                                        }}
+                                        className="text-[10px] font-extrabold bg-booking-lightblue hover:bg-booking-blue text-white px-2.5 py-1.5 rounded-lg mt-1 transition-all"
+                                      >
+                                        Book
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
                         <div className="mt-5 pt-4 border-t border-gray-200/50 dark:border-gray-700/50 flex justify-between items-center relative z-10">
                           <div className="text-xs font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
                              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Active Route
                           </div>
                           <button className="text-xs font-bold bg-gradient-to-r from-booking-blue to-booking-lightblue text-white px-4 py-2 rounded-xl transition-all duration-300 shadow-lg group-hover:shadow-booking-blue/40 transform group-hover:-translate-y-0.5">
-                            Book Now ➔
+                            {expandedRoute?.origin === r.origin && expandedRoute?.destination === r.destination ? "Close ▴" : "Book Now ➔"}
                           </button>
                         </div>
                       </div>

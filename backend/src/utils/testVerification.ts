@@ -37,6 +37,9 @@ async function runVerification() {
       await prisma.booking.deleteMany({
         where: { userId: { in: userIds } }
       });
+      await prisma.verificationCode.deleteMany({
+        where: { userId: { in: userIds } }
+      });
       await prisma.user.deleteMany({
         where: { id: { in: userIds } }
       });
@@ -182,6 +185,9 @@ async function runVerification() {
     });
     await prisma.flight.deleteMany({
       where: { id: flight.id }
+    });
+    await prisma.verificationCode.deleteMany({
+      where: { userId: user.id }
     });
     await prisma.user.deleteMany({
       where: { id: user.id }

@@ -5,6 +5,12 @@ import { prisma } from "../db";
 
 const router = Router();
 
+function getLocalDateString(d: Date = new Date()): string {
+  const offset = d.getTimezoneOffset();
+  const localDate = new Date(d.getTime() - offset * 60 * 1000);
+  return localDate.toISOString().split('T')[0];
+}
+
 // Local regex parser fallback for API quota exhaustion / rate limiting
 function parseSearchFallback(query: string): any {
   const q = query.toLowerCase();
@@ -63,21 +69,21 @@ function parseSearchFallback(query: string): any {
   // Parse Date
   let dateStr: string | null = null;
   const today = new Date();
-  const dateTodayStr = today.toISOString().split('T')[0];
+  const dateTodayStr = getLocalDateString(today);
   if (q.includes("tomorrow")) {
     const tomorrow = new Date();
     tomorrow.setDate(today.getDate() + 1);
-    dateStr = tomorrow.toISOString().split('T')[0];
+    dateStr = getLocalDateString(tomorrow);
   } else if (q.includes("next monday")) {
     const nextMonday = new Date();
     const day = today.getDay();
     const distance = (8 - day) % 7 || 7;
     nextMonday.setDate(today.getDate() + distance);
-    dateStr = nextMonday.toISOString().split('T')[0];
+    dateStr = getLocalDateString(nextMonday);
   } else if (q.includes("next week")) {
     const nextWeek = new Date();
     nextWeek.setDate(today.getDate() + 7);
-    dateStr = nextWeek.toISOString().split('T')[0];
+    dateStr = getLocalDateString(nextWeek);
   } else {
     // Check for YYYY-MM-DD
     const dateMatch = q.match(/\d{4}-\d{2}-\d{2}/);
@@ -125,7 +131,7 @@ router.post("/ai-search", async (req, res, next) => {
       return res.status(400).json({ error: "Query is required" });
     }
 
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = getLocalDateString();
     const systemPrompt = `You are a flight search parsing assistant. Parse the user's natural language query into a structured JSON search query for flights.
 You must respond in JSON ONLY. Do not include any markdown formatting, backticks, or explanation.
 

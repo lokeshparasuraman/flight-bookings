@@ -36,6 +36,7 @@ import Header from "../components/Header";
 import EnhancedAiChat from "../components/EnhancedAiChat";
 import { FlightIcon } from "../components/Icons";
 import Footer from "../components/Footer";
+import { formatDate, formatTime, getDuration } from "../utils/dateUtils";
 
 // Simple helper to read query params from the URL
 function useQuery() {
@@ -111,33 +112,7 @@ export default function SearchResults() {
       .finally(() => setLoading(false));
   }, [origin, destination, date, tripType, returnDate]);
 
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return "";
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return dateStr;
-    return d.toLocaleDateString('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
 
-  const formatTime = (dateStr: string) => {
-    return new Date(dateStr).toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    });
-  };
-
-  const getDuration = (departure: string, arrival: string) => {
-    const dep = new Date(departure);
-    const arr = new Date(arrival);
-    const diff = arr.getTime() - dep.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}h ${minutes}m`;
-  };
 
   const getAirlineColor = (airline: string) => {
     switch (airline.toLowerCase()) {
@@ -361,6 +336,20 @@ export default function SearchResults() {
                   })}
                 </div>
               </div>
+
+              {/* 4. Reset Filters Button */}
+              {(selectedAirlines.length > 0 || selectedTimes.length > 0 || sortBy !== "cheapest") && (
+                <button
+                  onClick={() => {
+                    setSelectedAirlines([]);
+                    setSelectedTimes([]);
+                    setSortBy("cheapest");
+                  }}
+                  className="py-1.5 px-4 rounded-full border border-red-200 dark:border-red-800 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 text-xs font-bold transition-all shadow-sm shrink-0"
+                >
+                  Clear Filters ↺
+                </button>
+              )}
             </div>
           )}
 
@@ -388,10 +377,20 @@ export default function SearchResults() {
                  {processedOutbound.length === 0 ? (
                   <div className="bg-white dark:bg-gray-905 p-12 text-center rounded-2xl border border-gray-205 dark:border-gray-800 animate-scale-in">
                     <div className="flex justify-center mb-3">
-                      <FlightIcon className="w-10 h-10 text-gray-300 dark:text-gray-650 transform -rotate-45" />
+                      <FlightIcon className="w-10 h-10 text-gray-300 dark:text-gray-655 transform -rotate-45" />
                     </div>
                     <h3 className="font-bold text-gray-700 dark:text-gray-350">No departure flights found</h3>
-                    <p className="text-xs text-gray-505 mt-1">Please try modifying filter selection.</p>
+                    <p className="text-xs text-gray-555 mt-1 mb-4">Please try modifying filter selection.</p>
+                    <button
+                      onClick={() => {
+                        setSelectedAirlines([]);
+                        setSelectedTimes([]);
+                        setSortBy("cheapest");
+                      }}
+                      className="px-4 py-2 bg-booking-lightblue hover:bg-booking-blue text-white rounded-xl text-xs font-bold transition-all shadow-md"
+                    >
+                      Reset Filters
+                    </button>
                   </div>
                 ) : (
                   <div className="space-y-3.5 max-h-[70vh] overflow-y-auto pr-1">
@@ -481,7 +480,17 @@ export default function SearchResults() {
                       <FlightIcon className="w-10 h-10 text-gray-300 dark:text-gray-655 transform -rotate-45" />
                     </div>
                     <h3 className="font-bold text-gray-700 dark:text-gray-350">No return flights found</h3>
-                    <p className="text-xs text-gray-505 mt-1">Please try modifying filter selection.</p>
+                    <p className="text-xs text-gray-555 mt-1 mb-4">Please try modifying filter selection.</p>
+                    <button
+                      onClick={() => {
+                        setSelectedAirlines([]);
+                        setSelectedTimes([]);
+                        setSortBy("cheapest");
+                      }}
+                      className="px-4 py-2 bg-booking-lightblue hover:bg-booking-blue text-white rounded-xl text-xs font-bold transition-all shadow-md"
+                    >
+                      Reset Filters
+                    </button>
                   </div>
                 ) : (
                   <div className="space-y-3.5 max-h-[70vh] overflow-y-auto pr-1">

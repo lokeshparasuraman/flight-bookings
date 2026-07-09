@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
 import { useToast } from "../contexts/ToastContext";
+import { formatTime, formatShortDate as formatDate, getDuration } from "../utils/dateUtils";
 
 interface FlightCardChatProps {
   flight: any;
@@ -22,29 +23,7 @@ export default function FlightCardChat({
   const navigate = useNavigate();
   const { showToast } = useToast();
   
-  const formatTime = (date: string) => {
-    return new Date(date).toLocaleTimeString('en-US', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      hour12: false 
-    });
-  };
-
-  const formatDate = (date: string) => {
-    return new Date(date).toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric' 
-    });
-  };
-
-  const getDuration = (departure: string, arrival: string) => {
-    const dep = new Date(departure);
-    const arr = new Date(arrival);
-    const diff = arr.getTime() - dep.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}h ${minutes}m`;
-  };
+  
 
   const basePrice = flight.basePriceCents / 100;
   const discountedPrice = discount > 0 ? basePrice * (1 - discount / 100) : basePrice;

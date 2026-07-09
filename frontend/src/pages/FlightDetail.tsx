@@ -6,6 +6,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 import { useToast } from "../contexts/ToastContext";
 import { MealIcon, BaggageIcon, WifiIcon, ShieldIcon } from "../components/Icons";
 import Footer from "../components/Footer";
+import { formatTime, getDuration } from "../utils/dateUtils";
 
 // Hardcoded occupied seats for realistic mockup
 const occupiedSeats: string[] = [];
@@ -90,13 +91,7 @@ export default function FlightDetail() {
       .finally(() => setLoading(false));
   }, [id, returnFlightId]);
 
-  const formatTime = (date: string) => {
-    return new Date(date).toLocaleTimeString('en-US', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    });
-  };
+  
 
   const formatDateTime = (date: string) => {
     return new Date(date).toLocaleString('en-US', {
@@ -109,14 +104,7 @@ export default function FlightDetail() {
     });
   };
 
-  const getDuration = (departure: string, arrival: string) => {
-    const dep = new Date(departure);
-    const arr = new Date(arrival);
-    const diff = arr.getTime() - dep.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}h ${minutes}m`;
-  };
+  
 
   // Add-on Cost Calculations (in Cents)
   const getSeatCost = (seat: string) => {

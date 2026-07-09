@@ -1836,9 +1836,6 @@ export default function Home() {
                   {activeTab === "cruise" && "Stunning Cruise Voyages"}
                   {activeTab === "tours" && "Top Tours & Attractions"}
                 </h3>
-                <p className="text-xs md:text-sm text-gray-500 dark:text-gray-400 mt-1 font-medium">
-                  Unlock scenic tourist destinations and premium accommodations directly from the navigation bar tabs above.
-                </p>
                 {/* Search and Filters Area */}
                 <div className="flex flex-col sm:flex-row gap-4 mb-8 bg-[#faf8f5]/60 dark:bg-gray-900/60 p-4 border border-gray-200/50 dark:border-gray-800/50 items-center justify-between">
                   {/* Text Search */}

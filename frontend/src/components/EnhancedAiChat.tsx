@@ -413,22 +413,28 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
   };
 
   return (
-    <div className="flex flex-col h-full bg-white dark:bg-gray-800">
+    <div className="flex flex-col h-full bg-slate-50 dark:bg-gray-950 font-sans">
       {/* Chat Header */}
-      <div className="bg-gradient-to-r from-booking-lightblue to-booking-blue p-4 text-white flex items-center justify-between">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-            <RobotIcon className="w-6 h-6 text-white" />
+      <div className="bg-gradient-to-r from-blue-600 via-sky-500 to-blue-700 p-4 text-white flex items-center justify-between shadow-md border-b border-white/10 relative overflow-hidden">
+        {/* Decorative background light effect */}
+        <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-2xl -mr-6 -mt-6"></div>
+        <div className="flex items-center space-x-3 relative z-10">
+          <div className="w-10 h-10 bg-white/10 backdrop-blur-md rounded-full flex items-center justify-center border border-white/20 shadow-inner animate-pulse">
+            <RobotIcon className="w-5.5 h-5.5 text-white" />
           </div>
           <div>
-            <h3 className="font-bold text-lg">FlyFast AI Assistant</h3>
-            <p className="text-xs text-white/80">Ask me to find flights with exclusive deals!</p>
+            <div className="flex items-center gap-1.5">
+              <h3 className="font-extrabold text-sm md:text-base tracking-tight">FlyFast AI Assistant</h3>
+              <span className="w-2 h-2 bg-green-400 rounded-full animate-ping"></span>
+              <span className="w-2 h-2 bg-green-400 rounded-full absolute"></span>
+            </div>
+            <p className="text-[10px] md:text-xs text-white/80">Search & book flights instantly with AI</p>
           </div>
         </div>
         {onClose && (
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 transition-colors duration-200 flex items-center justify-center"
+            className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/25 transition-all duration-300 flex items-center justify-center border border-white/10 hover:rotate-90 z-10 cursor-pointer"
             aria-label="Close chat"
           >
             ✕
@@ -437,37 +443,41 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 bg-gray-50 dark:bg-gray-900/50 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 bg-[#f8fafc] dark:bg-gray-950 space-y-4">
         {messages.length === 0 && (
-          <div className="text-center py-8 animate-fade-in">
-            <div className="flex justify-center items-center gap-3 mb-4">
-              <FlightIcon className="w-12 h-12 text-booking-lightblue transform -rotate-45" />
-              <RobotIcon className="w-12 h-12 text-purple-500" />
+          <div className="text-center py-10 px-4 animate-scale-in">
+            <div className="flex justify-center items-center gap-3.5 mb-6">
+              <div className="w-14 h-14 bg-blue-50 dark:bg-blue-950/30 rounded-2xl flex items-center justify-center shadow-soft border border-blue-100/50 dark:border-blue-900/30">
+                <FlightIcon className="w-8 h-8 text-booking-lightblue transform -rotate-45" />
+              </div>
+              <div className="w-14 h-14 bg-purple-50 dark:bg-purple-950/30 rounded-2xl flex items-center justify-center shadow-soft border border-purple-100/50 dark:border-purple-900/30 animate-bounce" style={{ animationDuration: '3s' }}>
+                <RobotIcon className="w-8 h-8 text-purple-500" />
+              </div>
             </div>
-            <h4 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">
+            <h4 className="text-xl font-extrabold text-gray-800 dark:text-gray-200 tracking-tight mb-2">
               Hi! I'm your FlyFast AI assistant
             </h4>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-              I can help you find flights with exclusive discounts and offers!
+            <p className="text-xs md:text-sm text-gray-550 dark:text-gray-400 max-w-sm mx-auto mb-8 leading-relaxed font-semibold">
+              I can help you search flights, find exclusive deals, and complete bookings using natural language.
             </p>
 
-            {/* Quick Actions */}
-            <div className="space-y-2 max-w-xs mx-auto">
+            {/* Quick Actions Suggestions (Horizontal wrap pills) */}
+            <div className="flex flex-wrap justify-center gap-2.5 max-w-md mx-auto">
               <button
                 onClick={() => handleQuickAction("SEARCH")}
-                className="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-booking-lightblue text-booking-lightblue rounded-lg hover:bg-booking-lightblue hover:text-white transition-all duration-200 text-sm font-semibold"
+                className="px-4 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:border-blue-500 hover:text-blue-500 text-gray-700 dark:text-gray-200 rounded-full hover:shadow-soft transition-all duration-300 text-xs font-bold cursor-pointer hover:scale-105"
               >
                 🔍 Search Flights
               </button>
               <button
                 onClick={() => handleQuickAction("DEALS")}
-                className="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-booking-lightblue text-booking-lightblue rounded-lg hover:bg-booking-lightblue hover:text-white transition-all duration-200 text-sm font-semibold"
+                className="px-4 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:border-blue-500 hover:text-blue-500 text-gray-700 dark:text-gray-200 rounded-full hover:shadow-soft transition-all duration-300 text-xs font-bold cursor-pointer hover:scale-105"
               >
                 💰 Find Deals
               </button>
               <button
                 onClick={() => handleQuickAction("OPTIONS")}
-                className="w-full px-4 py-2 bg-white dark:bg-gray-800 border border-booking-lightblue text-booking-lightblue rounded-lg hover:bg-booking-lightblue hover:text-white transition-all duration-200 text-sm font-semibold"
+                className="px-4 py-2 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 hover:border-blue-500 hover:text-blue-500 text-gray-700 dark:text-gray-200 rounded-full hover:shadow-soft transition-all duration-300 text-xs font-bold cursor-pointer hover:scale-105"
               >
                 📅 Best Options
               </button>
@@ -479,10 +489,10 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"} animate-slide-up`}>
             {m.type === 'flights' && m.flights ? (
               <div className="w-full max-w-full">
-                <div className="bg-white dark:bg-gray-700 rounded-2xl px-4 py-2 mb-3 shadow-sm max-w-[80%]">
-                  <div className="text-sm whitespace-pre-wrap break-words">{m.text}</div>
+                <div className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200/60 dark:border-gray-800 rounded-2xl rounded-tl-none px-4 py-3 mb-3 shadow-soft max-w-[85%] text-xs md:text-sm">
+                  <div className="whitespace-pre-wrap break-words font-semibold leading-relaxed">{m.text}</div>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-3.5">
                   {m.flights.map((flight, idx) => {
                     const discountInfo = calculateDiscount(flight);
                     return (
@@ -501,14 +511,14 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
               </div>
             ) : (
               <div
-                className={`max-w-[80%] rounded-2xl px-4 py-2 ${m.role === "user"
-                    ? "bg-booking-lightblue text-white"
-                    : "bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow-sm"
+                className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-soft ${m.role === "user"
+                    ? "bg-gradient-to-r from-blue-600 to-sky-500 dark:from-blue-700 dark:to-sky-600 text-white rounded-tr-none"
+                    : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200/60 dark:border-gray-800 rounded-tl-none"
                   }`}
               >
-                <div className="text-sm whitespace-pre-wrap break-words">{m.text}</div>
+                <div className="text-xs md:text-sm whitespace-pre-wrap break-words font-semibold leading-relaxed">{m.text}</div>
                 <div
-                  className={`text-xs mt-1 ${m.role === "user" ? "text-white/70" : "text-gray-500 dark:text-gray-400"
+                  className={`text-[9px] mt-1.5 font-bold ${m.role === "user" ? "text-white/70" : "text-gray-400 dark:text-gray-500"
                     }`}
                 >
                   {m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -520,11 +530,11 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
 
         {loading && (
           <div className="flex justify-start animate-fade-in">
-            <div className="bg-white dark:bg-gray-700 rounded-2xl px-4 py-2 shadow-sm">
-              <div className="flex space-x-2">
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl rounded-tl-none px-4 py-3 border border-gray-200/60 dark:border-gray-800 shadow-soft">
+              <div className="flex space-x-1.5 items-center">
+                <div className="w-2.5 h-2.5 bg-blue-500/80 rounded-full animate-bounce" style={{ animationDuration: '0.8s' }}></div>
+                <div className="w-2.5 h-2.5 bg-blue-500/80 rounded-full animate-bounce" style={{ animationDuration: '0.8s', animationDelay: '0.15s' }}></div>
+                <div className="w-2.5 h-2.5 bg-blue-500/80 rounded-full animate-bounce" style={{ animationDuration: '0.8s', animationDelay: '0.3s' }}></div>
               </div>
             </div>
           </div>
@@ -538,10 +548,10 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
       
       {/* Seat Selection Panel */}
       {bookingStep === 'seat' && bookingFlight && (
-        <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 space-y-4">
+        <div className="p-4 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 space-y-4">
           {renderMiniSeatMap()}
           <div className="text-center">
-            <button onClick={handleCancelBooking} className="text-xs text-red-500 hover:underline font-bold uppercase tracking-wider">
+            <button onClick={handleCancelBooking} className="text-xs text-red-500 hover:text-red-600 hover:underline font-extrabold uppercase tracking-wider transition-colors">
               Cancel booking wizard
             </button>
           </div>
@@ -550,11 +560,11 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
 
       {/* Default Chat Input (Hidden when Booking Wizard is active) */}
       {bookingStep === 'none' && (
-        <div className="p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-          <div className="flex gap-2">
+        <div className="p-3.5 bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+          <div className="flex gap-2 bg-[#f8fafc] dark:bg-gray-950 p-1 rounded-2xl border border-gray-200/60 dark:border-gray-800 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 transition-all duration-300">
             <input
               ref={inputRef}
-              className="flex-1 input-field text-sm"
+              className="flex-1 bg-transparent px-4 py-2 text-xs md:text-sm outline-none text-gray-800 dark:text-white placeholder-gray-400 font-semibold"
               value={text}
               onChange={(e) => setText(e.target.value)}
               onKeyPress={handleKeyPress}
@@ -564,7 +574,7 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
             <button
               onClick={handleSend}
               disabled={!text.trim() || loading}
-              className="px-6 py-3 bg-booking-lightblue hover:bg-booking-blue text-white font-semibold rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg"
+              className="px-5 py-2 bg-gradient-to-r from-blue-600 to-sky-500 hover:from-blue-700 hover:to-sky-600 disabled:from-gray-300 disabled:to-gray-450 dark:disabled:from-gray-800 dark:disabled:to-gray-700 text-white font-extrabold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-soft text-xs md:text-sm cursor-pointer whitespace-nowrap"
             >
               Send
             </button>

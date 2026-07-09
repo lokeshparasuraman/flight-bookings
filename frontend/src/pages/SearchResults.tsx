@@ -660,17 +660,8 @@ export default function SearchResults() {
           {/* AI Chat recommendations */}
           {!loading && processedOutbound.length > 0 && (
             <div className="mt-16 animate-fade-in max-w-5xl mx-auto">
-              <div className="bg-white dark:bg-gray-905 border border-gray-205/60 dark:border-gray-800 rounded-3xl p-6 md:p-8 shadow-soft">
-                <h2 className="text-lg md:text-xl font-extrabold text-gray-855 dark:text-white mb-3 flex items-center gap-2">
-                  <span>🤖</span>
-                  <span>Interactive AI Chat Recommendations</span>
-                </h2>
-                <p className="text-xs md:text-sm text-gray-505 dark:text-gray-400 mb-6 leading-relaxed font-semibold">
-                  Ask our AI travel assistant to help you locate cheaper fares or find specific departure windows.
-                </p>
-                <div className="rounded-2xl overflow-hidden border border-gray-205 dark:border-gray-800 h-[500px]">
-                  <EnhancedAiChat sessionId={`session-${origin}-${destination}`} />
-                </div>
+              <div className="rounded-2xl overflow-hidden border border-gray-205 dark:border-gray-800 h-[500px] shadow-soft">
+                <EnhancedAiChat sessionId={`session-${origin}-${destination}`} />
               </div>
             </div>
           )}

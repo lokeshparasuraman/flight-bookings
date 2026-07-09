@@ -6,7 +6,6 @@ import { calculateDiscount } from "../utils/discountCalculator";
 import LoadingSpinner from "./LoadingSpinner";
 import { 
   RobotIcon, 
-  FlightIcon, 
   SecureIcon, 
   UserIcon, 
   SeatIcon 
@@ -425,8 +424,6 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
           <div>
             <div className="flex items-center gap-1.5">
               <h3 className="font-extrabold text-sm md:text-base tracking-tight">FlyFast AI Assistant</h3>
-              <span className="w-2 h-2 bg-green-400 rounded-full animate-ping"></span>
-              <span className="w-2 h-2 bg-green-400 rounded-full absolute"></span>
             </div>
             <p className="text-[10px] md:text-xs text-white/80">Search & book flights instantly with AI</p>
           </div>
@@ -446,14 +443,6 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
       <div className="flex-1 overflow-y-auto p-4 bg-[#f8fafc] dark:bg-gray-950 space-y-4">
         {messages.length === 0 && (
           <div className="text-center py-10 px-4 animate-scale-in">
-            <div className="flex justify-center items-center gap-3.5 mb-6">
-              <div className="w-14 h-14 bg-blue-50 dark:bg-blue-950/30 rounded-2xl flex items-center justify-center shadow-soft border border-blue-100/50 dark:border-blue-900/30">
-                <FlightIcon className="w-8 h-8 text-booking-lightblue transform -rotate-45" />
-              </div>
-              <div className="w-14 h-14 bg-purple-50 dark:bg-purple-950/30 rounded-2xl flex items-center justify-center shadow-soft border border-purple-100/50 dark:border-purple-900/30 animate-bounce" style={{ animationDuration: '3s' }}>
-                <RobotIcon className="w-8 h-8 text-purple-500" />
-              </div>
-            </div>
             <h4 className="text-xl font-extrabold text-gray-800 dark:text-gray-200 tracking-tight mb-2">
               Hi! I'm your FlyFast AI assistant
             </h4>

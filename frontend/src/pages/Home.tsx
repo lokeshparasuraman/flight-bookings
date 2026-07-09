@@ -1836,8 +1836,11 @@ export default function Home() {
                   {activeTab === "cruise" && "Stunning Cruise Voyages"}
                   {activeTab === "tours" && "Top Tours & Attractions"}
                 </h3>
-                {/* Search and Filters Area */}
-                <div className="flex flex-col sm:flex-row gap-4 mb-8 bg-[#faf8f5]/60 dark:bg-gray-900/60 p-4 border border-gray-200/50 dark:border-gray-800/50 items-center justify-between">
+              </div>
+            </div>
+
+            {/* Search and Filters Area */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-8 bg-[#faf8f5]/60 dark:bg-gray-900/60 p-4 border border-gray-200/50 dark:border-gray-800/50 items-center justify-between">
                   {/* Text Search */}
                   <div className="relative w-full sm:w-72">
                     <input
@@ -1973,8 +1976,6 @@ export default function Home() {
                     </div>
                   );
                 })()}
-              </div>
-            </div>
           </div>
 
           {/* Quick Chat Widget Area & Benefits */}

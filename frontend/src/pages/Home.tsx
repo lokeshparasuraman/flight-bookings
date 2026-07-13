@@ -653,7 +653,7 @@ export default function Home() {
           {/* overflow-visible is critical here — combined with the portal Tooltip
               this ensures tooltip bubbles are never clipped by the grid container
               on any screen size, including small 6-inch mobile phones.          */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800/80 shadow-xl rounded-3xl mb-6 w-full grid grid-cols-2 min-[400px]:grid-cols-3 sm:grid-cols-5 lg:grid-cols-10 select-none px-2 py-3.5 relative z-30 gap-y-3.5 gap-x-2 sm:gap-x-3 overflow-visible">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200/80 dark:border-gray-800/80 shadow-xl rounded-3xl mb-6 w-full flex overflow-x-auto lg:grid lg:grid-cols-10 select-none px-4 py-3.5 relative z-30 gap-x-5 sm:gap-x-6 lg:gap-x-3 gap-y-3.5 overflow-y-visible lg:overflow-visible scrollbar-none snap-x snap-mandatory">
             {tabs.map((tab: any) => {
               const isActive = activeTab === tab.id;
               const tooltipLabel = tab.disabled
@@ -666,9 +666,9 @@ export default function Home() {
                   <button
                     disabled={tab.disabled}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`relative flex flex-col items-center justify-center py-2 px-1 text-center transition-all duration-200 outline-none rounded-2xl group w-full ${isActive
+                    className={`relative flex flex-col items-center justify-center py-2 px-1 text-center transition-all duration-200 outline-none rounded-2xl group snap-start shrink-0 min-w-[76px] lg:min-w-0 w-auto lg:w-full ${isActive
                       ? "text-[#008cff] font-extrabold scale-105"
-                      : "text-gray-500 dark:text-gray-400 hover:text-[#008cff] dark:hover:text-blue-400 disabled:opacity-40 disabled:cursor-not-allowed"
+                      : "text-gray-550 dark:text-gray-400 hover:text-[#008cff] dark:hover:text-blue-400 disabled:opacity-40 disabled:cursor-not-allowed"
                       }`}
                   >
                     {tab.badge && (
@@ -752,7 +752,18 @@ export default function Home() {
                           if (resolved) setOrigin(resolved);
                         }}
                         onFocus={() => setShowOriginSuggestions(true)}
-                        onBlur={() => setTimeout(() => setShowOriginSuggestions(false), 200)}
+                        onBlur={() => {
+                          setTimeout(() => {
+                            setShowOriginSuggestions(false);
+                            const resolved = resolveAirport(originInput);
+                            if (resolved) {
+                              setOrigin(resolved);
+                              setOriginInput(resolved);
+                            } else {
+                              setOriginInput(origin);
+                            }
+                          }, 200);
+                        }}
                         className="w-full bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
                         placeholder="DEL"
                         required
@@ -767,7 +778,7 @@ export default function Home() {
                           {getSuggestions(originInput).map((airport) => (
                             <div
                               key={airport.code}
-                              onMouseDown={() => {
+                              onPointerDown={() => {
                                 setOrigin(airport.code);
                                 setOriginInput(airport.code);
                                 setShowOriginSuggestions(false);
@@ -816,7 +827,18 @@ export default function Home() {
                           if (resolved) setDestination(resolved);
                         }}
                         onFocus={() => setShowDestSuggestions(true)}
-                        onBlur={() => setTimeout(() => setShowDestSuggestions(false), 200)}
+                        onBlur={() => {
+                          setTimeout(() => {
+                            setShowDestSuggestions(false);
+                            const resolved = resolveAirport(destinationInput);
+                            if (resolved) {
+                              setDestination(resolved);
+                              setDestinationInput(resolved);
+                            } else {
+                              setDestinationInput(destination);
+                            }
+                          }, 200);
+                        }}
                         className="w-full bg-transparent font-extrabold text-3xl text-gray-855 dark:text-white outline-none placeholder-gray-400 group-hover:text-[#008cff] dark:group-hover:text-blue-400 transition-colors"
                         placeholder="BOM"
                         required
@@ -831,7 +853,7 @@ export default function Home() {
                           {getSuggestions(destinationInput).map((airport) => (
                             <div
                               key={airport.code}
-                              onMouseDown={() => {
+                              onPointerDown={() => {
                                 setDestination(airport.code);
                                 setDestinationInput(airport.code);
                                 setShowDestSuggestions(false);
@@ -1914,7 +1936,7 @@ export default function Home() {
                         <div
                           key={index}
                           onClick={() => setSelectedExplorePlace(place)}
-                          className="shrink-0 w-80 h-[390px] bg-white dark:bg-gray-855 dark:border-gray-750/60 border border-gray-150 rounded-3xl shadow-md overflow-hidden hover:shadow-xl hover:border-booking-lightblue/25 transition-all duration-300 flex flex-col cursor-pointer group"
+                          className="shrink-0 w-full max-w-[340px] sm:w-80 h-[390px] bg-white dark:bg-gray-855 dark:border-gray-750/60 border border-gray-150 rounded-3xl shadow-md overflow-hidden hover:shadow-xl hover:border-booking-lightblue/25 transition-all duration-300 flex flex-col cursor-pointer group"
                         >
                           {/* Place Image */}
                           <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-900 group/img">

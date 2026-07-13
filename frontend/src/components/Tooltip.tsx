@@ -69,6 +69,7 @@ export default function Tooltip({
 
   const show = useCallback(() => {
     if (disabled) return;
+    if (window.matchMedia("(pointer: coarse)").matches) return;
     computePosition();
     setVisible(true);
   }, [disabled, computePosition]);

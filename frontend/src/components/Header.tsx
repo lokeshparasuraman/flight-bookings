@@ -49,6 +49,14 @@ export default function Header() {
   const navigate = useNavigate();
   const { showToast } = useToast();
 
+  // Track scroll position — changes header visual style beyond 20px scroll
+  const [scrolled, setScrolled] = useState(false);
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   // Read auth tokens on every render — if the user logs in/out in another tab
   // the header will reflect it correctly on their next interaction
   const token = localStorage.getItem("token");
@@ -149,7 +157,11 @@ export default function Header() {
       )}
 
       {/* ── Main Header Bar ──────────────────────────────────────────────── */}
-      <header className="glass-panel sticky top-0 z-50 transition-all duration-300 backdrop-blur-3xl bg-white/60 dark:bg-gray-900/60 border-b border-white/50 dark:border-white/10">
+      <header className={`sticky top-0 z-50 transition-all duration-300 ${
+        scrolled
+          ? "backdrop-blur-3xl bg-white/95 dark:bg-gray-950/95 shadow-lg shadow-black/5 border-b border-gray-200/60 dark:border-gray-800/60"
+          : "glass-panel backdrop-blur-3xl bg-white/60 dark:bg-gray-900/60 border-b border-white/50 dark:border-white/10"
+      }`}>
         <div className="container">
           {/* min-w-0 prevents flex children from overflowing on very small phones */}
           <div className="flex items-center justify-between h-16 md:h-20 min-w-0">

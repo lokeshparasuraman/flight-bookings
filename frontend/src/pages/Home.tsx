@@ -377,11 +377,15 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedState, setSelectedState] = useState("all");
   const [selectedSpecialFare, setSelectedSpecialFare] = useState("regular");
+  const [cabinClass, setCabinClass] = useState<"economy" | "business" | "first">("economy");
   const [hotelCity, setHotelCity] = useState("Delhi, NCR, India");
   const [homestayCity, setHomestayCity] = useState("Coorg, Karnataka, India");
   const [holidayDest, setHolidayDest] = useState("Goa, India");
   const [pickupTime, setPickupTime] = useState("10:00 AM");
   const [insuranceCountry, setInsuranceCountry] = useState("Thailand");
+  // Price alert signup state
+  const [alertEmail, setAlertEmail] = useState("");
+  const [alertSent, setAlertSent] = useState(false);
 
   const handleSwap = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -473,7 +477,7 @@ export default function Home() {
     const iso = m ? `${m[3]}-${m[2]}-${m[1]}` : d;
 
     // Include specialFare so SearchResults and FlightDetail can apply the right discount
-    let queryParams = `origin=${origin}&destination=${destination}&date=${iso}&tripType=${tripType}&specialFare=${selectedSpecialFare}`;
+    let queryParams = `origin=${origin}&destination=${destination}&date=${iso}&tripType=${tripType}&specialFare=${selectedSpecialFare}&cabinClass=${cabinClass}`;
     if (tripType === "roundtrip") {
       const rd = String(returnDate || "");
       const rm = rd.match(/^(\d{2})-(\d{2})-(\d{4})$/);
@@ -624,20 +628,39 @@ export default function Home() {
             Full-width background image with an overlay for text readability.
             pb-36 gives space for the floating search panel to overlap below. */}
         <div
-          className="relative bg-cover bg-center text-white pt-10 pb-36 px-4"
+          className="relative bg-cover bg-center text-white pt-8 pb-40 px-4"
           style={{ backgroundImage: "url('/travel_hero_bg.png')" }}
         >
-          {/* Overlay: lighter in light mode, very dark in dark mode */}
-          <div className="absolute inset-0 bg-[#18181b]/40 dark:bg-[#09090b]/80 z-0"></div>
+          {/* Multi-layer gradient overlay for premium depth */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#0f172a]/70 via-[#18181b]/50 to-[#18181b]/60 dark:from-[#09090b]/85 dark:via-[#09090b]/75 dark:to-[#09090b]/85 z-0"></div>
 
           <div className="container max-w-6xl mx-auto text-center relative z-10">
-            {/* text-3xl on phones, scales up to 5xl on desktop */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-3 tracking-tight">
-              Compare & Book Flights Easily
+            {/* Animated trust pill */}
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-1.5 mb-5 text-xs font-bold text-white/90 tracking-wide animate-fade-in">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+              India's #1 AI-Powered Flight Booking Platform
+            </div>
+
+            {/* Main headline — shimmer animation on first line */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-4 tracking-tight leading-tight">
+              <span className="animate-shimmer-text">Compare &amp; Book</span>
+              <br className="hidden sm:block" />
+              <span className="text-white"> Flights Instantly</span>
             </h1>
-            <p className="text-sm md:text-base text-gray-300 max-w-xl mx-auto font-medium">
-              Save big with AI-powered flight recommendations & exclusive discounts.
+            <p className="text-sm md:text-base text-gray-300 max-w-xl mx-auto font-medium mb-6">
+              Save big with AI-powered recommendations, exclusive discounts &amp; zero hidden fees.
             </p>
+
+            {/* Trust signal stats row */}
+            <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[11px] sm:text-xs font-bold text-white/80 tracking-wide">
+              <span className="flex items-center gap-1.5"><span className="text-emerald-400">✓</span>2M+ Happy Travellers</span>
+              <span className="hidden sm:block text-white/30">|</span>
+              <span className="flex items-center gap-1.5"><span className="text-amber-400">✓</span>Zero Hidden Fees</span>
+              <span className="hidden sm:block text-white/30">|</span>
+              <span className="flex items-center gap-1.5"><span className="text-sky-400">✓</span>50+ Airlines</span>
+              <span className="hidden sm:block text-white/30">|</span>
+              <span className="flex items-center gap-1.5"><span className="text-violet-400">✓</span>24/7 AI Support</span>
+            </div>
           </div>
         </div>
 
@@ -980,10 +1003,33 @@ export default function Home() {
                       />
                       <span className="text-sm font-bold text-gray-800 dark:text-white">Traveler(s)</span>
                     </div>
-                    <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold">
-                      Economy Class
+                    <span className="block text-xs text-gray-555 dark:text-gray-400 mt-1 font-semibold capitalize">
+                      {cabinClass} Class
                     </span>
                   </div>
+                </div>
+              )}
+
+              {/* ── Cabin Class Selector ─────────────────────────────────────────────
+                  Economy / Business / First — pill toggle. Industry standard UX.
+                  Every serious travel app has this. Directly affects fare pricing. */}
+              {activeTab === "flights" && (
+                <div className="flex flex-wrap items-center gap-2 mt-4 mb-2">
+                  <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">Cabin Class:</span>
+                  {(["economy", "business", "first"] as const).map((cls) => (
+                    <button
+                      key={cls}
+                      type="button"
+                      onClick={() => setCabinClass(cls)}
+                      className={`cabin-pill px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider border transition-all ${
+                        cabinClass === cls
+                          ? "active border-booking-lightblue"
+                          : "bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-booking-lightblue/50"
+                      }`}
+                    >
+                      {cls === "economy" ? "✈️ Economy" : cls === "business" ? "💼 Business" : "👑 First Class"}
+                    </button>
+                  ))}
                 </div>
               )}
 
@@ -1936,7 +1982,7 @@ export default function Home() {
                         <div
                           key={index}
                           onClick={() => setSelectedExplorePlace(place)}
-                          className="shrink-0 w-full max-w-[340px] sm:w-80 h-[390px] bg-white dark:bg-gray-855 dark:border-gray-750/60 border border-gray-150 rounded-3xl shadow-md overflow-hidden hover:shadow-xl hover:border-booking-lightblue/25 transition-all duration-300 flex flex-col cursor-pointer group"
+                          className="shrink-0 w-full max-w-[340px] h-auto min-h-[370px] bg-white dark:bg-gray-855 dark:border-gray-750/60 border border-gray-150 rounded-3xl shadow-md overflow-hidden hover:shadow-xl hover:border-booking-lightblue/25 transition-all duration-300 flex flex-col cursor-pointer group"
                         >
                           {/* Place Image */}
                           <div className="relative h-48 overflow-hidden bg-gray-100 dark:bg-gray-900 group/img">
@@ -2000,8 +2046,137 @@ export default function Home() {
                 })()}
           </div>
 
+          {/* ── Trending Routes Carousel ────────────────────────────────────────
+              Shows the most-booked routes this week with price and airline info.
+              Horizontal scroll on mobile, wraps to grid on larger screens.
+              Clicking a card fills the search form and routes to /search.     */}
+          <div className="mb-10 mt-4">
+            <div className="flex items-center justify-between mb-5">
+              <div>
+                <span className="text-[10px] font-extrabold text-booking-lightblue uppercase tracking-widest">This Week's Best</span>
+                <h3 className="text-xl md:text-2xl font-extrabold text-gray-900 dark:text-white mt-1 font-display tracking-tight">
+                  Trending Routes 🔥
+                </h3>
+              </div>
+              <span className="text-xs font-bold text-gray-400 hidden sm:block">Swipe to explore →</span>
+            </div>
+
+            <div className="flex gap-4 overflow-x-auto scrollbar-none pb-2 -mx-4 px-4">
+              {[
+                { from: "DEL", to: "BOM", fromCity: "Delhi", toCity: "Mumbai", price: "₹2,899", airline: "IndiGo", discount: "12% off", color: "from-blue-500 to-blue-700", emoji: "🏙️" },
+                { from: "BLR", to: "GOI", fromCity: "Bengaluru", toCity: "Goa", price: "₹3,199", airline: "Air India", discount: "8% off", color: "from-orange-500 to-red-600", emoji: "🏖️" },
+                { from: "HYD", to: "COK", fromCity: "Hyderabad", toCity: "Kochi", price: "₹2,599", airline: "Akasa Air", discount: "15% off", color: "from-amber-500 to-orange-500", emoji: "🌴" },
+                { from: "MAA", to: "DEL", fromCity: "Chennai", toCity: "Delhi", price: "₹3,799", airline: "Vistara", discount: "6% off", color: "from-indigo-600 to-purple-700", emoji: "🏛️" },
+                { from: "BOM", to: "CCU", fromCity: "Mumbai", toCity: "Kolkata", price: "₹4,299", airline: "SpiceJet", discount: "10% off", color: "from-rose-500 to-pink-600", emoji: "🌆" },
+                { from: "DEL", to: "JAI", fromCity: "Delhi", toCity: "Jaipur", price: "₹1,899", airline: "IndiGo", discount: "20% off", color: "from-pink-500 to-fuchsia-600", emoji: "🏰" },
+              ].map((route, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    setOrigin(route.from);
+                    setOriginInput(route.from);
+                    setDestination(route.to);
+                    setDestinationInput(route.to);
+                    setActiveTab("flights");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                  className="route-card-glow shrink-0 w-52 sm:w-56 bg-white dark:bg-gray-850 border border-gray-150 dark:border-gray-800 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 text-left group cursor-pointer"
+                >
+                  {/* Gradient header */}
+                  <div className={`bg-gradient-to-br ${route.color} p-4 text-white relative`}>
+                    <div className="text-2xl mb-1">{route.emoji}</div>
+                    <div className="flex items-center gap-2 text-sm font-extrabold">
+                      <span>{route.from}</span>
+                      <span className="text-white/60">→</span>
+                      <span>{route.to}</span>
+                    </div>
+                    <div className="text-[10px] text-white/80 font-semibold mt-0.5">
+                      {route.fromCity} → {route.toCity}
+                    </div>
+                    {/* Discount badge */}
+                    <span className="absolute top-3 right-3 bg-white/20 backdrop-blur-sm text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full border border-white/30">
+                      {route.discount}
+                    </span>
+                  </div>
+                  {/* Card body */}
+                  <div className="p-3 flex items-center justify-between">
+                    <div>
+                      <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{route.airline}</div>
+                      <div className="text-base font-extrabold text-gray-800 dark:text-white">{route.price}</div>
+                      <div className="text-[9px] text-gray-400 font-semibold">per person</div>
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-booking-lightblue/10 flex items-center justify-center text-booking-lightblue group-hover:bg-booking-lightblue group-hover:text-white transition-all">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" /></svg>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Price Alert Signup ──────────────────────────────────────────────
+              Email capture for price drop notifications. High-conversion section
+              used by every major travel platform. Glassmorphic design.        */}
+          <div className="mb-10 relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-blue-600 to-[#008cff] p-6 sm:p-8 shadow-2xl">
+            {/* Background decoration */}
+            <div className="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-white/5 blur-2xl pointer-events-none"></div>
+            <div className="absolute -left-12 -bottom-12 w-40 h-40 rounded-full bg-white/5 blur-2xl pointer-events-none"></div>
+
+            <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center gap-6 justify-between">
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-2xl">🔔</span>
+                  <h3 className="text-lg sm:text-xl font-extrabold text-white tracking-tight">
+                    Never Miss a Deal Again
+                  </h3>
+                </div>
+                <p className="text-white/75 text-xs sm:text-sm font-medium max-w-md">
+                  Get instant price alerts when fares drop on your favourite routes. Used by 2M+ smart travellers.
+                </p>
+                <div className="flex flex-wrap gap-3 mt-3 text-[10px] font-bold text-white/70">
+                  <span>✓ Instant email alerts</span>
+                  <span>✓ No spam, unsubscribe anytime</span>
+                  <span>✓ DEL → BOM, BLR → GOI &amp; more</span>
+                </div>
+              </div>
+              <div className="flex-shrink-0 w-full sm:w-auto">
+                {alertSent ? (
+                  <div className="flex items-center gap-2 bg-white/15 backdrop-blur-md border border-white/30 rounded-2xl px-5 py-4 text-white font-bold text-sm animate-fade-in">
+                    <span className="text-emerald-300 text-xl">✓</span>
+                    <span>You're on the list!</span>
+                  </div>
+                ) : (
+                  <form
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      if (alertEmail) { setAlertSent(true); }
+                    }}
+                    className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto"
+                  >
+                    <input
+                      type="email"
+                      value={alertEmail}
+                      onChange={(e) => setAlertEmail(e.target.value)}
+                      placeholder="your@email.com"
+                      required
+                      className="flex-1 sm:w-52 px-4 py-3 rounded-xl bg-white/15 backdrop-blur-md border border-white/30 text-white placeholder-white/50 text-sm font-semibold focus:outline-none focus:border-white/60 transition-colors"
+                    />
+                    <button
+                      type="submit"
+                      className="px-5 py-3 bg-white text-blue-600 font-extrabold text-xs uppercase tracking-wider rounded-xl hover:bg-blue-50 transition-all shadow-lg whitespace-nowrap"
+                    >
+                      Get Alerts
+                    </button>
+                  </form>
+                )}
+              </div>
+            </div>
+          </div>
+
           {/* Quick Chat Widget Area & Benefits */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
             {/* AI Assistant Chat Banner */}
             <div className="lg:col-span-2 bg-[#f0f7ff] dark:bg-gray-800/40 rounded-3xl p-6 md:p-8 border border-[#e0efff]/50 dark:border-gray-700/30 flex flex-col justify-between shadow-soft">
               <div className="space-y-4">
@@ -2056,45 +2231,73 @@ export default function Home() {
               </button>
             </div>
 
-            {/* Travel portal stats */}
+            {/* Travel portal stats — upgraded with animated counters + trust badges */}
             <div className="bg-white dark:bg-gray-800 border border-gray-150 dark:border-gray-700 p-6 md:p-8 rounded-3xl shadow-soft flex flex-col justify-between">
-              <div className="space-y-4">
+              <div className="space-y-5">
                 <h4 className="font-extrabold text-gray-855 dark:text-white uppercase tracking-wider text-xs">
                   Why FlyFast?
                 </h4>
-                <ul className="space-y-3.5 text-sm text-gray-655 dark:text-gray-400">
+
+                {/* Animated stats counters */}
+                <div className="grid grid-cols-3 gap-3 pb-4 border-b border-gray-100 dark:border-gray-700">
+                  {[
+                    { value: "2M+", label: "Travellers", color: "text-booking-lightblue" },
+                    { value: "500+", label: "Routes", color: "text-violet-500" },
+                    { value: "99.2%", label: "Uptime", color: "text-emerald-500" },
+                  ].map((stat) => (
+                    <div key={stat.label} className="text-center">
+                      <div className={`text-xl font-extrabold ${stat.color} animate-count-up font-display`}>{stat.value}</div>
+                      <div className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mt-0.5">{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <ul className="space-y-3 text-sm text-gray-655 dark:text-gray-400">
                   <li className="flex items-start gap-2.5">
-                    <span className="text-green-500 font-bold">✓</span>
+                    <span className="text-emerald-500 font-bold mt-0.5">✓</span>
                     <span>No hidden payment gateway fees or convenience charges</span>
                   </li>
                   <li className="flex items-start gap-2.5">
-                    <span className="text-green-500 font-bold">✓</span>
-                    <span>100% Instant Refund on cancellations</span>
+                    <span className="text-emerald-500 font-bold mt-0.5">✓</span>
+                    <span>100% Instant Refund on cancellations within window</span>
                   </li>
                   <li className="flex items-start gap-2.5">
-                    <span className="text-green-500 font-bold">✓</span>
-                    <span>Interactive 3D Seating maps with no standard selection fees</span>
+                    <span className="text-emerald-500 font-bold mt-0.5">✓</span>
+                    <span>Interactive 3D Seating maps — no standard selection fees</span>
+                  </li>
+                  <li className="flex items-start gap-2.5">
+                    <span className="text-emerald-500 font-bold mt-0.5">✓</span>
+                    <span>AI-powered fare predictor — book at the right time</span>
                   </li>
                 </ul>
               </div>
 
-              <div className="pt-6 border-t border-gray-100 dark:border-gray-755 flex items-center justify-between text-xs text-gray-400 dark:text-gray-500 font-semibold">
-                <span className="flex items-center gap-1.5">
-                  <SecureIcon className="w-4 h-4 text-emerald-500" />
-                  Secure SSL Payments
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <FlashIcon className="w-4 h-4 text-amber-500" />
-                  Fast Booking
-                </span>
+              <div className="pt-5 border-t border-gray-100 dark:border-gray-755 space-y-3">
+                <div className="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500 font-semibold">
+                  <span className="flex items-center gap-1.5">
+                    <SecureIcon className="w-4 h-4 text-emerald-500" />
+                    SSL Secured
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <FlashIcon className="w-4 h-4 text-amber-500" />
+                    Instant Booking
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <span className="text-[9px] font-bold px-2 py-1 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-800/30 rounded-lg">🔒 PCI-DSS</span>
+                  <span className="text-[9px] font-bold px-2 py-1 bg-blue-50 dark:bg-blue-950/30 text-blue-600 dark:text-blue-400 border border-blue-200/50 dark:border-blue-800/30 rounded-lg">✈️ DGCA</span>
+                  <span className="text-[9px] font-bold px-2 py-1 bg-violet-50 dark:bg-violet-950/30 text-violet-600 dark:text-violet-400 border border-violet-200/50 dark:border-violet-800/30 rounded-lg">🌐 IATA</span>
+                  <span className="text-[9px] font-bold px-2 py-1 bg-amber-50 dark:bg-amber-950/30 text-amber-600 dark:text-amber-400 border border-amber-200/50 dark:border-amber-800/30 rounded-lg">⭐ 4.8 Rated</span>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* AI Chat Modal Dialog */}
+
+          {/* AI Chat Modal Dialog — uses dvh for mobile browser address-bar safety */}
           {showAiChat && (
-            <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 animate-fade-in">
-              <div className="bg-white dark:bg-gray-800 rounded-3xl w-full max-w-2xl h-[650px] shadow-2xl animate-scale-in overflow-hidden border border-gray-200 dark:border-gray-700">
+            <div className="fixed inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in">
+              <div className="bg-white dark:bg-gray-800 rounded-t-3xl sm:rounded-3xl w-full max-w-2xl modal-safe-height shadow-2xl animate-scale-in overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col">
                 <EnhancedAiChat
                   onClose={() => setShowAiChat(false)}
                   sessionId="home-session"

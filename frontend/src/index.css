@@ -12,7 +12,7 @@
   /* Apply color transitions to everything so dark/light mode feels smooth.
      200ms is quick enough to feel snappy but slow enough to be noticeable.   */
   * {
-    @apply transition-all duration-300 ease-in-out;
+    @apply transition-colors duration-300 ease-in-out;
   }
 
   /* Smooth anchor scrolling — avoids the jarring snap to headings.           */
@@ -99,6 +99,17 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
+/* ─── Scrollbar utilities ─────────────────────────────────────────────────────
+   scrollbar-none is referenced across JSX but was missing from CSS — fixed.
+   scrollbar-thin is a thinner branded variant for scrollable panels.        */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 /* ─── Glowing background blobs ───────────────────────────────────────────────
    These are the soft colored orbs that float behind page content to add depth.
    They use pointer-events: none so they never block clicks.
@@ -135,8 +146,6 @@ input[type=number] {
   position: absolute;
   width: 500px;
   height: 500px;
-  /* This is intentionally overriding our global sharp-edge rule — blobs
-     must be circular to look like... blobs.                                 */
   border-radius: 50% !important;
   filter: blur(80px);
   opacity: 0.12;
@@ -304,6 +313,101 @@ input[type=number] {
   transform: translateX(-50%) translateY(0);
 }
 
+/* ─── Hero gradient text animation ──────────────────────────────────────────
+   Used for the animated shimmer effect on hero headings and stat numbers.   */
+@keyframes shimmer-text {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+.animate-shimmer-text {
+  background: linear-gradient(
+    90deg,
+    #ffffff 0%,
+    #a5f3fc 30%,
+    #ffffff 50%,
+    #bfdbfe 70%,
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer-text 4s linear infinite;
+}
+
+/* ─── Count-up number animation ──────────────────────────────────────────────
+   The counter animation runs once on component mount — triggered via
+   CSS animation + JS counter increment.                                      */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-count-up {
+  animation: countUp 0.6s ease-out forwards;
+}
+
+/* ─── Pulse ring — used on the AI button online indicator ─────────────────── */
+@keyframes pulse-ring {
+  0%   { transform: scale(1);   opacity: 0.8; }
+  70%  { transform: scale(2.2); opacity: 0; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+.animate-pulse-ring::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #34d399;
+  animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+/* ─── Gradient fade on scrollable tab nav ends ────────────────────────────── */
+.tab-fade-right {
+  mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+}
+
+/* ─── Trending route card hover glow ────────────────────────────────────────  */
+.route-card-glow:hover {
+  box-shadow: 0 0 0 1px rgba(0, 140, 255, 0.25),
+              0 8px 30px -4px rgba(0, 140, 255, 0.15);
+}
+
+/* ─── Price alert section gradient border ────────────────────────────────── */
+.price-alert-border {
+  border: 1px solid transparent;
+  background-clip: padding-box;
+  position: relative;
+}
+.price-alert-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #7c3aed, #008cff, #ff6636);
+  z-index: -1;
+}
+
+/* ─── Cabin class selector pill styles ───────────────────────────────────── */
+.cabin-pill {
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+.cabin-pill.active {
+  background: linear-gradient(135deg, #008cff, #0062ff);
+  color: #fff;
+  box-shadow: 0 4px 14px -2px rgba(0, 140, 255, 0.35);
+  transform: scale(1.03);
+}
+
+/* ─── Mobile modal safe sizing ───────────────────────────────────────────────
+   dvh (dynamic viewport height) accounts for the mobile browser address bar
+   shrinking the viewport. Falls back to vh for older browsers.               */
+.modal-safe-height {
+  max-height: 90vh;
+  max-height: 90dvh;
+}
+
 /* ─── Responsive helpers ─────────────────────────────────────────────────────
    A few utility classes not covered by Tailwind that we need for edge cases.
    Specifically: preventing horizontal overflow on mobile from stray elements. */
@@ -322,6 +426,32 @@ input[type=number] {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* ─── Skeleton loader ─────────────────────────────────────────────────────── */
+@keyframes skeleton-wave {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(229, 231, 235, 0.8) 25%,
+    rgba(209, 213, 219, 0.5) 50%,
+    rgba(229, 231, 235, 0.8) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-wave 1.4s ease infinite;
+  border-radius: 8px;
+}
+.dark .skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(39, 39, 42, 0.8) 25%,
+    rgba(63, 63, 70, 0.5) 50%,
+    rgba(39, 39, 42, 0.8) 75%
+  );
+  background-size: 200% 100%;
 }
 
 /* ─── Print styles ───────────────────────────────────────────────────────────

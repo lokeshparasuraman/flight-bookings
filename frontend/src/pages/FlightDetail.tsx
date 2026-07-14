@@ -415,9 +415,9 @@ export default function FlightDetail() {
           <span>Back to results</span>
         </button>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="md:col-span-2 space-y-6">
             
             {/* Outbound Flight Card */}
             <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200/60 dark:border-gray-800 p-6 shadow-soft">
@@ -644,7 +644,7 @@ export default function FlightDetail() {
           </div>
 
           {/* Pricing Sidebar */}
-          <div className="lg:col-span-1">
+          <div className="md:col-span-1">
             <div className="bg-white dark:bg-gray-900 border border-gray-200/60 dark:border-gray-800 rounded-3xl p-6 sticky top-24 space-y-6 shadow-soft">
               <h2 className="text-lg md:text-xl font-extrabold text-gray-850 dark:text-white">
                 Detailed Pricing

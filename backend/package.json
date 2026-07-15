@@ -10,7 +10,8 @@
     "postinstall": "node -e \"const fs=require('fs'); const p='prisma/schema.prisma'; let s=fs.readFileSync(p,'utf8'); const u=process.env.DATABASE_URL||''; const sqlite='provider = ' + String.fromCharCode(34) + 'sqlite' + String.fromCharCode(34); const pg='provider = ' + String.fromCharCode(34) + 'postgresql' + String.fromCharCode(34); if(u.startsWith('postgres')){s=s.replace(sqlite,pg);}else{s=s.replace(pg,sqlite);} fs.writeFileSync(p,s,'utf8');\" && prisma generate",
     "build:seed": "tsc -p tsconfig.prisma.json",
     "seed": "prisma db seed",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "jest --runInBand --detectOpenHandles --forceExit"
   },
   "prisma": {
     "seed": "node dist-prisma/prisma/seed.js"
@@ -42,5 +43,12 @@
     "ts-node-dev": "2.0.0",
     "twilio": "^4.23.0",
     "typescript": "5.6.3"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/supertest": "^7.2.1",
+    "jest": "^30.4.2",
+    "supertest": "^7.2.2",
+    "ts-jest": "^29.4.11"
   }
 }

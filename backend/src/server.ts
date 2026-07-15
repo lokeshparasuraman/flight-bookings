@@ -116,14 +116,20 @@ app.use(errorHandler);
 // 🚀 START SERVER
 // --------------------------------------------------------
 const port = Number(process.env.PORT) || 4000;
-const server = app.listen(port, "0.0.0.0", () => {
-  console.log(`Backend running on port ${port}`);
-});
+let server: any;
+
+if (process.env.NODE_ENV !== "test") {
+  server = app.listen(port, "0.0.0.0", () => {
+    console.log(`Backend running on port ${port}`);
+  });
+}
 
 async function shutdown(signal: string) {
   try {
     console.log(`Received ${signal}. Closing server...`);
-    await new Promise<void>((resolve) => server.close(() => resolve()));
+    if (server) {
+      await new Promise<void>((resolve) => server.close(() => resolve()));
+    }
     await prisma.$disconnect();
     console.log("Shutdown complete.");
     process.exit(0);
@@ -133,11 +139,16 @@ async function shutdown(signal: string) {
   }
 }
 
-process.on("SIGINT", () => shutdown("SIGINT"));
-process.on("SIGTERM", () => shutdown("SIGTERM"));
+if (process.env.NODE_ENV !== "test") {
+  process.on("SIGINT", () => shutdown("SIGINT"));
+  process.on("SIGTERM", () => shutdown("SIGTERM"));
+}
 process.on("unhandledRejection", (reason) => {
   console.error("Unhandled Rejection:", reason);
 });
 process.on("uncaughtException", (err) => {
   console.error("Uncaught Exception:", err);
 });
+
+export { app, server };
+

@@ -7,12 +7,7 @@ if (apiKey) {
 
 export async function callLLM(messages: any[]) {
   if (!client) {
-    const fallback = {
-      reply_text: "LLM unavailable in this environment",
-      intent: "none",
-      parameters: {}
-    };
-    return JSON.stringify(fallback);
+    throw new Error("LLM client is not configured (missing API key)");
   }
   const resp: any = await client.chat.completions.create({
     model: "gpt-4o-mini",

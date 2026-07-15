@@ -147,13 +147,13 @@ export default function FlightCardChat({
           <div className="flex gap-2">
             <Link
               to={`/flight/${flight.id}`}
-              className="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-semibold rounded-lg transition-colors duration-200 text-sm"
+              className="px-4 py-2 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-700 dark:text-gray-300 font-bold rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 text-sm"
             >
               View
             </Link>
             <button
               onClick={handleQuickBook}
-              className="px-4 py-2 bg-gradient-to-r from-booking-lightblue to-booking-blue hover:from-booking-blue hover:to-booking-lightblue text-white font-semibold rounded-lg transition-all duration-200 shadow-md hover:shadow-lg text-sm"
+              className="px-4 py-2 bg-gradient-to-r from-booking-lightblue to-booking-blue hover:from-booking-blue hover:to-booking-lightblue text-white font-bold rounded-xl transition-all duration-300 shadow-[0_4px_14px_rgba(0,140,255,0.25)] hover:shadow-[0_6px_20px_rgba(0,140,255,0.35)] hover:scale-105 active:scale-95 text-sm"
             >
               Book Now
             </button>

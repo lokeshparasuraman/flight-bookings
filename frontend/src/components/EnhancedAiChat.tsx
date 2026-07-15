@@ -412,9 +412,9 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
   };
 
   return (
-    <div className="flex flex-col h-full bg-slate-50 dark:bg-gray-950 font-sans">
+    <div className="flex flex-col h-full bg-gradient-to-b from-slate-50 to-indigo-50/30 dark:from-gray-950 dark:to-indigo-950/20 font-sans relative overflow-hidden">
       {/* Chat Header */}
-      <div className="bg-gradient-to-r from-blue-600 via-sky-500 to-blue-700 p-4 text-white flex items-center justify-between shadow-md border-b border-white/10 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-indigo-600 via-blue-600 to-sky-500 p-4 text-white flex items-center justify-between shadow-md border-b border-white/10 relative overflow-hidden">
         {/* Decorative background light effect */}
         <div className="absolute top-0 right-0 w-24 h-24 bg-white/10 rounded-full blur-2xl -mr-6 -mt-6"></div>
         <div className="flex items-center space-x-3 relative z-10">
@@ -478,7 +478,7 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
           <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"} animate-slide-up`}>
             {m.type === 'flights' && m.flights ? (
               <div className="w-full max-w-full">
-                <div className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200/60 dark:border-gray-800 rounded-2xl rounded-tl-none px-4 py-3 mb-3 shadow-soft max-w-[85%] text-xs md:text-sm">
+                <div className="backdrop-blur-md bg-white/75 dark:bg-gray-900/70 text-gray-800 dark:text-gray-100 border border-white/40 dark:border-white/5 rounded-2xl rounded-tl-none px-4 py-3 mb-3 shadow-soft max-w-[85%] text-xs md:text-sm">
                   <div className="whitespace-pre-wrap break-words font-semibold leading-relaxed">{m.text}</div>
                 </div>
                 <div className="space-y-3.5">
@@ -501,8 +501,8 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
             ) : (
               <div
                 className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-soft ${m.role === "user"
-                    ? "bg-gradient-to-r from-blue-600 to-sky-500 dark:from-blue-700 dark:to-sky-600 text-white rounded-tr-none"
-                    : "bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 border border-gray-200/60 dark:border-gray-800 rounded-tl-none"
+                    ? "bg-gradient-to-br from-indigo-600 to-blue-600 text-white rounded-tr-none"
+                    : "backdrop-blur-md bg-white/75 dark:bg-gray-900/70 text-gray-800 dark:text-gray-100 border border-white/40 dark:border-white/5 rounded-tl-none"
                   }`}
               >
                 <div className="text-xs md:text-sm whitespace-pre-wrap break-words font-semibold leading-relaxed">{m.text}</div>
@@ -519,7 +519,7 @@ export default function EnhancedAiChat({ onClose, sessionId, initialMessage }: E
 
         {loading && (
           <div className="flex justify-start animate-fade-in">
-            <div className="bg-white dark:bg-gray-800 rounded-2xl rounded-tl-none px-4 py-3 border border-gray-200/60 dark:border-gray-800 shadow-soft">
+            <div className="backdrop-blur-md bg-white/75 dark:bg-gray-900/70 rounded-2xl rounded-tl-none px-4 py-3 border border-white/40 dark:border-white/5 shadow-soft">
               <div className="flex space-x-1.5 items-center">
                 <div className="w-2.5 h-2.5 bg-blue-500/80 rounded-full animate-bounce" style={{ animationDuration: '0.8s' }}></div>
                 <div className="w-2.5 h-2.5 bg-blue-500/80 rounded-full animate-bounce" style={{ animationDuration: '0.8s', animationDelay: '0.15s' }}></div>
